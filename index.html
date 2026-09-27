@@ -171,6 +171,7 @@
   .match-buttons { display: flex; gap: 6px; }
   .btn-pick { background: transparent; border: 1px solid var(--line); color: var(--muted); padding: 5px 10px; font-size: 0.8rem; border-radius: 2px; }
   .btn-pick.active { border-color: var(--gold); color: var(--gold-soft); background: rgba(201,162,75,0.1); }
+  .btn-pick.secondary { border-color: var(--line); color: var(--muted); }
   .bye-row { color: var(--muted); font-size: 0.85rem; padding: 6px 0; }
 
   /* PREMIACION */
@@ -644,6 +645,12 @@
             btnB.className = 'btn-pick' + (m.winner === 'B' ? ' active' : ''); btnB.textContent = 'Ganó ' + m.teamBName;
             btnB.onclick = () => setWinner(m.id, 'B');
             btnWrap.appendChild(btnA); btnWrap.appendChild(btnB);
+            if (m.winner) {
+              const btnClear = document.createElement('button'); btnClear.type = 'button';
+              btnClear.className = 'btn-pick secondary'; btnClear.textContent = 'Sin definir';
+              btnClear.onclick = () => setWinner(m.id, null);
+              btnWrap.appendChild(btnClear);
+            }
             row.appendChild(btnWrap);
           } else {
             const status = document.createElement('span');
@@ -672,8 +679,8 @@
       el.innerHTML = '<p class="pending-note">Las fechas se publican en cuanto se cierra la inscripción de la tabla.</p>';
       return;
     }
-    const n = teams.length;
-    const rounds = n < 2 ? 0 : (n % 2 === 0 ? n - 1 : n);
+    const tableSize = Math.min(teams.length, 16);
+    const rounds = tableSize < 2 ? 0 : (tableSize % 2 === 0 ? tableSize - 1 : tableSize);
     let html = '<ul class="rounds-list">';
     for (let i = 0; i < rounds; i++) {
       const start = meta.scheduleStart + i * 3 * 86400000;
@@ -716,6 +723,11 @@
       } else {
         panel.innerHTML = '<p>Se completaron los 32 cupos. Los organizadores están generando el calendario.</p>';
       }
+    } else if (meta.scheduleStart && matches.length === 0 && isAdmin) {
+      panel.style.display = 'block';
+      panel.innerHTML = '<p>Las fechas ya están generadas pero no se crearon los cruces (versus). Puedes reintentar.</p>' +
+        '<div class="decision-buttons"><button class="btn-outline" id="regenBtn" type="button">Regenerar cruces</button></div>';
+      document.getElementById('regenBtn').onclick = () => regenerateFixtures();
     } else {
       panel.style.display = 'none';
     }
@@ -760,9 +772,14 @@
   async function decide(expand) {
     if (!db) return;
     if (!expand) {
-      await db.doc('meta/status').set({ expansionDecided: true, expanded: false, scheduleStart: Date.now(), fixturesGenerating: true });
-      await generateAndStoreFixtures(16);
-      await db.doc('meta/status').update({ fixturesGenerating: false });
+      try {
+        await db.doc('meta/status').set({ expansionDecided: true, expanded: false, scheduleStart: Date.now(), fixturesGenerating: true });
+        await generateAndStoreFixtures(16);
+      } catch (err) {
+        alert('No se pudieron generar los cruces: ' + err.message);
+      } finally {
+        await db.doc('meta/status').update({ fixturesGenerating: false });
+      }
     } else {
       await db.doc('meta/status').set({ expansionDecided: true, expanded: true, scheduleStart: null });
     }
@@ -770,9 +787,26 @@
 
   async function finalizeSchedule() {
     if (!db) return;
-    await db.doc('meta/status').set({ expansionDecided: true, expanded: true, scheduleStart: Date.now(), fixturesGenerating: true });
-    await generateAndStoreFixtures(32);
-    await db.doc('meta/status').update({ fixturesGenerating: false });
+    try {
+      await db.doc('meta/status').set({ expansionDecided: true, expanded: true, scheduleStart: Date.now(), fixturesGenerating: true });
+      await generateAndStoreFixtures(32);
+    } catch (err) {
+      alert('No se pudieron generar los cruces: ' + err.message);
+    } finally {
+      await db.doc('meta/status').update({ fixturesGenerating: false });
+    }
+  }
+
+  async function regenerateFixtures() {
+    if (!db) return;
+    try {
+      await db.doc('meta/status').update({ fixturesGenerating: true });
+      await generateAndStoreFixtures(capacity());
+    } catch (err) {
+      alert('No se pudieron regenerar los cruces: ' + err.message);
+    } finally {
+      await db.doc('meta/status').update({ fixturesGenerating: false });
+    }
   }
 
   openBtn.addEventListener('click', () => {
