@@ -228,7 +228,8 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
       <nav class="navlinks" aria-label="Navegación principal">
         <a href="#reglamento">Reglas</a><a href="#formato">Formato</a><a href="#inscripcion">Inscripción</a>
         <a href="#fechas">Calendario</a><a href="#tabla">Tabla</a><a href="#resultados">Resultados</a><a href="#premiacion">Premios</a>
-      </nav>
+      <button class="admin-access-btn" id="adminAccessBtn" type="button">⚙ ADMIN</button>
+    </nav>
     </div>
   </header>
 
@@ -516,6 +517,7 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
       'th,td{border:1px solid #ddd;padding:8px;text-align:left;font-size:0.92rem}th{background:#f4f0e6}' +
       'tr.q td{background:#fbf3df}ul{margin:0 0 10px;padding-left:20px;font-size:0.92rem}' +
       '
+.admin-access-btn{margin-left:14px;padding:9px 13px;border:1px solid rgba(244,212,119,.28);border-radius:10px;background:rgba(244,212,119,.06);color:var(--mk-gold2);font:800 .68rem/1 "Manrope",sans-serif;letter-spacing:.12em;cursor:pointer;transition:.2s}.admin-access-btn:hover{background:rgba(244,212,119,.13);border-color:rgba(244,212,119,.55)}
 .admin-dashboard{margin:26px 0 30px;padding:26px;border:1px solid rgba(244,212,119,.2);border-radius:22px;background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.018));box-shadow:0 20px 60px rgba(0,0,0,.22)}
 .admin-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}.admin-metric{padding:18px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(0,0,0,.18)}.admin-metric strong{display:block;font:700 1.8rem/1 "Manrope",sans-serif;color:var(--mk-gold2)}.admin-metric span{display:block;margin-top:7px;font-size:.66rem;letter-spacing:.14em;color:rgba(255,255,255,.62)}.admin-summary{padding:12px 14px;border-radius:12px;background:rgba(244,212,119,.06);font-size:.84rem;color:rgba(255,255,255,.78)}.admin-alerts{display:grid;gap:8px;margin-top:14px}.admin-alert,.admin-ok{display:flex;justify-content:space-between;gap:18px;padding:11px 13px;border-radius:11px;background:rgba(255,255,255,.035);font-size:.78rem}.admin-alert strong{color:#fff}.admin-alert span{color:rgba(255,255,255,.65);text-align:right}.admin-ok{color:var(--mk-gold2)}.admin-alert.black{border-left:3px solid #777}.admin-alert.red{border-left:3px solid #e57373}.admin-alert.yellow{border-left:3px solid #d9bd55}@media(max-width:700px){.admin-metrics{grid-template-columns:repeat(2,1fr)}.admin-alert{flex-direction:column;gap:4px}.admin-alert span{text-align:left}}
 </style></head><body>' +
@@ -985,39 +987,20 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
   });
 
   function setupAdminToggle() {
-    // Acceso de organizador: 5 clics rápidos sobre el LOGO de MASTER KING.
-    // Se mantiene el método anterior, pero ahora el objetivo vuelve a ser el logo.
-    const logo = document.querySelector('.brand-logo');
-    const brand = document.querySelector('.brand');
-    const target = logo || brand;
-    if (!target) return;
-    let clicks = 0, clickTimer = null;
-
-    target.style.cursor = 'pointer';
-    target.title = 'MASTER KING';
-
-    target.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      clicks++;
-      clearTimeout(clickTimer);
-      clickTimer = setTimeout(() => { clicks = 0; }, 2200);
-
-      if (clicks >= 5) {
-        clicks = 0;
-        clearTimeout(clickTimer);
-        if (auth.currentUser) {
-          if (confirm('¿Cerrar sesión de organizador?')) auth.signOut();
-          return;
-        }
-        const email = prompt('Correo de organizador:');
-        if (email === null) return;
-        const password = prompt('Contraseña:');
-        if (password === null) return;
-        auth.signInWithEmailAndPassword(email.trim(), password).catch((err) => {
-          alert('No se pudo iniciar sesión: ' + err.message);
-        });
+    const btn = document.getElementById('adminAccessBtn');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      if (auth.currentUser) {
+        if (confirm('¿Cerrar sesión de organizador?')) auth.signOut();
+        return;
       }
+      const email = prompt('Correo de organizador:');
+      if (email === null) return;
+      const password = prompt('Contraseña:');
+      if (password === null) return;
+      auth.signInWithEmailAndPassword(email.trim(), password).catch((err) => {
+        alert('No se pudo iniciar sesión: ' + err.message);
+      });
     });
   }
 
