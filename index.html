@@ -985,19 +985,29 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
   });
 
   function setupAdminToggle() {
-    // Clic 5 veces sobre el escudo/hero para iniciar o cerrar sesión de organizador.
-    const hero = document.querySelector('.hero');
+    // Acceso de organizador: 5 clics rápidos sobre el LOGO de MASTER KING.
+    // Se mantiene el método anterior, pero ahora el objetivo vuelve a ser el logo.
+    const logo = document.querySelector('.brand-logo');
+    const brand = document.querySelector('.brand');
+    const target = logo || brand;
+    if (!target) return;
     let clicks = 0, clickTimer = null;
-    hero.addEventListener('click', () => {
+
+    target.style.cursor = 'pointer';
+    target.title = 'MASTER KING';
+
+    target.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       clicks++;
       clearTimeout(clickTimer);
-      clickTimer = setTimeout(() => { clicks = 0; }, 1500);
+      clickTimer = setTimeout(() => { clicks = 0; }, 2200);
+
       if (clicks >= 5) {
         clicks = 0;
+        clearTimeout(clickTimer);
         if (auth.currentUser) {
-          if (confirm('¿Cerrar sesión de organizador?')) {
-            auth.signOut();
-          }
+          if (confirm('¿Cerrar sesión de organizador?')) auth.signOut();
           return;
         }
         const email = prompt('Correo de organizador:');
