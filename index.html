@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <style>
   :root {
     --ink: #0d0f16;
@@ -412,18 +413,14 @@
     appId: "1:369594551900:web:026a5e772628b7e938a099"
   };
 
-  // Código para activar el modo organizador (cámbialo por el que quieras).
-  // Se guarda en este archivo; quien lo conozca puede editar resultados y el calendario.
-  const ADMIN_CODE = "KINGMASTERS25";
-  const ADMIN_STORAGE_KEY = "km_is_admin";
-
   const app = firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore(app);
+  const auth = firebase.auth(app);
 
   let teams = [];
   let matches = [];
   let meta = { expansionDecided: false, expanded: false, scheduleStart: null };
-  let isAdmin = (localStorage.getItem(ADMIN_STORAGE_KEY) === '1');
+  let isAdmin = false; // se actualiza cuando Firebase confirma la sesión
 
   const backupBtn = document.getElementById('backupBtn');
   const backupMsg = document.getElementById('backupMsg');
@@ -823,7 +820,7 @@
   });
 
   function setupAdminToggle() {
-    // Clic 5 veces sobre el escudo/hero para pedir el código de organizador.
+    // Clic 5 veces sobre el escudo/hero para iniciar o cerrar sesión de organizador.
     const hero = document.querySelector('.hero');
     let clicks = 0, clickTimer = null;
     hero.addEventListener('click', () => {
@@ -832,28 +829,30 @@
       clickTimer = setTimeout(() => { clicks = 0; }, 1500);
       if (clicks >= 5) {
         clicks = 0;
-        if (isAdmin) {
-          if (confirm('¿Salir del modo organizador?')) {
-            isAdmin = false;
-            localStorage.removeItem(ADMIN_STORAGE_KEY);
-            render();
+        if (auth.currentUser) {
+          if (confirm('¿Cerrar sesión de organizador?')) {
+            auth.signOut();
           }
           return;
         }
-        const code = prompt('Código de organizador:');
-        if (code === ADMIN_CODE) {
-          isAdmin = true;
-          localStorage.setItem(ADMIN_STORAGE_KEY, '1');
-          render();
-        } else if (code !== null) {
-          alert('Código incorrecto.');
-        }
+        const email = prompt('Correo de organizador:');
+        if (email === null) return;
+        const password = prompt('Contraseña:');
+        if (password === null) return;
+        auth.signInWithEmailAndPassword(email.trim(), password).catch((err) => {
+          alert('No se pudo iniciar sesión: ' + err.message);
+        });
       }
     });
   }
 
   function init() {
     setupAdminToggle();
+
+    auth.onAuthStateChanged((user) => {
+      isAdmin = !!user;
+      render();
+    });
 
     db.collection('teams').orderBy('registeredAt', 'asc').onSnapshot((snap) => {
       teams = snap.docs.map(d => Object.assign({ id: d.id }, d.data()));
