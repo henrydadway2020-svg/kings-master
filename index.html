@@ -228,8 +228,7 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
       <nav class="navlinks" aria-label="Navegación principal">
         <a href="#reglamento">Reglas</a><a href="#formato">Formato</a><a href="#inscripcion">Inscripción</a>
         <a href="#fechas">Calendario</a><a href="#tabla">Tabla</a><a href="#resultados">Resultados</a><a href="#premiacion">Premios</a>
-      <button class="admin-access-btn" id="adminAccessBtn" type="button">⚙ ADMIN</button>
-    </nav>
+      </nav>
     </div>
   </header>
 
@@ -389,18 +388,6 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
 
       <section id="respaldo">
         <div class="kicker">08 · CONTROL DEL CAMPEONATO</div>
-        <div class="admin-dashboard" id="adminDashboard" style="display:none;">
-          <div class="activity-head"><div><div class="subkicker">PANEL PRIVADO</div><h3>Dashboard de administración</h3></div><div class="activity-day" id="adminRound">—</div></div>
-          <div class="admin-metrics">
-            <div class="admin-metric"><strong id="adminActive">0</strong><span>ACTIVOS</span></div>
-            <div class="admin-metric"><strong id="adminRisk">0</strong><span>EN RIESGO</span></div>
-            <div class="admin-metric"><strong id="adminLate">0</strong><span>ATRASADOS</span></div>
-            <div class="admin-metric"><strong id="adminReview">0</strong><span>EN REVISIÓN</span></div>
-          </div>
-          <div class="admin-summary" id="adminSummary">—</div>
-          <div class="admin-alerts" id="adminAlerts"></div>
-        </div>
-
         <h2>Respaldo</h2>
         <div class="backup-box">
           <div><p>Descarga un archivo con los equipos inscritos, el estado de la liga y todos los cruces y resultados capturados hasta este momento.</p><div id="backupMsg"></div></div>
@@ -516,7 +503,112 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
       '.muted{color:#777;font-size:0.92rem}table{border-collapse:collapse;width:100%;margin-bottom:16px}' +
       'th,td{border:1px solid #ddd;padding:8px;text-align:left;font-size:0.92rem}th{background:#f4f0e6}' +
       'tr.q td{background:#fbf3df}ul{margin:0 0 10px;padding-left:20px;font-size:0.92rem}' +
-      '</style></head><body>' +
+      '
+/* =========================================================
+   MASTER KING V5 // PREMIUM EXPERIENCE OVERRIDE
+   Visual-only enhancement layer — Firebase/JS preserved.
+   ========================================================= */
+:root{
+  --premium-bg:#030405;
+  --premium-panel:rgba(12,14,18,.78);
+  --premium-panel-solid:#0b0d11;
+  --premium-gold:#d8ad3c;
+  --premium-gold-hi:#ffe7a1;
+  --premium-text:#f5f1e6;
+  --premium-muted:#8992a3;
+  --premium-line:rgba(255,224,139,.115);
+  --premium-glow:rgba(221,175,57,.16);
+}
+body{background:
+  radial-gradient(900px 420px at 50% -8%,rgba(218,169,42,.16),transparent 66%),
+  radial-gradient(600px 500px at 100% 18%,rgba(86,61,12,.10),transparent 72%),
+  radial-gradient(520px 480px at 0% 58%,rgba(45,58,80,.08),transparent 72%),
+  linear-gradient(180deg,#020304 0%,#07090c 48%,#030405 100%);
+}
+body::before{opacity:.075;background-size:64px 64px}
+body::after{z-index:40;opacity:.018}
+.topbar{z-index:90;height:82px;background:rgba(2,3,4,.78);backdrop-filter:blur(24px) saturate(135%);box-shadow:0 1px 0 rgba(255,224,139,.08),0 18px 60px rgba(0,0,0,.34)}
+.nav{width:min(1260px,calc(100% - 40px));margin:auto;height:82px}
+.brand{gap:13px;letter-spacing:.2em}
+.brand-mark{width:42px;height:42px;border-radius:12px;transform:rotate(0deg);box-shadow:0 0 0 1px rgba(255,224,139,.06),inset 0 0 24px rgba(255,210,70,.11),0 8px 28px rgba(0,0,0,.35)}
+.navlinks{gap:4px}
+.navlinks a{position:relative;padding:10px 12px;color:#9da5b4;border-radius:9px;transition:color .22s,background .22s,transform .22s}
+.navlinks a::after{content:"";position:absolute;left:12px;right:12px;bottom:5px;height:1px;background:linear-gradient(90deg,transparent,var(--premium-gold),transparent);transform:scaleX(0);transition:transform .22s}
+.navlinks a:hover{color:var(--premium-gold-hi);background:rgba(255,224,139,.035);transform:translateY(-1px)}
+.navlinks a:hover::after{transform:scaleX(1)}
+.hero{min-height:735px;border-bottom:0;background:radial-gradient(ellipse 55% 50% at 50% 30%,rgba(255,205,77,.075),transparent 68%),linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.72))}
+.hero::before{width:1120px;height:1120px;top:-620px;border-color:rgba(255,224,139,.055);box-shadow:0 0 0 90px rgba(255,224,139,.018),0 0 0 180px rgba(255,224,139,.011)}
+.hero::after{opacity:.18}
+.hero-inner{padding:86px 0 112px}
+.hero-eyebrow{border-color:rgba(255,224,139,.19);background:rgba(255,224,139,.025);box-shadow:0 10px 40px rgba(0,0,0,.18);letter-spacing:.24em}
+.crest{width:min(470px,78vw);margin:28px auto 16px;filter:drop-shadow(0 28px 38px rgba(0,0,0,.8)) drop-shadow(0 0 45px rgba(228,179,50,.12));animation:float 7s ease-in-out infinite}
+.hero h1{font-size:clamp(2.2rem,5.5vw,4.65rem);letter-spacing:-.015em}
+.hero p.lede{max-width:620px;color:#9da6b5;font-size:1rem}
+.facts{margin-top:25px;gap:8px}.fact{border-color:rgba(255,224,139,.09);background:rgba(255,255,255,.018);padding:8px 13px}
+.hero-actions{margin-top:28px}.cta,.btn-gold{min-width:205px;border-radius:10px;padding:13px 21px;box-shadow:0 16px 40px rgba(0,0,0,.3),0 0 30px rgba(217,169,40,.07),inset 0 1px 0 rgba(255,255,255,.72)}
+.btn-ghost{min-width:155px;border-color:rgba(255,224,139,.13);background:rgba(255,255,255,.018);border-radius:10px}
+.stats{width:min(1120px,calc(100% - 40px));margin:-50px auto 0;border-color:rgba(255,224,139,.11);background:rgba(7,9,12,.82);box-shadow:0 28px 90px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.025);border-radius:16px}
+.stat{padding:22px 18px}.stat .n{font-size:2rem}.stat .l{letter-spacing:.18em}
+section{padding:100px 0;border-bottom-color:rgba(255,224,139,.055)}
+section::after{opacity:.55;width:110px}
+section .wrap{position:relative}
+.kicker{font-size:.67rem;letter-spacing:.27em;color:#dcb65b;margin-bottom:11px}
+h2{font-size:clamp(2.05rem,4vw,3.35rem);letter-spacing:-.025em;margin-bottom:34px}
+/* premium section framing */
+section .wrap > h2::after{content:"";display:block;width:44px;height:2px;margin-top:16px;background:linear-gradient(90deg,var(--premium-gold),transparent);opacity:.8}
+.clause{padding:22px 18px;border-top-color:rgba(255,224,139,.07);grid-template-columns:54px 1fr}
+.clause:hover{padding-left:22px;background:linear-gradient(90deg,rgba(255,224,139,.035),transparent)}
+.clause .num{font-size:1.05rem;color:#cfa63e}
+.grid-2,.prizes{gap:18px}
+.grid-2 .cell,.prize{border-color:rgba(255,224,139,.09);background:linear-gradient(145deg,rgba(18,21,27,.82),rgba(7,9,12,.92));box-shadow:0 20px 55px rgba(0,0,0,.23),inset 0 1px 0 rgba(255,255,255,.025);border-radius:14px;transition:transform .22s,border-color .22s,box-shadow .22s}
+.grid-2 .cell:hover,.prize:hover{transform:translateY(-3px);border-color:rgba(255,224,139,.19);box-shadow:0 25px 70px rgba(0,0,0,.30),0 0 35px rgba(216,173,60,.035)}
+.grid-2 .cell h3{font-size:1.2rem;letter-spacing:.01em}
+.roster-box,.standings-wrap,.backup-box,.results-toggle{border-color:rgba(255,224,139,.09);background:linear-gradient(145deg,rgba(15,18,23,.78),rgba(7,9,12,.88));box-shadow:0 22px 65px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.025)}
+.roster-box{border-radius:14px}
+.progress-track{height:8px;background:#080a0d;border-color:rgba(255,224,139,.07)}
+.progress-fill{background:linear-gradient(90deg,#76500a,#c89420,#f5d875);box-shadow:0 0 20px rgba(222,177,55,.27)}
+.team-list li{border-top-color:rgba(255,224,139,.065);padding:14px 2px}.team-list .tname{font-weight:800}.team-list .tplayers{font-size:.8rem}
+.decision-panel{border-color:rgba(255,224,139,.16);background:linear-gradient(135deg,rgba(216,173,60,.065),rgba(255,255,255,.012));box-shadow:inset 0 1px 0 rgba(255,255,255,.02)}
+.btn-outline{border-color:rgba(255,224,139,.2);transition:.2s}.btn-outline:hover{border-color:rgba(255,224,139,.42);transform:translateY(-1px)}
+.rounds-list li{border-top-color:rgba(255,224,139,.065)}
+.standings-wrap{border-radius:14px}.standings{min-width:680px}.standings th{background:rgba(255,224,139,.025);padding-top:13px;padding-bottom:13px}.standings td{padding-top:15px;padding-bottom:15px;border-top-color:rgba(255,224,139,.055)}.standings tr.qualify{background:linear-gradient(90deg,rgba(255,213,90,.065),rgba(255,255,255,.006))}
+.match-row{padding:14px 4px;border-top-color:rgba(255,224,139,.06)}
+.match-teams{font-weight:700}.btn-pick{transition:.18s}.btn-pick:hover{border-color:rgba(255,224,139,.28);color:#d9b75d}
+.prize .amount{font-size:3.25rem;text-shadow:0 8px 30px rgba(0,0,0,.4)}
+.prize::after{content:"";position:absolute;right:-40px;bottom:-70px;width:160px;height:160px;border-radius:50%;border:1px solid rgba(255,224,139,.05);box-shadow:0 0 0 25px rgba(255,224,139,.015),0 0 0 50px rgba(255,224,139,.008)}
+.backup-box{border-radius:14px}
+footer{padding:70px 20px 90px;border-top:0;color:#626a78;letter-spacing:.14em}
+.modal-backdrop{z-index:120;background:rgba(0,0,0,.86)}
+.modal{border-color:rgba(255,224,139,.16);background:linear-gradient(145deg,#13161c,#07090c);box-shadow:0 35px 120px rgba(0,0,0,.72),0 0 50px rgba(214,169,42,.045)}
+.field input{border-color:rgba(255,224,139,.10);transition:border-color .2s,box-shadow .2s}.field input:focus{border-color:rgba(255,224,139,.42);box-shadow:0 0 0 3px rgba(255,224,139,.05)}
+/* Activity / status area */
+#activityControl{border:1px solid rgba(255,224,139,.09)!important;background:linear-gradient(145deg,rgba(14,17,22,.86),rgba(6,8,11,.94))!important;box-shadow:0 22px 70px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.02);border-radius:14px!important;overflow:hidden}
+.activity-row{transition:background .18s}.activity-row:hover{background:rgba(255,224,139,.025)!important}
+/* reduce the “template” feel of repeated borders */
+.panel,.card{box-shadow:0 18px 55px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,255,255,.02)}
+/* keyboard / accessibility */
+:focus-visible{outline:2px solid rgba(255,224,139,.75)!important;outline-offset:3px}
+/* responsive premium */
+@media(max-width:820px){
+  .topbar,.nav{height:70px}.nav{min-height:70px;width:min(100% - 24px,1260px)}
+  .brand{font-size:.72rem;letter-spacing:.14em}.brand-mark{width:38px;height:38px}
+  .hero{min-height:650px}.hero-inner{padding:72px 0 90px}.crest{width:min(430px,88vw)}
+  section{padding:78px 0}.stats{width:calc(100% - 24px);margin-top:-34px}
+}
+@media(max-width:560px){
+  .wrap{width:calc(100% - 24px)}.hero{min-height:610px}.hero-inner{padding:58px 0 72px}.crest{width:92vw;margin-top:22px}
+  .hero h1{font-size:2.15rem}.hero p.lede{font-size:.91rem;max-width:340px}.facts{margin-top:20px}.fact{font-size:.62rem}
+  .stats{grid-template-columns:repeat(2,1fr);border-radius:13px}.stat{padding:17px 7px}.stat .n{font-size:1.5rem}.stat .l{font-size:.57rem;letter-spacing:.1em}
+  section{padding:64px 0}h2{font-size:2rem;margin-bottom:26px}.kicker{font-size:.61rem}
+  .grid-2,.prizes{gap:12px}.grid-2 .cell,.prize{padding:22px}.prize .amount{font-size:2.55rem}
+  .standings-wrap{margin-left:-1px;margin-right:-1px}.standings{min-width:610px;font-size:.82rem}.standings th,.standings td{padding-left:9px;padding-right:9px}
+  .rounds-list li{grid-template-columns:76px 1fr}.clause{grid-template-columns:34px 1fr;gap:10px;padding:16px 2px}.clause:hover{padding-left:5px}
+  .hero-actions{gap:8px}.cta,.btn-ghost{min-height:48px}
+  footer{padding-bottom:60px;font-size:.68rem}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+</style></head><body>' +
       '<h1>King Masters</h1><p class="muted">Respaldo generado el ' + esc(genDate) + '</p>' +
       '<h2>Estado de la liga</h2><p>' + esc(estadoTxt) + '</p><p>Fechas generadas: ' + esc(fechasTxt) + '</p>' +
       '<h2>Equipos inscritos (' + teams.length + ')</h2>' +
@@ -766,38 +858,6 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
     }
   }
 
-  function renderAdminDashboard() {
-    const box = document.getElementById('adminDashboard');
-    if (!box) return;
-    if (!isAdmin || !meta.scheduleStart || !matches.length || !teams.length) { box.style.display = 'none'; return; }
-    box.style.display = 'block';
-    const DAY = 86400000, ROUND = 3 * DAY;
-    const elapsed = Math.max(0, Date.now() - Number(meta.scheduleStart));
-    const currentRound = Math.floor(elapsed / ROUND) + 1;
-    const dayInRound = Math.min(3, Math.floor((elapsed % ROUND) / DAY) + 1);
-    const rows = teams.map(t => {
-      const tm = matches.filter(m => !m.bye && (m.teamAId === t.id || m.teamBId === t.id));
-      const table = tm.length ? tm[0].table : 1;
-      const current = matches.find(m => !m.bye && Number(m.round) === currentRound && m.table === table && (m.teamAId === t.id || m.teamBId === t.id));
-      const unresolvedPast = tm.filter(m => Number(m.round) < currentRound && !m.winner).length;
-      const currentDone = !!(current && current.winner);
-      let status='green', label='ACTIVO', detail='Duelo de la ronda registrado';
-      if (unresolvedPast >= 2) { status='black'; label='REVISIÓN'; detail=unresolvedPast+' rondas anteriores pendientes'; }
-      else if (!currentDone && dayInRound === 1) { status='yellow'; label='EN RIESGO'; detail='Debe completar su duelo del Día 1'; }
-      else if (!currentDone) { status='red'; label='ATRASADO'; detail='Duelo de la ronda pendiente'; }
-      return {name:t.name||'Equipo',status,label,detail};
-    });
-    const count = c => rows.filter(r=>r.status===c).length;
-    document.getElementById('adminActive').textContent=count('green');
-    document.getElementById('adminRisk').textContent=count('yellow');
-    document.getElementById('adminLate').textContent=count('red');
-    document.getElementById('adminReview').textContent=count('black');
-    document.getElementById('adminRound').textContent='RONDA '+currentRound+' · DÍA '+dayInRound+' / 3';
-    document.getElementById('adminSummary').textContent='Actividad: '+count('green')+' de '+rows.length+' equipos con su duelo de la ronda registrado.';
-    const priority=rows.filter(r=>r.status==='black'||r.status==='red'||r.status==='yellow');
-    document.getElementById('adminAlerts').innerHTML = priority.length ? priority.slice(0,12).map(r=>'<div class="admin-alert '+r.status+'"><strong>'+esc(r.name)+'</strong><span>'+esc(r.label)+' · '+esc(r.detail)+'</span></div>').join('') : '<div class="admin-ok">✓ Todos los equipos cumplen el control de actividad de la ronda.</div>';
-  }
-
   function renderActivityControl() {
     const box = document.getElementById('activityControl');
     const list = document.getElementById('activityList');
@@ -894,7 +954,6 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
     renderRounds();
     renderStandings();
     renderActivityControl();
-    renderAdminDashboard();
     renderResults();
   }
 
@@ -983,20 +1042,29 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
   });
 
   function setupAdminToggle() {
-    const btn = document.getElementById('adminAccessBtn');
-    if (!btn) return;
-    btn.addEventListener('click', () => {
-      if (auth.currentUser) {
-        if (confirm('¿Cerrar sesión de organizador?')) auth.signOut();
-        return;
+    // Clic 5 veces sobre el escudo/hero para iniciar o cerrar sesión de organizador.
+    const hero = document.querySelector('.hero');
+    let clicks = 0, clickTimer = null;
+    hero.addEventListener('click', () => {
+      clicks++;
+      clearTimeout(clickTimer);
+      clickTimer = setTimeout(() => { clicks = 0; }, 1500);
+      if (clicks >= 5) {
+        clicks = 0;
+        if (auth.currentUser) {
+          if (confirm('¿Cerrar sesión de organizador?')) {
+            auth.signOut();
+          }
+          return;
+        }
+        const email = prompt('Correo de organizador:');
+        if (email === null) return;
+        const password = prompt('Contraseña:');
+        if (password === null) return;
+        auth.signInWithEmailAndPassword(email.trim(), password).catch((err) => {
+          alert('No se pudo iniciar sesión: ' + err.message);
+        });
       }
-      const email = prompt('Correo de organizador:');
-      if (email === null) return;
-      const password = prompt('Contraseña:');
-      if (password === null) return;
-      auth.signInWithEmailAndPassword(email.trim(), password).catch((err) => {
-        alert('No se pudo iniciar sesión: ' + err.message);
-      });
     });
   }
 
