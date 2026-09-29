@@ -218,7 +218,15 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
 .clause.activity.final-rule{border-color:rgba(244,212,119,.3);margin-top:12px}
 @media(max-width:760px){.activity-grid{grid-template-columns:1fr}.activity-card{min-height:auto}}
 </style>
-<style id="mk-behavior-rules">.behavior-rules{margin-top:42px;padding-top:34px;border-top:1px solid rgba(255,90,90,.18)}.behavior-rules .subkicker{color:#ffb2b2}.behavior-rules h2{margin-bottom:14px}.clause.behavior{border-color:rgba(244,212,119,.12)}.clause.behavior.severe{border-color:rgba(255,82,82,.28);box-shadow:inset 3px 0 0 rgba(255,82,82,.65)}.clause.behavior.severe .num{color:#ff8b8b}.clause.behavior.final-rule{border-color:rgba(244,212,119,.3);margin-top:12px}@media(max-width:700px){.behavior-rules{margin-top:30px;padding-top:26px}}</style>
+<style id="mk-behavior-rules">.behavior-rules{margin-top:42px;padding-top:34px;border-top:1px solid rgba(255,90,90,.18)}.behavior-rules .subkicker{color:#ffb2b2}.behavior-rules h2{margin-bottom:14px}.clause.behavior{border-color:rgba(244,212,119,.12)}.clause.behavior.severe{border-color:rgba(255,82,82,.28);box-shadow:inset 3px 0 0 rgba(255,82,82,.65)}.clause.behavior.severe .num{color:#ff8b8b}.clause.behavior.final-rule{border-color:rgba(244,212,119,.3);margin-top:12px}@media(max-width:700px){.behavior-rules{margin-top:30px;padding-top:26px}}
+/* --- Herramientas de organizador (solo visibles con sesión) --- */
+.team-list li{align-items:center;flex-wrap:wrap}
+.team-actions{display:flex;gap:6px;flex-shrink:0}
+.btn-mini{background:transparent;border:1px solid rgba(255,220,130,.3);color:var(--gold2);padding:5px 11px;font-size:.78rem;border-radius:7px;font-weight:700}
+.btn-mini:hover{background:rgba(255,210,75,.1)}
+.btn-mini.danger{border-color:rgba(214,76,94,.5);color:#ff8b9a}.btn-mini.danger:hover{background:rgba(214,76,94,.14)}
+.admin-badge{display:inline-block;margin-bottom:10px;font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold2);border:1px solid rgba(255,220,130,.3);padding:4px 10px;border-radius:999px}
+</style>
 </head>
 
 <body>
@@ -415,6 +423,22 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
     </div>
   </div>
 
+  <div class="modal-backdrop" id="editBackdrop">
+    <div class="modal">
+      <h3>Editar equipo</h3>
+      <p class="sub">Solo organizadores. Los cambios se reflejan también en los cruces y la tabla.</p>
+      <form id="editForm">
+        <div class="field"><label for="eName">Nombre del equipo</label><input type="text" id="eName" required maxlength="40"></div>
+        <div class="field"><label for="e1">Jugador 1</label><input type="text" id="e1" required maxlength="30"></div>
+        <div class="field"><label for="e2">Jugador 2</label><input type="text" id="e2" required maxlength="30"></div>
+        <div class="field"><label for="e3">Jugador 3</label><input type="text" id="e3" required maxlength="30"></div>
+        <div class="field"><label for="e4">Jugador 4</label><input type="text" id="e4" required maxlength="30"></div>
+        <div class="modal-actions"><button type="button" class="cancel" id="editCancelBtn">Cancelar</button><button type="submit">Guardar cambios</button></div>
+        <div class="form-msg" id="editMsg"></div>
+      </form>
+    </div>
+  </div>
+
 <script>
 (function () {
   const backdrop = document.getElementById('modalBackdrop');
@@ -535,6 +559,83 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
     }
   });
 
+
+  // --- Herramientas de organizador: editar / reemplazar / borrar equipos ---
+  const editBackdrop = document.getElementById('editBackdrop');
+  const editForm = document.getElementById('editForm');
+  const editMsg = document.getElementById('editMsg');
+  let editingId = null;
+
+  function openEdit(t) {
+    if (!isAdmin) return;
+    editingId = t.id;
+    document.getElementById('eName').value = t.name || '';
+    ['e1', 'e2', 'e3', 'e4'].forEach((id, i) => { document.getElementById(id).value = (t.players || [])[i] || ''; });
+    editMsg.className = 'form-msg'; editMsg.textContent = '';
+    editBackdrop.classList.add('open');
+  }
+  function closeEdit() { editBackdrop.classList.remove('open'); editingId = null; }
+  document.getElementById('editCancelBtn').addEventListener('click', closeEdit);
+  editBackdrop.addEventListener('click', (e) => { if (e.target === editBackdrop) closeEdit(); });
+
+  editForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!isAdmin || !editingId) return;
+    const name = document.getElementById('eName').value.trim();
+    const players = ['e1', 'e2', 'e3', 'e4'].map(id => document.getElementById(id).value.trim());
+    if (!name || players.some(p => !p)) return;
+    try {
+      const batch = db.batch();
+      batch.update(db.doc('teams/' + editingId), { name, players });
+      // los cruces guardan una copia del nombre: se actualiza para que tabla y versus coincidan
+      matches.forEach(m => {
+        if (m.teamAId === editingId) batch.update(db.doc('matches/' + m.id), { teamAName: name });
+        if (m.teamBId === editingId) batch.update(db.doc('matches/' + m.id), { teamBName: name });
+      });
+      await batch.commit();
+      closeEdit();
+    } catch (err) {
+      editMsg.className = 'form-msg error';
+      editMsg.textContent = 'No se pudo guardar: ' + err.message;
+    }
+  });
+
+  async function deleteTeam(t) {
+    if (!isAdmin) return;
+    const related = matches.filter(m => m.teamAId === t.id || m.teamBId === t.id);
+    let msg = '¿Borrar el equipo "' + (t.name || 'Equipo') + '"?';
+    if (related.length) {
+      msg += '\n\nYa tiene ' + related.length + ' cruces generados. Se eliminarán y el rival de cada versus quedará descansando en esa ronda. Si solo quieres cambiar nombres o jugadores, usa "Editar".';
+    }
+    if (!confirm(msg)) return;
+    try {
+      const batch = db.batch();
+      batch.delete(db.doc('teams/' + t.id));
+      related.forEach(m => {
+        const ref = db.doc('matches/' + m.id);
+        if (m.bye) { batch.delete(ref); return; }
+        const del = firebase.firestore.FieldValue.delete();
+        if (m.teamAId === t.id) {
+          batch.update(ref, { bye: true, teamAId: m.teamBId, teamAName: m.teamBName, teamBId: del, teamBName: del, winner: del });
+        } else {
+          batch.update(ref, { bye: true, teamBId: del, teamBName: del, winner: del });
+        }
+      });
+      await batch.commit();
+    } catch (err) {
+      alert('No se pudo borrar el equipo: ' + err.message);
+    }
+  }
+
+  async function clearAllMatches() {
+    const snap = await db.collection('matches').get();
+    for (let i = 0; i < snap.docs.length; i += 400) {
+      const batch = db.batch();
+      snap.docs.slice(i, i + 400).forEach(d => batch.delete(d.ref));
+      await batch.commit();
+    }
+  }
+
   function roundRobin(ids) {
     const list = ids.slice();
     if (list.length % 2 !== 0) list.push(null);
@@ -554,6 +655,7 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
   }
 
   async function generateAndStoreFixtures(cap) {
+    await clearAllMatches();
     const groups = cap === 32
       ? [{ table: 1, list: teams.slice(0, 16) }, { table: 2, list: teams.slice(16, 32) }]
       : [{ table: 1, list: teams.slice(0, cap) }];
@@ -836,6 +938,15 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
       teams.forEach((t, i) => {
         items[i].querySelector('.tname').textContent = t.name || 'Equipo';
         items[i].querySelector('.tplayers').textContent = (t.players || []).join(' · ');
+        if (isAdmin) {
+          const acts = document.createElement('span'); acts.className = 'team-actions';
+          const bEdit = document.createElement('button'); bEdit.type = 'button'; bEdit.className = 'btn-mini'; bEdit.textContent = 'Editar';
+          bEdit.onclick = () => openEdit(t);
+          const bDel = document.createElement('button'); bDel.type = 'button'; bDel.className = 'btn-mini danger'; bDel.textContent = 'Borrar';
+          bDel.onclick = () => deleteTeam(t);
+          acts.appendChild(bEdit); acts.appendChild(bDel);
+          items[i].appendChild(acts);
+        }
       });
     }
 
