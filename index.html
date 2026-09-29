@@ -414,6 +414,7 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
           <div class="decision-buttons">
             <button class="btn-outline" id="jsonBackupBtn" type="button">Descargar respaldo (.json)</button>
             <button class="btn-outline secondary" id="jsonRestoreBtn" type="button">Restaurar desde .json</button>
+            <button class="btn-mini danger" id="clearMatchesBtn" type="button">Borrar todos los cruces</button>
             <input type="file" id="jsonFile" accept="application/json,.json" style="display:none;">
           </div>
         </div>
@@ -837,6 +838,20 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
       say('ok', 'Respaldo restaurado: ' + data.teams.length + ' equipos y ' + data.matches.length + ' cruces.');
     } catch (err) {
       say('error', 'No se pudo restaurar: ' + err.message);
+    }
+  });
+
+  document.getElementById('clearMatchesBtn').addEventListener('click', async () => {
+    if (!isAdmin) return;
+    if (!confirm('¿Borrar TODOS los cruces y resultados (' + matches.length + ')?\n\nLos equipos inscritos NO se borran. Las fechas quedarán como "no generadas" y podrás generarlas de nuevo. Antes se descargará un respaldo .json de seguridad.')) return;
+    try {
+      downloadText('king-masters-antes-de-borrar-cruces-' + stamp() + '.json', buildJsonBackup(), 'application/json');
+      await clearAllMatches();
+      await db.doc('meta/status').set({ expansionDecided: !!meta.expansionDecided, expanded: !!meta.expanded, scheduleStart: null, fixturesGenerating: false });
+      await logAction('clear', 'Borró todos los cruces y resultados (' + matches.length + ') para volver a generar el calendario');
+      say('ok', 'Cruces borrados. Los equipos siguen inscritos.');
+    } catch (err) {
+      say('error', 'No se pudieron borrar los cruces: ' + err.message);
     }
   });
 
