@@ -226,6 +226,14 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
 .btn-mini:hover{background:rgba(255,210,75,.1)}
 .btn-mini.danger{border-color:rgba(214,76,94,.5);color:#ff8b9a}.btn-mini.danger:hover{background:rgba(214,76,94,.14)}
 .admin-badge{display:inline-block;margin-bottom:10px;font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold2);border:1px solid rgba(255,220,130,.3);padding:4px 10px;border-radius:999px}
+
+.team-list li.dq .tname{text-decoration:line-through;opacity:.6}
+.dq-tag{display:inline-block;margin-left:8px;font-size:.66rem;letter-spacing:.08em;font-weight:800;color:#ff8b9a;border:1px solid rgba(214,76,94,.5);padding:2px 7px;border-radius:999px;text-decoration:none}
+.forfeit-tag{margin-left:8px;font-size:.7rem;color:#f4d477;border:1px solid rgba(244,212,119,.35);padding:1px 7px;border-radius:999px}
+.admin-box{margin-top:16px}
+.log-row{padding:9px 0;border-top:1px solid rgba(255,220,130,.08);font-size:.86rem;color:#c9cfdc}.log-row:first-child{border-top:0}
+.log-meta{display:block;color:#8992a5;font-size:.74rem;margin-bottom:2px}
+#logList{margin-top:14px;max-height:420px;overflow-y:auto}
 </style>
 </head>
 
@@ -401,6 +409,18 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
           <div><p>Descarga un archivo con los equipos inscritos, el estado de la liga y todos los cruces y resultados capturados hasta este momento.</p><div id="backupMsg"></div></div>
           <button class="btn-outline" id="backupBtn" type="button">Descargar respaldo (.html)</button>
         </div>
+        <div class="backup-box admin-box" id="adminBackupBox" style="display:none;">
+          <div><span class="admin-badge">Organizador</span><p>Respaldo completo en .json para poder <strong>restaurar</strong> equipos, cruces y resultados. Restaurar reemplaza todo lo actual; antes se descarga solo un respaldo de seguridad.</p><div id="jsonMsg"></div></div>
+          <div class="decision-buttons">
+            <button class="btn-outline" id="jsonBackupBtn" type="button">Descargar respaldo (.json)</button>
+            <button class="btn-outline secondary" id="jsonRestoreBtn" type="button">Restaurar desde .json</button>
+            <input type="file" id="jsonFile" accept="application/json,.json" style="display:none;">
+          </div>
+        </div>
+        <details class="results-toggle admin-box" id="adminLogBox" style="display:none;">
+          <summary>Historial de cambios (solo organizador)</summary>
+          <div id="logList"></div>
+        </details>
       </section>
     </div>
   </main>
@@ -483,7 +503,7 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
     const fechasTxt = meta.scheduleStart ? new Date(meta.scheduleStart).toLocaleDateString('es-MX') : 'Aún no generadas';
 
     let equiposRows = teams.map(t =>
-      '<tr><td>' + esc(t.name || 'Equipo') + '</td><td>' + (t.players || []).map(esc).join(', ') + '</td></tr>'
+      '<tr><td>' + esc(t.name || 'Equipo') + (t.disqualified ? ' (DESCALIFICADO)' : '') + '</td><td>' + (t.players || []).map(esc).join(', ') + '</td></tr>'
     ).join('');
 
     const tableNums = meta.expanded ? [1, 2] : [1];
@@ -493,7 +513,7 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
         standingsHtml += '<h3>' + (tableNums.length > 1 ? 'Tabla ' + tn : 'Tabla general') + '</h3>';
         standingsHtml += '<table><thead><tr><th>#</th><th>Equipo</th><th>G</th><th>P</th></tr></thead><tbody>';
         computeStandings(tn).forEach((s, i) => {
-          standingsHtml += '<tr' + (i < 4 ? ' class="q"' : '') + '><td>' + (i + 1) + '</td><td>' + esc(s.name) + '</td><td>' + s.wins + '</td><td>' + s.losses + '</td></tr>';
+          standingsHtml += '<tr' + (i < 4 && !s.dq ? ' class="q"' : '') + '><td>' + (i + 1) + '</td><td>' + esc(s.name) + (s.dq ? ' (DESCALIFICADO)' : '') + '</td><td>' + s.wins + '</td><td>' + s.losses + '</td></tr>';
         });
         standingsHtml += '</tbody></table>';
       });
@@ -512,7 +532,7 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
             resultsHtml += '<li>' + esc(m.teamAName) + ' descansa</li>';
           } else {
             const winnerTxt = m.winner === 'A' ? esc(m.teamAName) : m.winner === 'B' ? esc(m.teamBName) : 'Pendiente';
-            resultsHtml += '<li>' + esc(m.teamAName) + ' vs ' + esc(m.teamBName) + ' — Ganador: ' + winnerTxt + '</li>';
+            resultsHtml += '<li>' + esc(m.teamAName) + ' vs ' + esc(m.teamBName) + ' — Ganador: ' + winnerTxt + (m.forfeit ? ' (victoria administrativa)' : '') + '</li>';
           }
         });
         resultsHtml += '</ul>';
@@ -578,12 +598,60 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
   document.getElementById('editCancelBtn').addEventListener('click', closeEdit);
   editBackdrop.addEventListener('click', (e) => { if (e.target === editBackdrop) closeEdit(); });
 
+  const FV = () => firebase.firestore.FieldValue;
+  let logEntries = [];
+  let unsubLog = null;
+
+  function logEntry(action, text) {
+    return { at: Date.now(), by: (auth.currentUser && auth.currentUser.email) || 'organizador', action, text };
+  }
+  async function logAction(action, text) {
+    if (!isAdmin) return;
+    try { await db.collection('log').add(logEntry(action, text)); } catch (e) { /* el historial nunca debe bloquear la acción */ }
+  }
+  function renderLog() {
+    const el = document.getElementById('logList');
+    if (!el) return;
+    el.innerHTML = '';
+    if (!logEntries.length) {
+      const p = document.createElement('p'); p.className = 'empty-note'; p.textContent = 'Todavía no hay cambios registrados.';
+      el.appendChild(p); return;
+    }
+    logEntries.forEach(e => {
+      const row = document.createElement('div'); row.className = 'log-row';
+      const meta = document.createElement('span'); meta.className = 'log-meta';
+      meta.textContent = new Date(e.at).toLocaleString('es-MX') + ' · ' + (e.by || '');
+      const txt = document.createElement('span'); txt.textContent = e.text || '';
+      row.appendChild(meta); row.appendChild(txt); el.appendChild(row);
+    });
+  }
+  function watchLog() {
+    if (isAdmin && !unsubLog) {
+      unsubLog = db.collection('log').orderBy('at', 'desc').limit(100).onSnapshot(snap => {
+        logEntries = snap.docs.map(d => d.data());
+        renderLog();
+      }, () => {});
+    } else if (!isAdmin && unsubLog) {
+      unsubLog(); unsubLog = null; logEntries = []; renderLog();
+    }
+  }
+
+  function isDq(id) {
+    const t = teams.find(x => x.id === id);
+    return !!(t && t.disqualified);
+  }
+
   editForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!isAdmin || !editingId) return;
     const name = document.getElementById('eName').value.trim();
     const players = ['e1', 'e2', 'e3', 'e4'].map(id => document.getElementById(id).value.trim());
     if (!name || players.some(p => !p)) return;
+    const old = teams.find(t => t.id === editingId);
+    const changes = [];
+    if (old && old.name !== name) changes.push('nombre "' + old.name + '" → "' + name + '"');
+    if (old && JSON.stringify(old.players || []) !== JSON.stringify(players)) changes.push('jugadores [' + (old.players || []).join(', ') + '] → [' + players.join(', ') + ']');
+    if (!changes.length) { closeEdit(); return; }
     try {
       const batch = db.batch();
       batch.update(db.doc('teams/' + editingId), { name, players });
@@ -592,6 +660,7 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
         if (m.teamAId === editingId) batch.update(db.doc('matches/' + m.id), { teamAName: name });
         if (m.teamBId === editingId) batch.update(db.doc('matches/' + m.id), { teamBName: name });
       });
+      batch.set(db.collection('log').doc(), logEntry('edit', 'Editó equipo: ' + changes.join('; ')));
       await batch.commit();
       closeEdit();
     } catch (err) {
@@ -605,7 +674,7 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
     const related = matches.filter(m => m.teamAId === t.id || m.teamBId === t.id);
     let msg = '¿Borrar el equipo "' + (t.name || 'Equipo') + '"?';
     if (related.length) {
-      msg += '\n\nYa tiene ' + related.length + ' cruces generados. Se eliminarán y el rival de cada versus quedará descansando en esa ronda. Si solo quieres cambiar nombres o jugadores, usa "Editar".';
+      msg += '\n\nYa tiene ' + related.length + ' cruces generados. Se eliminarán y el rival de cada versus quedará descansando en esa ronda. Si quieres conservar el historial, usa "Descalificar"; si solo quieres cambiar nombres o jugadores, usa "Editar".';
     }
     if (!confirm(msg)) return;
     try {
@@ -614,18 +683,162 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
       related.forEach(m => {
         const ref = db.doc('matches/' + m.id);
         if (m.bye) { batch.delete(ref); return; }
-        const del = firebase.firestore.FieldValue.delete();
+        const del = FV().delete();
         if (m.teamAId === t.id) {
-          batch.update(ref, { bye: true, teamAId: m.teamBId, teamAName: m.teamBName, teamBId: del, teamBName: del, winner: del });
+          batch.update(ref, { bye: true, teamAId: m.teamBId, teamAName: m.teamBName, teamBId: del, teamBName: del, winner: del, forfeit: del, forfeitBy: del });
         } else {
-          batch.update(ref, { bye: true, teamBId: del, teamBName: del, winner: del });
+          batch.update(ref, { bye: true, teamBId: del, teamBName: del, winner: del, forfeit: del, forfeitBy: del });
         }
       });
+      batch.set(db.collection('log').doc(), logEntry('delete', 'Borró el equipo "' + (t.name || 'Equipo') + '" (jugadores: ' + (t.players || []).join(', ') + ')' + (related.length ? ' — ' + related.length + ' cruces afectados' : '')));
       await batch.commit();
     } catch (err) {
       alert('No se pudo borrar el equipo: ' + err.message);
     }
   }
+
+  async function setDisqualified(t, on) {
+    if (!isAdmin) return;
+    const related = matches.filter(m => !m.bye && (m.teamAId === t.id || m.teamBId === t.id));
+    const name = t.name || 'Equipo';
+    try {
+      const batch = db.batch();
+      const teamRef = db.doc('teams/' + t.id);
+      if (on) {
+        const pending = related.filter(m => !m.winner);
+        if (!confirm('¿Descalificar a "' + name + '"?\n\nSus ' + pending.length + ' versus pendientes se adjudicarán como victoria administrativa al rival. Los resultados ya jugados se conservan. Se puede revertir con "Reactivar".')) return;
+        const reason = prompt('Motivo de la descalificación (opcional):', '');
+        if (reason === null) return;
+        const data = { disqualified: true, disqualifiedAt: Date.now() };
+        if (reason.trim()) data.disqualifiedReason = reason.trim().slice(0, 200);
+        batch.update(teamRef, data);
+        pending.forEach(m => {
+          batch.update(db.doc('matches/' + m.id), { winner: m.teamAId === t.id ? 'B' : 'A', forfeit: true, forfeitBy: t.id });
+        });
+        batch.set(db.collection('log').doc(), logEntry('disqualify', 'Descalificó a "' + name + '" — ' + pending.length + ' versus adjudicados al rival' + (reason.trim() ? '. Motivo: ' + reason.trim() : '')));
+      } else {
+        const revert = related.filter(m => m.forfeit && m.forfeitBy === t.id);
+        if (!confirm('¿Reactivar a "' + name + '"?\n\nSe revertirán ' + revert.length + ' victorias administrativas y esos versus volverán a quedar pendientes.')) return;
+        const del = FV().delete();
+        batch.update(teamRef, { disqualified: false, disqualifiedAt: del, disqualifiedReason: del });
+        revert.forEach(m => {
+          batch.update(db.doc('matches/' + m.id), { winner: null, forfeit: del, forfeitBy: del });
+        });
+        batch.set(db.collection('log').doc(), logEntry('reinstate', 'Reactivó a "' + name + '" — ' + revert.length + ' versus revertidos a pendiente'));
+      }
+      await batch.commit();
+    } catch (err) {
+      alert('No se pudo completar la acción: ' + err.message);
+    }
+  }
+
+  // --- Respaldo restaurable (.json) ---
+  const jsonMsg = document.getElementById('jsonMsg');
+  function say(cls, text) { jsonMsg.className = cls; jsonMsg.textContent = text; }
+
+  function buildJsonBackup() {
+    return JSON.stringify({
+      app: 'king-masters', version: 1,
+      exportedAt: new Date().toISOString(),
+      exportedBy: (auth.currentUser && auth.currentUser.email) || null,
+      meta: { expansionDecided: !!meta.expansionDecided, expanded: !!meta.expanded, scheduleStart: meta.scheduleStart || null },
+      teams: teams, matches: matches, log: logEntries
+    }, null, 2);
+  }
+  function downloadText(fname, text, type) {
+    const blob = new Blob([text], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = fname;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  }
+  function stamp() { return new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-'); }
+
+  const ID_OK = /^[A-Za-z0-9_-]{1,100}$/;
+  function cleanTeam(t) {
+    const o = {
+      name: String(t.name || '').slice(0, 40),
+      players: (Array.isArray(t.players) ? t.players : []).slice(0, 4).map(p => String(p).slice(0, 30)),
+      registeredAt: Number(t.registeredAt) || Date.now()
+    };
+    if (t.disqualified) {
+      o.disqualified = true;
+      if (t.disqualifiedAt) o.disqualifiedAt = Number(t.disqualifiedAt) || Date.now();
+      if (t.disqualifiedReason) o.disqualifiedReason = String(t.disqualifiedReason).slice(0, 200);
+    }
+    return o;
+  }
+  function cleanMatch(m) {
+    const o = { table: Number(m.table) === 2 ? 2 : 1, round: Number(m.round) || 1, teamAId: String(m.teamAId || ''), teamAName: String(m.teamAName || '') };
+    if (m.bye) { o.bye = true; return o; }
+    o.teamBId = String(m.teamBId || ''); o.teamBName = String(m.teamBName || '');
+    o.winner = (m.winner === 'A' || m.winner === 'B') ? m.winner : null;
+    if (m.forfeit) { o.forfeit = true; if (m.forfeitBy) o.forfeitBy = String(m.forfeitBy); }
+    return o;
+  }
+  async function wipeCollection(name) {
+    const snap = await db.collection(name).get();
+    for (let i = 0; i < snap.docs.length; i += 400) {
+      const batch = db.batch();
+      snap.docs.slice(i, i + 400).forEach(d => batch.delete(d.ref));
+      await batch.commit();
+    }
+  }
+  async function writeDocs(col, items) {
+    for (let i = 0; i < items.length; i += 400) {
+      const batch = db.batch();
+      items.slice(i, i + 400).forEach(it => batch.set(db.collection(col).doc(it.id), it.data));
+      await batch.commit();
+    }
+  }
+  async function restoreFromData(data) {
+    const cleanTeams = data.teams.map(t => ({ id: t.id, data: cleanTeam(t) }));
+    const cleanMatches = data.matches.map(m => ({ id: m.id, data: cleanMatch(m) }));
+    await wipeCollection('teams');
+    await wipeCollection('matches');
+    await writeDocs('teams', cleanTeams);
+    await writeDocs('matches', cleanMatches);
+    const m = data.meta || {};
+    await db.doc('meta/status').set({
+      expansionDecided: !!m.expansionDecided, expanded: !!m.expanded,
+      scheduleStart: m.scheduleStart ? Number(m.scheduleStart) : null, fixturesGenerating: false
+    });
+    await logAction('restore', 'Restauró un respaldo (' + cleanTeams.length + ' equipos, ' + cleanMatches.length + ' cruces) del ' + (data.exportedAt ? new Date(data.exportedAt).toLocaleString('es-MX') : 'archivo sin fecha'));
+  }
+
+  document.getElementById('jsonBackupBtn').addEventListener('click', () => {
+    if (!isAdmin) return;
+    try {
+      downloadText('king-masters-respaldo-' + stamp() + '.json', buildJsonBackup(), 'application/json');
+      say('ok', 'Respaldo .json descargado.');
+    } catch (err) { say('error', 'No se pudo generar el respaldo.'); }
+  });
+  document.getElementById('jsonRestoreBtn').addEventListener('click', () => {
+    if (!isAdmin) return;
+    document.getElementById('jsonFile').click();
+  });
+  document.getElementById('jsonFile').addEventListener('change', async (ev) => {
+    const input = ev.target;
+    const file = input.files && input.files[0];
+    input.value = '';
+    if (!file || !isAdmin) return;
+    try {
+      let data;
+      try { data = JSON.parse(await file.text()); } catch (e) { throw new Error('El archivo no es un JSON válido.'); }
+      if (!data || data.app !== 'king-masters' || !Array.isArray(data.teams) || !Array.isArray(data.matches)) throw new Error('Este archivo no es un respaldo de King Masters.');
+      if (data.teams.some(t => !t || !ID_OK.test(String(t.id)) || !t.name || !Array.isArray(t.players) || t.players.length !== 4)) throw new Error('El respaldo tiene equipos con datos incompletos.');
+      if (data.matches.some(m => !m || !ID_OK.test(String(m.id)))) throw new Error('El respaldo tiene cruces con datos incompletos.');
+      const fecha = data.exportedAt ? new Date(data.exportedAt).toLocaleString('es-MX') : 'sin fecha';
+      if (!confirm('Vas a RESTAURAR el respaldo del ' + fecha + ':\n• ' + data.teams.length + ' equipos\n• ' + data.matches.length + ' cruces\n\nEsto REEMPLAZA todos los equipos, cruces y resultados actuales. Antes se descargará un respaldo de seguridad del estado de ahora. ¿Continuar?')) return;
+      downloadText('king-masters-antes-de-restaurar-' + stamp() + '.json', buildJsonBackup(), 'application/json');
+      say('', 'Restaurando…');
+      await restoreFromData(data);
+      say('ok', 'Respaldo restaurado: ' + data.teams.length + ' equipos y ' + data.matches.length + ' cruces.');
+    } catch (err) {
+      say('error', 'No se pudo restaurar: ' + err.message);
+    }
+  });
 
   async function clearAllMatches() {
     const snap = await db.collection('matches').get();
@@ -684,19 +897,25 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
   }
 
   async function setWinner(matchId, winner) {
-    if (!db) return;
-    await db.doc('matches/' + matchId).update({ winner });
+    if (!db || !isAdmin) return;
+    const m = matches.find(x => x.id === matchId);
+    const batch = db.batch();
+    batch.update(db.doc('matches/' + matchId), { winner, forfeit: FV().delete(), forfeitBy: FV().delete() });
+    const vs = m ? (m.teamAName + ' vs ' + m.teamBName) : matchId;
+    const res = winner === 'A' ? 'ganó ' + (m && m.teamAName) : winner === 'B' ? 'ganó ' + (m && m.teamBName) : 'sin definir';
+    batch.set(db.collection('log').doc(), logEntry('result', 'Resultado ' + vs + (m ? ' (ronda ' + m.round + ')' : '') + ': ' + res));
+    await batch.commit();
   }
 
   function computeStandings(tableNum) {
     const stats = {};
     matches.filter(m => m.table === tableNum && !m.bye).forEach(m => {
-      if (!stats[m.teamAId]) stats[m.teamAId] = { name: m.teamAName, wins: 0, losses: 0 };
-      if (!stats[m.teamBId]) stats[m.teamBId] = { name: m.teamBName, wins: 0, losses: 0 };
+      if (!stats[m.teamAId]) stats[m.teamAId] = { name: m.teamAName, wins: 0, losses: 0, dq: isDq(m.teamAId) };
+      if (!stats[m.teamBId]) stats[m.teamBId] = { name: m.teamBName, wins: 0, losses: 0, dq: isDq(m.teamBId) };
       if (m.winner === 'A') { stats[m.teamAId].wins++; stats[m.teamBId].losses++; }
       else if (m.winner === 'B') { stats[m.teamBId].wins++; stats[m.teamAId].losses++; }
     });
-    return Object.values(stats).sort((a, b) => b.wins - a.wins || a.losses - b.losses);
+    return Object.values(stats).sort((a, b) => (Number(a.dq) - Number(b.dq)) || b.wins - a.wins || a.losses - b.losses);
   }
 
   function renderStandings() {
@@ -717,8 +936,8 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
       table.innerHTML = '<thead><tr><th>#</th><th>Equipo</th><th class="num">G</th><th class="num">P</th></tr></thead>';
       const tbody = document.createElement('tbody');
       computeStandings(tn).forEach((s, i) => {
-        const tr = document.createElement('tr'); if (i < 4) tr.className = 'qualify';
-        [String(i + 1), s.name, String(s.wins), String(s.losses)].forEach((val, ci) => {
+        const tr = document.createElement('tr'); if (i < 4 && !s.dq) tr.className = 'qualify';
+        [String(i + 1), s.name + (s.dq ? ' (DESCALIFICADO)' : ''), String(s.wins), String(s.losses)].forEach((val, ci) => {
           const td = document.createElement('td');
           if (ci !== 1) td.className = 'num';
           td.textContent = val;
@@ -757,6 +976,7 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
           const vsSpan = document.createElement('span'); vsSpan.textContent = ' vs ';
           const bSpan = document.createElement('span'); bSpan.textContent = m.teamBName; if (m.winner === 'B') bSpan.className = 'winner';
           teamsSpan.appendChild(aSpan); teamsSpan.appendChild(vsSpan); teamsSpan.appendChild(bSpan);
+          if (m.forfeit) { const f = document.createElement('span'); f.className = 'forfeit-tag'; f.textContent = 'victoria administrativa'; teamsSpan.appendChild(f); }
           row.appendChild(teamsSpan);
           if (isAdmin) {
             const btnWrap = document.createElement('div'); btnWrap.className = 'match-buttons';
@@ -777,7 +997,7 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
           } else {
             const status = document.createElement('span');
             status.style.color = 'var(--muted)'; status.style.fontSize = '0.85rem';
-            status.textContent = m.winner ? 'Definido' : 'Pendiente';
+            status.textContent = m.winner ? (m.forfeit ? 'Victoria administrativa' : 'Definido') : 'Pendiente';
             row.appendChild(status);
           }
           wrap.appendChild(row);
@@ -884,7 +1104,10 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
       const currentDone = !!(current && current.winner);
       let status, cls, detail;
 
-      if (unresolvedPast >= 2) {
+      if (t.disqualified) {
+        status = '⛔ DESCALIFICADO'; cls = 'black';
+        detail = t.disqualifiedReason || 'Descalificado por la organización';
+      } else if (unresolvedPast >= 2) {
         status = '⚫ REVISIÓN / ABANDONO'; cls = 'black';
         detail = unresolvedPast + ' rondas anteriores pendientes';
       } else if (currentDone) {
@@ -901,7 +1124,7 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
         detail = 'Cierre de ronda sin resultado';
       }
 
-      if (!current && currentRound > totalRounds) {
+      if (!t.disqualified && !current && currentRound > totalRounds) {
         status = '🟢 ACTIVO'; cls = 'green'; detail = 'Liga finalizada o sin ronda pendiente';
       }
       return { name: t.name || 'Equipo', status, cls, detail, completedPast };
@@ -938,13 +1161,25 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
       teams.forEach((t, i) => {
         items[i].querySelector('.tname').textContent = t.name || 'Equipo';
         items[i].querySelector('.tplayers').textContent = (t.players || []).join(' · ');
+        if (t.disqualified) {
+          items[i].classList.add('dq');
+          const tag = document.createElement('span'); tag.className = 'dq-tag'; tag.textContent = 'DESCALIFICADO';
+          items[i].querySelector('.tname').appendChild(tag);
+        }
         if (isAdmin) {
           const acts = document.createElement('span'); acts.className = 'team-actions';
           const bEdit = document.createElement('button'); bEdit.type = 'button'; bEdit.className = 'btn-mini'; bEdit.textContent = 'Editar';
           bEdit.onclick = () => openEdit(t);
+          acts.appendChild(bEdit);
+          if (t.disqualified || matches.length > 0) {
+            const bDq = document.createElement('button'); bDq.type = 'button'; bDq.className = 'btn-mini';
+            bDq.textContent = t.disqualified ? 'Reactivar' : 'Descalificar';
+            bDq.onclick = () => setDisqualified(t, !t.disqualified);
+            acts.appendChild(bDq);
+          }
           const bDel = document.createElement('button'); bDel.type = 'button'; bDel.className = 'btn-mini danger'; bDel.textContent = 'Borrar';
           bDel.onclick = () => deleteTeam(t);
-          acts.appendChild(bEdit); acts.appendChild(bDel);
+          acts.appendChild(bDel);
           items[i].appendChild(acts);
         }
       });
@@ -956,6 +1191,9 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
       // still allow opening only if slots exist; message handled in form submit
     }
 
+    const ab = document.getElementById('adminBackupBox'), lb = document.getElementById('adminLogBox');
+    if (ab) ab.style.display = isAdmin ? 'flex' : 'none';
+    if (lb) lb.style.display = isAdmin ? 'block' : 'none';
     renderDecisionPanel();
     renderRounds();
     renderStandings();
@@ -969,6 +1207,7 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
       try {
         await db.doc('meta/status').set({ expansionDecided: true, expanded: false, scheduleStart: Date.now(), fixturesGenerating: true });
         await generateAndStoreFixtures(16);
+        await logAction('fixtures', 'Cerró la liga en 16 equipos y generó fechas y cruces');
       } catch (err) {
         alert('No se pudieron generar los cruces: ' + err.message);
       } finally {
@@ -984,6 +1223,7 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
     try {
       await db.doc('meta/status').set({ expansionDecided: true, expanded: true, scheduleStart: Date.now(), fixturesGenerating: true });
       await generateAndStoreFixtures(32);
+      await logAction('fixtures', 'Generó fechas y cruces de la liga de 32 equipos');
     } catch (err) {
       alert('No se pudieron generar los cruces: ' + err.message);
     } finally {
@@ -996,6 +1236,7 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
     try {
       await db.doc('meta/status').update({ fixturesGenerating: true });
       await generateAndStoreFixtures(capacity());
+      await logAction('fixtures', 'Regeneró los cruces');
     } catch (err) {
       alert('No se pudieron regenerar los cruces: ' + err.message);
     } finally {
@@ -1079,6 +1320,7 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
 
     auth.onAuthStateChanged((user) => {
       isAdmin = !!user;
+      watchLog();
       render();
     });
 
