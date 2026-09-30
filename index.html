@@ -197,8 +197,8 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
 /* ORDEN PREMIUM POR BLOQUES */
 .rules-subsection{margin-top:34px;padding:30px 0 0;border-top:1px solid rgba(244,212,119,.16)}
 .subkicker{font-family:"Cinzel",serif;color:var(--mk-gold2);font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:7px}
-#resultados .table-note{max-width:68ch}
-#resultados .results-toggle{margin-top:22px}
+#versus .table-note{max-width:68ch}
+#versus .vs-hub{margin-top:22px}
 </style>
 
 <style id="mk-activity-rules">
@@ -324,27 +324,40 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
 .act-count{font-family:"Fraunces",serif;font-weight:700;color:var(--gold2);min-width:1.6em;text-align:center;border:1px solid rgba(255,225,138,.3);border-radius:999px;padding:0 9px}
 .act-group .activity-row:first-of-type{border-top:1px solid rgba(255,255,255,.08)}
 
-/* ---- Cruces estilo VS ---- */
-.match-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px;margin-top:10px;align-items:start}
-.match-grid .bye-row{grid-column:1/-1}
-.vs-card{border:1px solid rgba(255,220,130,.14);border-radius:14px;background:linear-gradient(160deg,rgba(28,33,46,.85),rgba(12,15,22,.95));padding:14px 12px;display:flex;flex-direction:column;gap:12px;transition:border-color .2s,box-shadow .2s}
-.vs-card:hover{border-color:rgba(255,220,130,.32)}
-.vs-card.done{border-color:rgba(255,220,130,.3)}
-.vs-duel{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
-.vs-team{display:flex;flex-direction:column;gap:5px;min-width:0;padding:10px 9px;border-radius:10px;border:1px solid transparent;transition:opacity .2s,box-shadow .2s}
-.vs-team.a{text-align:right;align-items:flex-end}.vs-team.b{text-align:left;align-items:flex-start}
-.vs-name{font-family:"Fraunces",serif;font-weight:600;font-size:.98rem;line-height:1.2;color:#eef1f8;overflow-wrap:anywhere}
-.vs-team.win{border-color:rgba(255,211,92,.65);background:linear-gradient(135deg,rgba(255,211,92,.17),rgba(201,162,75,.05));box-shadow:0 0 18px rgba(255,211,92,.14)}
-.vs-team.win .vs-name{color:var(--gold2)}
-.vs-team.lose{opacity:.5}
-.vs-crown{font-size:.66rem;letter-spacing:.07em;text-transform:uppercase;color:var(--gold2);font-weight:800}
-.vs-mid{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:64px}
-.vs-badge{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-family:"Fraunces",serif;font-weight:800;font-size:.8rem;color:var(--gold2);border:1px solid rgba(255,225,138,.45);background:rgba(255,225,138,.08)}
-.vs-badge.done{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#1a1405;border-color:transparent;font-size:1rem}
-.vs-status{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;text-align:center}
-.vs-admin{display:flex;flex-wrap:wrap;gap:6px;align-items:center;border-top:1px solid rgba(255,220,130,.08);padding-top:10px}
-.vs-admin .btn-pick{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-@media(max-width:420px){.match-grid{grid-template-columns:1fr}.vs-name{font-size:.9rem}.vs-mid{min-width:52px}}
+/* ---- Pestaña VERSUS: banners estilo marcador ---- */
+.vs-seg{display:inline-flex;border:1px solid rgba(255,220,130,.25);border-radius:999px;padding:3px;background:rgba(255,255,255,.03);margin-bottom:12px}
+.vs-seg button{padding:8px 20px;border-radius:999px;border:0;background:transparent;color:#aeb6c7;font-weight:800;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase}
+.vs-seg button.on{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#1a1405}
+.vs-rounds{display:flex;gap:7px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:thin}
+.vs-chip{flex:none;min-width:48px;padding:8px 12px;border-radius:10px;border:1px solid rgba(255,220,130,.18);background:rgba(255,255,255,.03);color:#aeb6c7;font-weight:800;font-size:.8rem;position:relative}
+.vs-chip:hover{border-color:rgba(255,220,130,.45);color:var(--gold2)}
+.vs-chip.on{background:rgba(255,211,92,.14);border-color:var(--gold);color:var(--gold2)}
+.vs-chip.now::after{content:"";position:absolute;top:4px;right:5px;width:6px;height:6px;border-radius:50%;background:#ff3fa4;box-shadow:0 0 8px #ff3fa4}
+.vs-roundhead{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:14px 0 14px}
+.vs-roundhead h4{font-family:"Fraunces",serif;font-weight:600;color:var(--gold2);font-size:1.25rem;margin:0}
+.vs-roundhead .vs-sub{color:var(--muted);font-size:.82rem}
+.vs-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:18px 16px}
+.vs-list .bye-row{grid-column:1/-1}
+.vs-item{display:flex;flex-direction:column;gap:8px}
+.vsb{display:flex;align-items:center;position:relative;filter:drop-shadow(0 6px 14px rgba(0,0,0,.45))}
+.vsb-score{flex:none;width:50px;height:50px;border-radius:50%;background:#1b1650;border:3px solid #fff;display:grid;place-items:center;font-family:"Manrope",sans-serif;font-weight:900;font-size:1.3rem;color:#fff;position:relative;z-index:3}
+.vsb-side{flex:1 1 0;min-width:0;height:44px;display:flex;align-items:center;background:#1b1650;position:relative;z-index:1}
+.vsb-side.a{margin-left:-24px;padding:0 40px 0 34px;justify-content:flex-end;text-align:right;clip-path:polygon(0 0,100% 0,calc(100% - 16px) 100%,0 100%);background:linear-gradient(#ff2e93,#ff2e93) bottom/100% 4px no-repeat,#1b1650}
+.vsb-side.b{margin-right:-24px;padding:0 34px 0 40px;justify-content:flex-start;text-align:left;clip-path:polygon(16px 0,100% 0,100% 100%,0 100%);background:linear-gradient(#a24dff,#a24dff) top/100% 4px no-repeat,#1b1650}
+.vsb-name{font-family:"Manrope",sans-serif;font-weight:800;font-size:.86rem;line-height:1.1;color:#fff;letter-spacing:.02em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}
+.vsb-vs{flex:none;width:82px;height:64px;z-index:2;display:grid;place-items:center;clip-path:polygon(14% 0,86% 0,100% 50%,86% 100%,14% 100%,0 50%);background:linear-gradient(135deg,#ff2e93,#a24dff);position:relative}
+.vsb-vs::before{content:"";position:absolute;inset:3px;clip-path:polygon(14% 0,86% 0,100% 50%,86% 100%,14% 100%,0 50%);background:#140f3d}
+.vsb-vs span{position:relative;font-family:"Manrope",sans-serif;font-weight:900;font-style:italic;font-size:1.65rem;letter-spacing:.02em;background:linear-gradient(135deg,#ff4fb0,#b56bff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.vsb .win.vsb-score{background:linear-gradient(135deg,var(--gold2),var(--gold));border-color:#fff6d6;color:#1a1405;box-shadow:0 0 16px rgba(255,211,92,.55)}
+.vsb .win.vsb-side{background:linear-gradient(var(--gold2),var(--gold)) bottom/100% 4px no-repeat,linear-gradient(135deg,#3a2c08,#1b1650)}
+.vsb .win.vsb-side.b{background:linear-gradient(var(--gold2),var(--gold)) top/100% 4px no-repeat,linear-gradient(225deg,#3a2c08,#1b1650)}
+.vsb .win .vsb-name{color:var(--gold2)}
+.vsb .lose{opacity:.55}
+.vs-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:0 4px;font-size:.76rem;color:var(--muted)}
+.vs-meta .vs-status{letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.vs-meta .vs-status.done{color:var(--gold2)}
+.vs-meta .btn-pick{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:480px){.vsb-score{width:40px;height:40px;font-size:1.05rem;border-width:2px}.vsb-side{height:38px}.vsb-side.a{margin-left:-20px;padding:0 34px 0 26px}.vsb-side.b{margin-right:-20px;padding:0 26px 0 34px}.vsb-vs{width:62px;height:52px}.vsb-vs span{font-size:1.25rem}.vsb-name{font-size:.74rem}}
 
 /* ---- Podio de goleo ---- */
 #goleoPodium{display:flex;justify-content:center;align-items:flex-end;gap:12px;margin-top:14px}
@@ -372,7 +385,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
       <button class="nav-toggle" id="navToggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="navLinks">☰</button>
       <nav class="navlinks" id="navLinks" aria-label="Navegación principal">
         <a href="#reglamento">Reglas</a><a href="#formato">Formato</a><a href="#inscripcion">Equipos</a>
-        <a href="#fechas">Calendario</a><a href="#tabla">Tabla</a><a href="#goleo">Goleo</a><a href="#resultados">Resultados</a><a href="#premiacion">Premios</a>
+        <a href="#fechas">Calendario</a><a href="#tabla">Tabla</a><a href="#goleo">Goleo</a><a href="#versus">Versus</a><a href="#premiacion">Premios</a>
       </nav>
     </div>
   </header>
@@ -540,14 +553,13 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
         </div>
       </section>
 
-      <section id="resultados">
-        <div class="kicker">06 · RESULTADOS DE LOS DUELOS</div>
-        <h2>Resultados por ronda</h2>
-        <p class="table-note">Consulta los ganadores de cada enfrentamiento. Los resultados quedan vinculados al calendario y alimentan la tabla de posiciones.</p>
-        <details class="results-toggle" id="resultsDetails" style="display:none;">
-          <summary>Ver y capturar resultados por ronda</summary>
+      <section id="versus">
+        <div class="kicker">06 · VERSUS</div>
+        <h2>Versus de la liga</h2>
+        <p class="table-note">Elige la tabla y la ronda para ver cada enfrentamiento. El ganador de cada duelo se ilumina en dorado y alimenta la tabla de posiciones.</p>
+        <div class="vs-hub" id="resultsDetails" style="display:none;">
           <div id="resultsContent"></div>
-        </details>
+        </div>
       </section>
 
       <section id="premiacion">
@@ -1381,10 +1393,10 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
     }
   }
 
+  let vsTable = 1, vsRound = null;
   function renderResults() {
     const el = document.getElementById('resultsContent');
     el.innerHTML = '';
-    const tableNums = [1, 2];
     const shown = matches.filter(m => isAdmin || m.published === true);
     const mkBtn = (text, fn, cls) => {
       const b = document.createElement('button'); b.type = 'button'; b.className = cls || 'btn-mini'; b.textContent = text; b.onclick = fn; return b;
@@ -1405,82 +1417,119 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
       bar.appendChild(mkBtn('Ocultar todos', () => setPublishedMany(shown, false, 'todos los cruces')));
       el.appendChild(bar);
     }
-    tableNums.forEach(tn => {
-      const tableMatches = shown.filter(m => m.table === tn);
-      const roundsSet = Array.from(new Set(tableMatches.map(m => m.round))).sort((a, b) => a - b);
-      roundsSet.forEach(rn => {
-        const wrap = document.createElement('div'); wrap.className = 'round-group';
-        const head = document.createElement('div'); head.className = 'round-head';
-        const h4 = document.createElement('h4');
-        h4.textContent = (tableNums.length > 1 ? ('Tabla ' + tn + ' · ') : '') + 'Ronda ' + rn;
-        head.appendChild(h4);
-        const roundMatches = tableMatches.filter(m => m.round === rn);
-        if (isAdmin) {
-          const rb = document.createElement('div'); rb.className = 'match-buttons';
-          const lbl = 'la ronda ' + rn + (tableNums.length > 1 ? ' de la Tabla ' + tn : '');
-          rb.appendChild(mkBtn('Publicar ronda', () => setPublishedMany(roundMatches, true, lbl)));
-          rb.appendChild(mkBtn('Ocultar ronda', () => setPublishedMany(roundMatches, false, lbl)));
-          head.appendChild(rb);
-        }
-        wrap.appendChild(head);
-        const grid = document.createElement('div'); grid.className = 'match-grid';
-        roundMatches.forEach(m => {
-          const pubTag = () => {
-            const t = document.createElement('span'); t.className = 'pub-tag' + (m.published === true ? ' on' : '');
-            t.textContent = m.published === true ? 'PUBLICADO' : 'OCULTO'; return t;
-          };
-          if (m.bye) {
-            const byeDiv = document.createElement('div'); byeDiv.className = 'bye-row';
-            const tx = document.createElement('span'); tx.textContent = m.teamAName + ' descansa esta ronda';
-            byeDiv.appendChild(tx);
-            if (isAdmin) {
-              byeDiv.appendChild(pubTag());
-              byeDiv.appendChild(mkBtn(m.published === true ? 'Ocultar' : 'Publicar', () => setPublishedMany([m], m.published !== true, 'el descanso de ' + m.teamAName + ' (ronda ' + m.round + ')')));
-            }
-            grid.appendChild(byeDiv);
-            return;
-          }
-          const card = document.createElement('div'); card.className = 'vs-card' + (m.winner ? ' done' : '');
-          const duel = document.createElement('div'); duel.className = 'vs-duel';
-          const side = (name, key) => {
-            const d = document.createElement('div');
-            d.className = 'vs-team ' + (key === 'A' ? 'a' : 'b') + (m.winner === key ? ' win' : (m.winner ? ' lose' : ''));
-            const n = document.createElement('span'); n.className = 'vs-name'; n.textContent = name; d.appendChild(n);
-            if (m.winner === key) { const w = document.createElement('span'); w.className = 'vs-crown'; w.textContent = m.forfeit ? '♛ Victoria admin.' : '♛ Ganador'; d.appendChild(w); }
-            return d;
-          };
-          const mid = document.createElement('div'); mid.className = 'vs-mid';
-          const badge = document.createElement('span'); badge.className = 'vs-badge' + (m.winner ? ' done' : ''); badge.textContent = m.winner ? '✓' : 'VS';
-          const st = document.createElement('span'); st.className = 'vs-status';
-          st.textContent = m.winner ? (m.forfeit ? 'Administrativa' : 'Definido') : 'Pendiente';
-          mid.append(badge, st);
-          duel.append(side(m.teamAName, 'A'), mid, side(m.teamBName, 'B'));
-          card.appendChild(duel);
-          if (isAdmin) {
-            const btnWrap = document.createElement('div'); btnWrap.className = 'vs-admin';
-            btnWrap.appendChild(pubTag());
-            const btnA = document.createElement('button'); btnA.type = 'button';
-            btnA.className = 'btn-pick' + (m.winner === 'A' ? ' active' : ''); btnA.textContent = 'Ganó ' + m.teamAName;
-            btnA.onclick = () => setWinner(m.id, 'A');
-            const btnB = document.createElement('button'); btnB.type = 'button';
-            btnB.className = 'btn-pick' + (m.winner === 'B' ? ' active' : ''); btnB.textContent = 'Ganó ' + m.teamBName;
-            btnB.onclick = () => setWinner(m.id, 'B');
-            btnWrap.appendChild(btnA); btnWrap.appendChild(btnB);
-            if (m.winner) {
-              const btnClear = document.createElement('button'); btnClear.type = 'button';
-              btnClear.className = 'btn-pick secondary'; btnClear.textContent = 'Sin definir';
-              btnClear.onclick = () => setWinner(m.id, null);
-              btnWrap.appendChild(btnClear);
-            }
-            btnWrap.appendChild(mkBtn(m.published === true ? 'Ocultar' : 'Publicar', () => setPublishedMany([m], m.published !== true, 'el cruce ' + m.teamAName + ' vs ' + m.teamBName + ' (ronda ' + m.round + ')')));
-            card.appendChild(btnWrap);
-          }
-          grid.appendChild(card);
-        });
-        wrap.appendChild(grid);
-        el.appendChild(wrap);
+
+    // --- Pestañas: tabla y ronda ---
+    const tablesAvail = [1, 2].filter(tn => shown.some(m => m.table === tn));
+    if (!tablesAvail.includes(vsTable)) vsTable = tablesAvail[0];
+    if (tablesAvail.length > 1) {
+      const seg = document.createElement('div'); seg.className = 'vs-seg'; seg.setAttribute('role', 'tablist');
+      tablesAvail.forEach(tn => {
+        const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Tabla ' + tn;
+        b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(tn === vsTable));
+        if (tn === vsTable) b.className = 'on';
+        b.onclick = () => { vsTable = tn; renderResults(); };
+        seg.appendChild(b);
       });
+      el.appendChild(seg);
+    }
+    const tableMatches = shown.filter(m => m.table === vsTable);
+    const roundsArr = Array.from(new Set(tableMatches.map(m => m.round))).sort((x, y) => x - y);
+    const cur = meta.scheduleStart ? Math.floor((Date.now() - meta.scheduleStart) / (3 * 86400000)) + 1 : 1;
+    let sel = vsRound;
+    if (sel === null || !roundsArr.includes(sel)) {
+      const le = roundsArr.filter(r => r <= cur);
+      sel = le.length ? le[le.length - 1] : roundsArr[0];
+    }
+    const chips = document.createElement('div'); chips.className = 'vs-rounds'; chips.setAttribute('role', 'tablist');
+    roundsArr.forEach(r => {
+      const c = document.createElement('button'); c.type = 'button';
+      c.className = 'vs-chip' + (r === sel ? ' on' : '') + (r === cur ? ' now' : '');
+      c.textContent = 'R' + r; c.title = 'Ronda ' + r + (r === cur ? ' (actual)' : '');
+      c.setAttribute('role', 'tab'); c.setAttribute('aria-selected', String(r === sel));
+      c.onclick = () => { vsRound = r; renderResults(); };
+      chips.appendChild(c);
     });
+    el.appendChild(chips);
+
+    // --- Encabezado de la ronda ---
+    const roundMatches = tableMatches.filter(m => m.round === sel);
+    const head = document.createElement('div'); head.className = 'vs-roundhead';
+    const hl = document.createElement('div');
+    const h4 = document.createElement('h4'); h4.textContent = (tablesAvail.length > 1 ? 'Tabla ' + vsTable + ' · ' : '') + 'Ronda ' + sel;
+    const sub = document.createElement('div'); sub.className = 'vs-sub';
+    const real = roundMatches.filter(m => !m.bye);
+    const dates = meta.scheduleStart ? (fmtDate(meta.scheduleStart + (sel - 1) * 3 * 86400000) + ' – ' + fmtDate(meta.scheduleStart + (sel - 1) * 3 * 86400000 + 2 * 86400000) + ' · ') : '';
+    sub.textContent = dates + real.length + ' duelos · ' + real.filter(m => m.winner).length + ' definidos';
+    hl.append(h4, sub); head.appendChild(hl);
+    if (isAdmin) {
+      const rb = document.createElement('div'); rb.className = 'match-buttons';
+      const lbl = 'la ronda ' + sel + (tablesAvail.length > 1 ? ' de la Tabla ' + vsTable : '');
+      rb.appendChild(mkBtn('Publicar ronda', () => setPublishedMany(roundMatches, true, lbl)));
+      rb.appendChild(mkBtn('Ocultar ronda', () => setPublishedMany(roundMatches, false, lbl)));
+      head.appendChild(rb);
+    }
+    el.appendChild(head);
+
+    // --- Banners ---
+    const list = document.createElement('div'); list.className = 'vs-list';
+    roundMatches.forEach(m => {
+      const pubTag = () => {
+        const t = document.createElement('span'); t.className = 'pub-tag' + (m.published === true ? ' on' : '');
+        t.textContent = m.published === true ? 'PUBLICADO' : 'OCULTO'; return t;
+      };
+      if (m.bye) {
+        const byeDiv = document.createElement('div'); byeDiv.className = 'bye-row';
+        const tx = document.createElement('span'); tx.textContent = m.teamAName + ' descansa esta ronda';
+        byeDiv.appendChild(tx);
+        if (isAdmin) {
+          byeDiv.appendChild(pubTag());
+          byeDiv.appendChild(mkBtn(m.published === true ? 'Ocultar' : 'Publicar', () => setPublishedMany([m], m.published !== true, 'el descanso de ' + m.teamAName + ' (ronda ' + m.round + ')')));
+        }
+        list.appendChild(byeDiv);
+        return;
+      }
+      const item = document.createElement('div'); item.className = 'vs-item';
+      const ban = document.createElement('div'); ban.className = 'vsb';
+      const cls = (key) => m.winner === key ? ' win' : (m.winner ? ' lose' : '');
+      const scoreEl = (key, side) => {
+        const d = document.createElement('div'); d.className = 'vsb-score ' + side + cls(key);
+        d.textContent = m.winner ? (m.winner === key ? '1' : '0') : '–'; return d;
+      };
+      const sideEl = (name, key, side) => {
+        const d = document.createElement('div'); d.className = 'vsb-side ' + side + cls(key);
+        const n = document.createElement('span'); n.className = 'vsb-name'; n.textContent = name; d.appendChild(n); return d;
+      };
+      const vs = document.createElement('div'); vs.className = 'vsb-vs'; const vsT = document.createElement('span'); vsT.textContent = 'VS'; vs.appendChild(vsT);
+      ban.append(scoreEl('A', 'l'), sideEl(m.teamAName, 'A', 'a'), vs, sideEl(m.teamBName, 'B', 'b'), scoreEl('B', 'r'));
+      ban.setAttribute('role', 'group');
+      ban.setAttribute('aria-label', m.teamAName + ' contra ' + m.teamBName + (m.winner ? '. Ganó ' + (m.winner === 'A' ? m.teamAName : m.teamBName) : '. Pendiente'));
+      item.appendChild(ban);
+
+      const meta2 = document.createElement('div'); meta2.className = 'vs-meta';
+      const st = document.createElement('span'); st.className = 'vs-status' + (m.winner ? ' done' : '');
+      st.textContent = m.winner ? (m.forfeit ? 'Victoria administrativa' : 'Definido') : 'Pendiente';
+      meta2.appendChild(st);
+      if (isAdmin) {
+        meta2.appendChild(pubTag());
+        const btnA = document.createElement('button'); btnA.type = 'button';
+        btnA.className = 'btn-pick' + (m.winner === 'A' ? ' active' : ''); btnA.textContent = 'Ganó ' + m.teamAName;
+        btnA.onclick = () => setWinner(m.id, 'A');
+        const btnB = document.createElement('button'); btnB.type = 'button';
+        btnB.className = 'btn-pick' + (m.winner === 'B' ? ' active' : ''); btnB.textContent = 'Ganó ' + m.teamBName;
+        btnB.onclick = () => setWinner(m.id, 'B');
+        meta2.append(btnA, btnB);
+        if (m.winner) {
+          const btnClear = document.createElement('button'); btnClear.type = 'button';
+          btnClear.className = 'btn-pick secondary'; btnClear.textContent = 'Sin definir';
+          btnClear.onclick = () => setWinner(m.id, null);
+          meta2.appendChild(btnClear);
+        }
+        meta2.appendChild(mkBtn(m.published === true ? 'Ocultar' : 'Publicar', () => setPublishedMany([m], m.published !== true, 'el cruce ' + m.teamAName + ' vs ' + m.teamBName + ' (ronda ' + m.round + ')')));
+      }
+      item.appendChild(meta2);
+      list.appendChild(item);
+    });
+    el.appendChild(list);
   }
 
   function capacity() {
