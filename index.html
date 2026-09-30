@@ -323,6 +323,44 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
 .act-group>summary:focus-visible{outline:2px solid var(--gold2);outline-offset:-2px}
 .act-count{font-family:"Fraunces",serif;font-weight:700;color:var(--gold2);min-width:1.6em;text-align:center;border:1px solid rgba(255,225,138,.3);border-radius:999px;padding:0 9px}
 .act-group .activity-row:first-of-type{border-top:1px solid rgba(255,255,255,.08)}
+
+/* ---- Cruces estilo VS ---- */
+.match-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px;margin-top:10px;align-items:start}
+.match-grid .bye-row{grid-column:1/-1}
+.vs-card{border:1px solid rgba(255,220,130,.14);border-radius:14px;background:linear-gradient(160deg,rgba(28,33,46,.85),rgba(12,15,22,.95));padding:14px 12px;display:flex;flex-direction:column;gap:12px;transition:border-color .2s,box-shadow .2s}
+.vs-card:hover{border-color:rgba(255,220,130,.32)}
+.vs-card.done{border-color:rgba(255,220,130,.3)}
+.vs-duel{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
+.vs-team{display:flex;flex-direction:column;gap:5px;min-width:0;padding:10px 9px;border-radius:10px;border:1px solid transparent;transition:opacity .2s,box-shadow .2s}
+.vs-team.a{text-align:right;align-items:flex-end}.vs-team.b{text-align:left;align-items:flex-start}
+.vs-name{font-family:"Fraunces",serif;font-weight:600;font-size:.98rem;line-height:1.2;color:#eef1f8;overflow-wrap:anywhere}
+.vs-team.win{border-color:rgba(255,211,92,.65);background:linear-gradient(135deg,rgba(255,211,92,.17),rgba(201,162,75,.05));box-shadow:0 0 18px rgba(255,211,92,.14)}
+.vs-team.win .vs-name{color:var(--gold2)}
+.vs-team.lose{opacity:.5}
+.vs-crown{font-size:.66rem;letter-spacing:.07em;text-transform:uppercase;color:var(--gold2);font-weight:800}
+.vs-mid{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:64px}
+.vs-badge{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-family:"Fraunces",serif;font-weight:800;font-size:.8rem;color:var(--gold2);border:1px solid rgba(255,225,138,.45);background:rgba(255,225,138,.08)}
+.vs-badge.done{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#1a1405;border-color:transparent;font-size:1rem}
+.vs-status{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;text-align:center}
+.vs-admin{display:flex;flex-wrap:wrap;gap:6px;align-items:center;border-top:1px solid rgba(255,220,130,.08);padding-top:10px}
+.vs-admin .btn-pick{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:420px){.match-grid{grid-template-columns:1fr}.vs-name{font-size:.9rem}.vs-mid{min-width:52px}}
+
+/* ---- Podio de goleo ---- */
+#goleoPodium{display:flex;justify-content:center;align-items:flex-end;gap:12px;margin-top:14px}
+#goleoPodium:empty{display:none}
+.pod{flex:1 1 0;max-width:230px;min-width:0;text-align:center;border-radius:16px;padding:16px 10px 14px;border:1px solid var(--pc);background:linear-gradient(170deg,color-mix(in srgb,var(--pc) 16%,#10141d),#0b0e15 70%);box-shadow:0 0 22px color-mix(in srgb,var(--pc) 16%,transparent);display:flex;flex-direction:column;align-items:center;gap:4px}
+.pod.p1{--pc:#ffd35c;order:2;padding-top:26px;padding-bottom:20px}
+.pod.p2{--pc:#c9d1de;order:1}
+.pod.p3{--pc:#d08a4f;order:3}
+.pod-medal{font-size:2rem;line-height:1}.pod.p1 .pod-medal{font-size:2.5rem}
+.pod-name{font-family:"Fraunces",serif;font-weight:700;font-size:1.02rem;color:#f5f0df;overflow-wrap:anywhere;margin-top:4px}
+.pod-team{font-size:.76rem;color:#8992a5;overflow-wrap:anywhere}
+.pod-score{font-family:"Fraunces",serif;font-weight:800;font-size:2rem;color:var(--pc);line-height:1.1;margin-top:6px}
+.pod.p1 .pod-score{font-size:2.5rem}
+.pod-lbl{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:#8992a5}
+.pod .goleo-ctrl{margin-top:6px}
+@media(max-width:560px){#goleoPodium{flex-direction:column;align-items:stretch}.pod{max-width:none;order:0!important}.pod.p1,.pod.p2,.pod.p3{padding:14px 10px}}
 </style>
 </head>
 
@@ -485,6 +523,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
           <div class="subkicker">GOLEO INDIVIDUAL</div>
           <h3>Tabla de goleo</h3>
           <p class="table-note">Cada jugador acumula su propio goleo, que registra la administración durante la liga. Cada partida ganada suma 1 punto (2-0: 2 puntos al ganador; 2-1: 2 al ganador y 1 al perdedor). La muerte súbita no suma goleo individual. Quien tenga más puntos gana el goleo.</p>
+          <div id="goleoPodium"></div>
           <div id="goleoList"></div>
           <div class="pager" id="goleoPager"></div>
         </div>
@@ -980,21 +1019,12 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
   function renderGoleo() {
     const box = document.getElementById('goleo');
     const list = document.getElementById('goleoList');
+    const podEl = document.getElementById('goleoPodium');
     if (!box || !list) return;
     const rows = goleoRows();
     if (!rows.length) { box.style.display = 'none'; return; }
     box.style.display = 'block';
-    list.innerHTML = '';
-    const pages = Math.max(1, Math.ceil(rows.length / GOLEO_PER_PAGE));
-    if (goleoPage > pages - 1) goleoPage = pages - 1;
-    if (goleoPage < 0) goleoPage = 0;
-    rows.slice(goleoPage * GOLEO_PER_PAGE, (goleoPage + 1) * GOLEO_PER_PAGE).forEach(r => {
-      const row = document.createElement('div'); row.className = 'goleo-row' + (r.rank <= 3 && r.score > 0 ? ' top' : '');
-      const rk = document.createElement('div'); rk.className = 'goleo-rank'; rk.textContent = String(r.rank);
-      const nm = document.createElement('div'); nm.className = 'goleo-name'; nm.textContent = r.name;
-      const tm = document.createElement('span'); tm.className = 'goleo-team'; tm.textContent = r.teamName + (r.team.disqualified ? ' · descalificado' : '');
-      nm.appendChild(tm);
-      row.appendChild(rk); row.appendChild(nm);
+    const scoreCtl = (r) => {
       if (isAdmin) {
         const ctrl = document.createElement('div'); ctrl.className = 'goleo-ctrl';
         const minus = document.createElement('button'); minus.type = 'button'; minus.className = 'btn-mini'; minus.textContent = '−';
@@ -1005,11 +1035,48 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
         const plus = document.createElement('button'); plus.type = 'button'; plus.className = 'btn-mini'; plus.textContent = '+';
         plus.onclick = () => setScore(r.team, r.idx, r.score + 1);
         ctrl.appendChild(minus); ctrl.appendChild(val); ctrl.appendChild(plus);
-        row.appendChild(ctrl);
-      } else {
-        const sc = document.createElement('div'); sc.className = 'goleo-score'; sc.textContent = String(r.score);
-        row.appendChild(sc);
+        return ctrl;
       }
+      return null;
+    };
+    const teamLabel = (r) => r.teamName + (r.team.disqualified ? ' · descalificado' : '');
+
+    // Podio: los primeros 3 con goleo mayor a 0
+    const podium = [];
+    for (let i = 0; i < rows.length && i < 3 && rows[i].score > 0; i++) podium.push(rows[i]);
+    if (podEl) {
+      podEl.innerHTML = '';
+      const medals = ['🥇', '🥈', '🥉'];
+      podium.forEach((r, i) => {
+        const c = document.createElement('div'); c.className = 'pod p' + (i + 1);
+        const md = document.createElement('div'); md.className = 'pod-medal'; md.setAttribute('aria-hidden', 'true'); md.textContent = medals[i];
+        const nm = document.createElement('div'); nm.className = 'pod-name'; nm.textContent = r.name;
+        const tm = document.createElement('div'); tm.className = 'pod-team'; tm.textContent = teamLabel(r);
+        c.append(md, nm, tm);
+        const ctl = scoreCtl(r);
+        if (ctl) { c.appendChild(ctl); }
+        else { const sc = document.createElement('div'); sc.className = 'pod-score'; sc.textContent = String(r.score); const lb = document.createElement('div'); lb.className = 'pod-lbl'; lb.textContent = 'goles'; c.append(sc, lb); }
+        podEl.appendChild(c);
+      });
+    }
+
+    // Resto de la lista, por páginas
+    const rest = rows.slice(podium.length);
+    list.innerHTML = '';
+    list.style.display = rest.length ? '' : 'none';
+    const pages = Math.max(1, Math.ceil(rest.length / GOLEO_PER_PAGE));
+    if (goleoPage > pages - 1) goleoPage = pages - 1;
+    if (goleoPage < 0) goleoPage = 0;
+    rest.slice(goleoPage * GOLEO_PER_PAGE, (goleoPage + 1) * GOLEO_PER_PAGE).forEach(r => {
+      const row = document.createElement('div'); row.className = 'goleo-row';
+      const rk = document.createElement('div'); rk.className = 'goleo-rank'; rk.textContent = String(r.rank);
+      const nm = document.createElement('div'); nm.className = 'goleo-name'; nm.textContent = r.name;
+      const tm = document.createElement('span'); tm.className = 'goleo-team'; tm.textContent = teamLabel(r);
+      nm.appendChild(tm);
+      row.appendChild(rk); row.appendChild(nm);
+      const ctl = scoreCtl(r);
+      if (ctl) row.appendChild(ctl);
+      else { const sc = document.createElement('div'); sc.className = 'goleo-score'; sc.textContent = String(r.score); row.appendChild(sc); }
       list.appendChild(row);
     });
     const pager = document.getElementById('goleoPager');
@@ -1019,7 +1086,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
       const prev = document.createElement('button'); prev.type = 'button'; prev.textContent = '‹ Anterior'; prev.disabled = goleoPage === 0;
       prev.onclick = () => { goleoPage--; renderGoleo(); };
       const info = document.createElement('span'); info.className = 'pg-info';
-      info.textContent = 'Página ' + (goleoPage + 1) + ' de ' + pages + ' · ' + rows.length + ' jugadores';
+      info.textContent = 'Página ' + (goleoPage + 1) + ' de ' + pages + ' · ' + rest.length + ' jugadores';
       const next = document.createElement('button'); next.type = 'button'; next.textContent = 'Siguiente ›'; next.disabled = goleoPage >= pages - 1;
       next.onclick = () => { goleoPage++; renderGoleo(); };
       pager.append(prev, info, next);
@@ -1356,6 +1423,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
           head.appendChild(rb);
         }
         wrap.appendChild(head);
+        const grid = document.createElement('div'); grid.className = 'match-grid';
         roundMatches.forEach(m => {
           const pubTag = () => {
             const t = document.createElement('span'); t.className = 'pub-tag' + (m.published === true ? ' on' : '');
@@ -1369,20 +1437,28 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
               byeDiv.appendChild(pubTag());
               byeDiv.appendChild(mkBtn(m.published === true ? 'Ocultar' : 'Publicar', () => setPublishedMany([m], m.published !== true, 'el descanso de ' + m.teamAName + ' (ronda ' + m.round + ')')));
             }
-            wrap.appendChild(byeDiv);
+            grid.appendChild(byeDiv);
             return;
           }
-          const row = document.createElement('div'); row.className = 'match-row';
-          const teamsSpan = document.createElement('span'); teamsSpan.className = 'match-teams';
-          const aSpan = document.createElement('span'); aSpan.textContent = m.teamAName; if (m.winner === 'A') aSpan.className = 'winner';
-          const vsSpan = document.createElement('span'); vsSpan.textContent = ' vs ';
-          const bSpan = document.createElement('span'); bSpan.textContent = m.teamBName; if (m.winner === 'B') bSpan.className = 'winner';
-          teamsSpan.appendChild(aSpan); teamsSpan.appendChild(vsSpan); teamsSpan.appendChild(bSpan);
-          if (m.forfeit) { const f = document.createElement('span'); f.className = 'forfeit-tag'; f.textContent = 'victoria administrativa'; teamsSpan.appendChild(f); }
-          if (isAdmin) teamsSpan.appendChild(pubTag());
-          row.appendChild(teamsSpan);
+          const card = document.createElement('div'); card.className = 'vs-card' + (m.winner ? ' done' : '');
+          const duel = document.createElement('div'); duel.className = 'vs-duel';
+          const side = (name, key) => {
+            const d = document.createElement('div');
+            d.className = 'vs-team ' + (key === 'A' ? 'a' : 'b') + (m.winner === key ? ' win' : (m.winner ? ' lose' : ''));
+            const n = document.createElement('span'); n.className = 'vs-name'; n.textContent = name; d.appendChild(n);
+            if (m.winner === key) { const w = document.createElement('span'); w.className = 'vs-crown'; w.textContent = m.forfeit ? '♛ Victoria admin.' : '♛ Ganador'; d.appendChild(w); }
+            return d;
+          };
+          const mid = document.createElement('div'); mid.className = 'vs-mid';
+          const badge = document.createElement('span'); badge.className = 'vs-badge' + (m.winner ? ' done' : ''); badge.textContent = m.winner ? '✓' : 'VS';
+          const st = document.createElement('span'); st.className = 'vs-status';
+          st.textContent = m.winner ? (m.forfeit ? 'Administrativa' : 'Definido') : 'Pendiente';
+          mid.append(badge, st);
+          duel.append(side(m.teamAName, 'A'), mid, side(m.teamBName, 'B'));
+          card.appendChild(duel);
           if (isAdmin) {
-            const btnWrap = document.createElement('div'); btnWrap.className = 'match-buttons';
+            const btnWrap = document.createElement('div'); btnWrap.className = 'vs-admin';
+            btnWrap.appendChild(pubTag());
             const btnA = document.createElement('button'); btnA.type = 'button';
             btnA.className = 'btn-pick' + (m.winner === 'A' ? ' active' : ''); btnA.textContent = 'Ganó ' + m.teamAName;
             btnA.onclick = () => setWinner(m.id, 'A');
@@ -1397,15 +1473,11 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
               btnWrap.appendChild(btnClear);
             }
             btnWrap.appendChild(mkBtn(m.published === true ? 'Ocultar' : 'Publicar', () => setPublishedMany([m], m.published !== true, 'el cruce ' + m.teamAName + ' vs ' + m.teamBName + ' (ronda ' + m.round + ')')));
-            row.appendChild(btnWrap);
-          } else {
-            const status = document.createElement('span');
-            status.style.color = 'var(--muted)'; status.style.fontSize = '0.85rem';
-            status.textContent = m.winner ? (m.forfeit ? 'Victoria administrativa' : 'Definido') : 'Pendiente';
-            row.appendChild(status);
+            card.appendChild(btnWrap);
           }
-          wrap.appendChild(row);
+          grid.appendChild(card);
         });
+        wrap.appendChild(grid);
         el.appendChild(wrap);
       });
     });
