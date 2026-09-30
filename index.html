@@ -283,6 +283,22 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
 .rules-fold>summary h2{margin:0}.rules-fold[open]>summary{margin-bottom:18px}
 .dlg-text{white-space:pre-line;color:#c9d0de;margin:0 0 6px}
 </style>
+<style id="mk-teams">
+.team-grid{list-style:none;margin:22px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.team-card{display:flex;flex-direction:column;gap:12px;padding:18px;border:1px solid rgba(255,220,130,.16);border-radius:14px;background:linear-gradient(160deg,rgba(28,33,46,.9),rgba(12,15,22,.95))}
+.tc-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tc-num{min-width:30px;height:30px;display:grid;place-items:center;border-radius:8px;background:rgba(255,225,138,.12);color:var(--gold2);font-family:"Fraunces",serif;font-weight:700}
+.team-card .tname{font-family:"Fraunces",serif;font-size:1.1rem;font-weight:600;flex:1;min-width:0;overflow-wrap:anywhere}
+.tc-table{font-size:.75rem;color:var(--muted);border:1px solid rgba(255,220,130,.16);border-radius:999px;padding:2px 9px}
+.tc-players{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.tc-players li{display:flex;align-items:center;gap:8px;color:#d9deea;font-size:.92rem}
+.tc-players .pm{width:1.2em;text-align:center;color:#5d6577}
+.tc-players li.cap{color:var(--gold2);font-weight:700}.tc-players li.cap .pm{color:var(--gold)}
+.cap-tag{margin-left:auto;font-size:.75rem;color:var(--gold2);border:1px solid rgba(255,225,138,.35);border-radius:999px;padding:1px 8px;font-weight:600}
+.tc-pbtn{background:none;border:0;padding:0;color:inherit;font:inherit;text-align:left;cursor:pointer;text-decoration:underline dotted rgba(255,255,255,.3);text-underline-offset:3px}
+.team-card.dq{opacity:.65;border-color:rgba(214,76,94,.4)}
+.team-card .team-actions{margin:auto 0 0;display:flex;gap:6px;flex-wrap:wrap}
+</style>
 </head>
 
 <body>
@@ -423,7 +439,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
           <p>Las inscripciones están cerradas. Estos son los equipos que compiten en la liga.</p>
           <div class="progress-row"><span id="progressLabel">Cargando inscritos…</span><span class="count" id="progressCount">—</span></div>
           <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-          <ul class="team-list" id="teamList"></ul>
+          <p class="table-note" id="captainHint" style="display:none">Organizador: toca el nombre de un jugador para nombrarlo capitán; tócalo otra vez para quitarlo.</p>
+          <ul class="team-grid" id="teamList"></ul>
           <p class="empty-note" id="emptyNote" style="display:none;">Aún no hay equipos registrados.</p>
           <div class="decision-panel" id="decisionPanel" style="display:none;"></div>
         </div>
@@ -659,7 +676,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
     const fechasTxt = meta.scheduleStart ? new Date(meta.scheduleStart).toLocaleDateString('es-MX') : 'Aún no generadas';
 
     let equiposRows = teams.map(t =>
-      '<tr><td>' + esc(t.name || 'Equipo') + (t.disqualified ? ' (DESCALIFICADO)' : '') + '</td><td>' + (t.players || []).map(esc).join(', ') + '</td></tr>'
+      '<tr><td>' + esc(t.name || 'Equipo') + (t.disqualified ? ' (DESCALIFICADO)' : '') + '</td><td>' + (t.players || []).map((p, i) => esc(p) + (i === t.captain ? ' (capitán)' : '')).join(', ') + '</td></tr>'
     ).join('');
 
     const tableNums = [1, 2];
@@ -996,6 +1013,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
       players: (Array.isArray(t.players) ? t.players : []).slice(0, 4).map(p => String(p).slice(0, 30)),
       registeredAt: Number(t.registeredAt) || Date.now()
     };
+    if (Number.isInteger(t.captain) && t.captain >= 0 && t.captain < 4) o.captain = t.captain;
     if (Array.isArray(t.scores)) o.scores = getScores(t);
     if (t.disqualified) {
       o.disqualified = true;
@@ -1488,24 +1506,43 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
     document.getElementById('progressFill').style.width = Math.min(100, (n / cap) * 100) + '%';
 
     const list = document.getElementById('teamList');
+    document.getElementById('captainHint').style.display = isAdmin ? 'block' : 'none';
     const emptyNote = document.getElementById('emptyNote');
     if (n === 0) {
       list.innerHTML = '';
       emptyNote.style.display = 'block';
     } else {
       emptyNote.style.display = 'none';
-      list.innerHTML = teams.map(t =>
-        '<li><span class="tname"></span><span class="tplayers"></span></li>'
-      ).join('');
-      const items = list.querySelectorAll('li');
+      list.innerHTML = '';
       teams.forEach((t, i) => {
-        items[i].querySelector('.tname').textContent = t.name || 'Equipo';
-        items[i].querySelector('.tplayers').textContent = (t.players || []).join(' · ');
-        if (t.disqualified) {
-          items[i].classList.add('dq');
-          const tag = document.createElement('span'); tag.className = 'dq-tag'; tag.textContent = 'DESCALIFICADO';
-          items[i].querySelector('.tname').appendChild(tag);
-        }
+        const players = t.players || [];
+        const capIdx = Number.isInteger(t.captain) ? t.captain : -1;
+        const li = document.createElement('li');
+        li.className = 'team-card' + (t.disqualified ? ' dq' : '');
+        const head = document.createElement('div'); head.className = 'tc-head';
+        const num = document.createElement('span'); num.className = 'tc-num'; num.textContent = i + 1;
+        const nm = document.createElement('span'); nm.className = 'tname'; nm.textContent = t.name || 'Equipo';
+        if (t.disqualified) { const tag = document.createElement('span'); tag.className = 'dq-tag'; tag.textContent = 'DESCALIFICADO'; nm.appendChild(tag); }
+        head.append(num, nm);
+        if (teams.length > 16) { const tb = document.createElement('span'); tb.className = 'tc-table'; tb.textContent = 'Tabla ' + (i < 16 ? 1 : 2); head.appendChild(tb); }
+        const ul = document.createElement('ul'); ul.className = 'tc-players';
+        players.forEach((pname, idx) => {
+          const pl = document.createElement('li');
+          if (idx === capIdx) pl.className = 'cap';
+          const pm = document.createElement('span'); pm.className = 'pm'; pm.setAttribute('aria-hidden', 'true'); pm.textContent = idx === capIdx ? '♛' : '·';
+          pl.appendChild(pm);
+          if (isAdmin) {
+            const b = document.createElement('button'); b.type = 'button'; b.className = 'tc-pbtn'; b.textContent = pname;
+            b.title = idx === capIdx ? 'Quitar capitán' : 'Nombrar capitán';
+            b.onclick = () => setCaptain(t, idx);
+            pl.appendChild(b);
+          } else {
+            const s = document.createElement('span'); s.textContent = pname; pl.appendChild(s);
+          }
+          if (idx === capIdx) { const ct = document.createElement('span'); ct.className = 'cap-tag'; ct.textContent = 'Capitán'; pl.appendChild(ct); }
+          ul.appendChild(pl);
+        });
+        li.append(head, ul);
         if (isAdmin) {
           const acts = document.createElement('span'); acts.className = 'team-actions';
           const bEdit = document.createElement('button'); bEdit.type = 'button'; bEdit.className = 'btn-mini'; bEdit.textContent = 'Editar';
@@ -1520,8 +1557,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
           const bDel = document.createElement('button'); bDel.type = 'button'; bDel.className = 'btn-mini danger'; bDel.textContent = 'Borrar';
           bDel.onclick = () => deleteTeam(t);
           acts.appendChild(bDel);
-          items[i].appendChild(acts);
+          li.appendChild(acts);
         }
+        list.appendChild(li);
       });
     }
 
@@ -1559,6 +1597,20 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
       await logAction('fixtures', 'Reinició el estado "generando calendario"');
     } catch (err) {
       uiAlert('No se pudo reiniciar: ' + err.message);
+    }
+  }
+
+  async function setCaptain(t, idx) {
+    if (!db || !isAdmin) return;
+    const cur = Number.isInteger(t.captain) ? t.captain : -1;
+    const quitar = cur === idx;
+    try {
+      const batch = db.batch();
+      batch.update(db.doc('teams/' + t.id), { captain: quitar ? FV().delete() : idx });
+      batch.set(db.collection('log').doc(), logEntry('captain', 'Capitán de "' + (t.name || 'Equipo') + '": ' + (quitar ? 'sin capitán' : (t.players || [])[idx])));
+      await batch.commit();
+    } catch (err) {
+      uiAlert('No se pudo guardar el capitán: ' + err.message);
     }
   }
 
