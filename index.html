@@ -494,6 +494,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
             <button class="btn-outline" id="jsonBackupBtn" type="button">Descargar respaldo (.json)</button>
             <button class="btn-outline secondary" id="jsonRestoreBtn" type="button">Restaurar desde .json</button>
             <button class="btn-mini danger" id="clearMatchesBtn" type="button">Borrar todos los cruces</button>
+            <button class="btn-mini danger" id="shuffleBtn" type="button">Barajar equipos y generar cruces nuevos</button>
             <input type="file" id="jsonFile" accept="application/json,.json" style="display:none;">
           </div>
         </div>
@@ -1560,6 +1561,43 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
       uiAlert('No se pudo reiniciar: ' + err.message);
     }
   }
+
+  // --- Barajar equipos (3 veces) y generar cruces nuevos ---
+  function randInt(n) {
+    const u = new Uint32Array(1), lim = Math.floor(4294967296 / n) * n;
+    let x; do { crypto.getRandomValues(u); x = u[0]; } while (x >= lim);
+    return x % n;
+  }
+  function shuffleInPlace(a) {
+    for (let i = a.length - 1; i > 0; i--) { const j = randInt(i + 1); [a[i], a[j]] = [a[j], a[i]]; }
+    return a;
+  }
+  async function shuffleAndRegenerate() {
+    if (!db || !isAdmin) return;
+    if (teams.length !== 32) { uiAlert('Se necesitan los 32 equipos para barajar. Ahora hay ' + teams.length + '.'); return; }
+    const ok = await uiConfirm('Vas a BARAJAR los 32 equipos (3 veces) y generar cruces nuevos.\n\n• Cambia el orden de la lista y qué equipos van en la Tabla 1 (los primeros 16) y en la Tabla 2 (los últimos 16).\n• Se borran TODOS los versus y resultados actuales (' + matches.length + '); los nuevos quedan sin publicar.\n• El goleo y las descalificaciones no se tocan.\n\nAntes se descarga un respaldo .json. ¿Continuar?');
+    if (!ok) return;
+    try {
+      downloadText('king-masters-antes-de-barajar-' + stamp() + '.json', buildJsonBackup(), 'application/json');
+      const order = teams.slice();
+      for (let k = 0; k < 3; k++) shuffleInPlace(order);
+      const base = Math.min.apply(null, teams.map(t => Number(t.registeredAt) || Date.now()));
+      await db.doc('meta/status').set({ expansionDecided: true, expanded: true, scheduleStart: meta.scheduleStart || Date.now(), fixturesGenerating: true, fixturesGeneratingAt: Date.now() });
+      const batch = db.batch();
+      order.forEach((t, i) => batch.update(db.doc('teams/' + t.id), { registeredAt: base + i * 1000 }));
+      batch.set(db.collection('log').doc(), logEntry('shuffle', 'Barajó los 32 equipos (3 veces). Tabla 1: ' + order.slice(0, 16).map(t => t.name).join(', ') + '. Tabla 2: ' + order.slice(16).map(t => t.name).join(', ')));
+      await batch.commit();
+      teams = order.map((t, i) => Object.assign({}, t, { registeredAt: base + i * 1000 }));
+      await generateAndStoreFixtures();
+      await logAction('fixtures', 'Generó cruces nuevos después de barajar');
+      uiAlert('Listo: equipos barajados y cruces nuevos generados. Recuerda publicarlos en Resultados cuando quieras que se vean.');
+    } catch (err) {
+      uiAlert('No se pudo barajar: ' + err.message);
+    } finally {
+      await db.doc('meta/status').update({ fixturesGenerating: false });
+    }
+  }
+  document.getElementById('shuffleBtn').addEventListener('click', shuffleAndRegenerate);
 
   async function regenerateFixtures() {
     if (!db) return;
