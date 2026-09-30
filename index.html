@@ -8,7 +8,7 @@
 <meta name="description" content="MASTER KING — Campeonato competitivo premium por equipos.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="MASTER KING | Liga Oficial">
-<meta property="og:description" content="Liga de Pokémon TCG por equipos. Inscríbete, consulta el calendario, la tabla y los resultados.">
+<meta property="og:description" content="Liga de Pokémon TCG por equipos. Consulta el calendario, la tabla y los resultados.">
 <meta name="twitter:card" content="summary">
 <!-- Para que WhatsApp/Facebook muestren imagen al compartir el enlace, descomenta y pon tu URL real
      (mejor un PNG o JPG de 1200x630 que el .webp):
@@ -281,7 +281,7 @@ body.modal-open{overflow:hidden}
       <a class="brand" href="#inicio"><img class="brand-logo" src="logo.webp" alt="MASTER KING" width="52" height="42"><span>MASTER KING</span></a>
       <button class="nav-toggle" id="navToggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="navLinks">☰</button>
       <nav class="navlinks" id="navLinks" aria-label="Navegación principal">
-        <a href="#reglamento">Reglas</a><a href="#formato">Formato</a><a href="#inscripcion">Inscripción</a>
+        <a href="#reglamento">Reglas</a><a href="#formato">Formato</a><a href="#inscripcion">Equipos</a>
         <a href="#fechas">Calendario</a><a href="#tabla">Tabla</a><a href="#goleo">Goleo</a><a href="#resultados">Resultados</a><a href="#premiacion">Premios</a>
       </nav>
     </div>
@@ -300,8 +300,7 @@ body.modal-open{overflow:hidden}
           <span class="fact"><strong>3 días</strong> por ronda</span>
         </div>
         <div class="hero-actions">
-          <button class="cta" id="openFormBtn" type="button">♛ Inscribir a mi equipo</button>
-          <a class="btn-ghost" href="#tabla">Ver campeonato ↓</a>
+          <a class="cta" href="#tabla" style="text-decoration:none">Ver campeonato ↓</a>
           <a class="btn-ghost" href="https://chat.whatsapp.com/EfHegAr4nby2Zs7yp4FtEs" target="_blank" rel="noopener noreferrer">Grupo oficial de WhatsApp</a>
         </div>
       </div>
@@ -407,14 +406,14 @@ body.modal-open{overflow:hidden}
       </section>
 
       <section id="inscripcion">
-        <div class="kicker">03 · INSCRIPCIÓN DE EQUIPOS</div>
-        <h2>Inscripción de equipos</h2>
+        <div class="kicker">03 · EQUIPOS</div>
+        <h2>Equipos inscritos</h2>
         <div class="roster-box">
-          <p>Cada equipo se registra con el nombre y el nick de sus 4 jugadores. El logo se envía aparte a los organizadores por el <a href="https://chat.whatsapp.com/EfHegAr4nby2Zs7yp4FtEs" target="_blank" rel="noopener noreferrer">grupo oficial de WhatsApp</a>.</p>
+          <p>Las inscripciones están cerradas. Estos son los equipos que compiten en la liga.</p>
           <div class="progress-row"><span id="progressLabel">Cargando inscritos…</span><span class="count" id="progressCount">—</span></div>
           <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
           <ul class="team-list" id="teamList"></ul>
-          <p class="empty-note" id="emptyNote" style="display:none;">Todavía no hay equipos inscritos. ¡Sé el primero!</p>
+          <p class="empty-note" id="emptyNote" style="display:none;">Aún no hay equipos registrados.</p>
           <div class="decision-panel" id="decisionPanel" style="display:none;"></div>
         </div>
       </section>
@@ -497,22 +496,6 @@ body.modal-open{overflow:hidden}
 
   <footer><span class="footer-crown">♛</span>MASTER KING · Liga de Pokémon TCG por equipos<br><a href="https://chat.whatsapp.com/EfHegAr4nby2Zs7yp4FtEs" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:10px">Grupo oficial de WhatsApp</a></footer>
 
-  <div class="modal-backdrop" id="modalBackdrop">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="teamModalTitle">
-      <h3 id="teamModalTitle">Inscribir equipo</h3>
-      <p class="sub">Forma tu escuadra de 4 jugadores y entra al campeonato.</p>
-      <form id="teamForm">
-        <div class="field"><label for="teamName">Nombre del equipo</label><input type="text" id="teamName" required maxlength="40"></div>
-        <div class="field"><label for="p1">Jugador 1</label><input type="text" id="p1" required maxlength="30"></div>
-        <div class="field"><label for="p2">Jugador 2</label><input type="text" id="p2" required maxlength="30"></div>
-        <div class="field"><label for="p3">Jugador 3</label><input type="text" id="p3" required maxlength="30"></div>
-        <div class="field"><label for="p4">Jugador 4</label><input type="text" id="p4" required maxlength="30"></div>
-        <div class="modal-actions"><button type="button" class="cancel" id="cancelBtn">Cancelar</button><button type="submit">Inscribirse</button></div>
-        <div class="form-msg" id="formMsg"></div>
-      </form>
-    </div>
-  </div>
-
   <div class="modal-backdrop" id="editBackdrop">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
       <h3 id="editModalTitle">Editar equipo</h3>
@@ -544,11 +527,6 @@ body.modal-open{overflow:hidden}
 
 <script>
 (function () {
-  const backdrop = document.getElementById('modalBackdrop');
-  const openBtn = document.getElementById('openFormBtn');
-  const cancelBtn = document.getElementById('cancelBtn');
-  const form = document.getElementById('teamForm');
-  const formMsg = document.getElementById('formMsg');
 
   if (typeof firebase === 'undefined') {
     // Los scripts de Firebase no cargaron (sin internet o bloqueados)
@@ -557,7 +535,6 @@ body.modal-open{overflow:hidden}
     document.getElementById('progressCount').textContent = '—';
     document.getElementById('standingsContent').innerHTML = '<p class="pending-note">' + msg + '</p>';
     document.getElementById('fechasContent').innerHTML = '<p class="pending-note">' + msg + '</p>';
-    openBtn.addEventListener('click', () => alert(msg));
     return;
   }
 
@@ -1350,7 +1327,7 @@ body.modal-open{overflow:hidden}
       }
     } else if (meta.expansionDecided && meta.expanded && n < 32 && !meta.scheduleStart) {
       panel.style.display = 'block';
-      panel.innerHTML = '<p>La liga se expandió a 32 equipos. Inscripciones abiertas hasta llenar la doble tabla.</p>';
+      panel.innerHTML = '<p>La liga se expandió a 32 equipos. Los organizadores están completando los cupos.</p>';
     } else if (meta.expansionDecided && meta.expanded && n >= 32 && !meta.scheduleStart) {
       panel.style.display = 'block';
       if (isAdmin) {
@@ -1441,7 +1418,7 @@ body.modal-open{overflow:hidden}
   function render() {
     const cap = capacity();
     const n = teams.length;
-    document.getElementById('progressLabel').textContent = n >= cap ? 'Inscripción llena' : 'Equipos inscritos';
+    document.getElementById('progressLabel').textContent = n >= cap ? 'Inscripciones cerradas' : 'Equipos inscritos';
     document.getElementById('progressCount').textContent = n + ' / ' + cap;
     document.getElementById('progressFill').style.width = Math.min(100, (n / cap) * 100) + '%';
 
@@ -1481,12 +1458,6 @@ body.modal-open{overflow:hidden}
           items[i].appendChild(acts);
         }
       });
-    }
-
-    const openable = n < cap;
-    openBtn.disabled = false;
-    if (!openable && !(meta.expansionDecided === false && n >= 16)) {
-      // still allow opening only if slots exist; message handled in form submit
     }
 
     const ab = document.getElementById('adminBackupBox'), lb = document.getElementById('adminLogBox');
@@ -1554,56 +1525,6 @@ body.modal-open{overflow:hidden}
     }
   }
 
-  openBtn.addEventListener('click', () => {
-    const n = teams.length, cap = capacity();
-    if (n >= cap) {
-      formMsg.textContent = '';
-      backdrop.classList.add('open');
-      formMsg.className = 'form-msg error';
-      formMsg.textContent = 'La inscripción está llena por ahora.';
-      return;
-    }
-    formMsg.textContent = '';
-    formMsg.className = 'form-msg';
-    backdrop.classList.add('open');
-  });
-  cancelBtn.addEventListener('click', () => backdrop.classList.remove('open'));
-  backdrop.addEventListener('click', (e) => { if (e.target === backdrop) backdrop.classList.remove('open'); });
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (!db) {
-      formMsg.className = 'form-msg error';
-      formMsg.textContent = 'No se pudo conectar. Intenta de nuevo en unos segundos.';
-      return;
-    }
-    const n = teams.length, cap = capacity();
-    if (n >= cap) {
-      formMsg.className = 'form-msg error';
-      formMsg.textContent = 'La inscripción ya está llena.';
-      return;
-    }
-    const name = document.getElementById('teamName').value.trim();
-    const players = ['p1', 'p2', 'p3', 'p4'].map(id => document.getElementById(id).value.trim());
-    if (!name || players.some(p => !p)) return;
-    const norm = (x) => String(x || '').trim().toLowerCase().replace(/\s+/g, ' ');
-    if (teams.some(t => norm(t.name) === norm(name))) {
-      formMsg.className = 'form-msg error';
-      formMsg.textContent = 'Ya hay un equipo inscrito con ese nombre. Elige otro.';
-      return;
-    }
-    try {
-      await db.collection('teams').add({ name, players, registeredAt: Date.now() });
-      formMsg.className = 'form-msg ok';
-      formMsg.textContent = '¡Equipo inscrito!';
-      form.reset();
-      setTimeout(() => backdrop.classList.remove('open'), 900);
-    } catch (err) {
-      formMsg.className = 'form-msg error';
-      formMsg.textContent = 'No se pudo inscribir el equipo. Intenta de nuevo.';
-    }
-  });
-
   // --- Acceso de organizador (modal con contraseña oculta) ---
   const loginBackdrop = document.getElementById('loginBackdrop');
   const loginForm = document.getElementById('loginForm');
@@ -1637,7 +1558,7 @@ body.modal-open{overflow:hidden}
   (function watchModals() {
     const focusBefore = new WeakMap();
     const wasOpen = new WeakMap();
-    const backs = [backdrop, editBackdrop, loginBackdrop];
+    const backs = [editBackdrop, loginBackdrop];
     function sync(b) {
       const open = b.classList.contains('open');
       if (open === !!wasOpen.get(b)) return;
@@ -1658,7 +1579,6 @@ body.modal-open{overflow:hidden}
   // Esc cierra cualquier ventana abierta
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
-    backdrop.classList.remove('open');
     closeEdit();
     closeLogin();
   });
