@@ -284,20 +284,30 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
 .dlg-text{white-space:pre-line;color:#c9d0de;margin:0 0 6px}
 </style>
 <style id="mk-teams">
-.team-grid{list-style:none;margin:22px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
-.team-card{display:flex;flex-direction:column;gap:12px;padding:18px;border:1px solid rgba(255,220,130,.16);border-radius:14px;background:linear-gradient(160deg,rgba(28,33,46,.9),rgba(12,15,22,.95))}
-.tc-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.tc-num{min-width:30px;height:30px;display:grid;place-items:center;border-radius:8px;background:rgba(255,225,138,.12);color:var(--gold2);font-family:"Fraunces",serif;font-weight:700}
-.team-card .tname{font-family:"Fraunces",serif;font-size:1.1rem;font-weight:600;flex:1;min-width:0;overflow-wrap:anywhere}
-.tc-table{font-size:.75rem;color:var(--muted);border:1px solid rgba(255,220,130,.16);border-radius:999px;padding:2px 9px}
-.tc-players{list-style:none;margin:0;padding:0;display:grid;gap:7px}
-.tc-players li{display:flex;align-items:center;gap:8px;color:#d9deea;font-size:.92rem}
+.team-grid{list-style:none;margin:22px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;align-items:start}
+.team-card{border:1px solid rgba(255,220,130,.16);border-radius:14px;background:linear-gradient(160deg,rgba(28,33,46,.9),rgba(12,15,22,.95));overflow:hidden}
+.team-card[open],.team-card:has(details[open]){border-color:rgba(255,220,130,.4)}
+.tc-fold>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:13px 16px;user-select:none}
+.tc-fold>summary::-webkit-details-marker{display:none}
+.tc-fold>summary::after{content:"▾";color:var(--gold2);font-size:1.1rem;transition:transform .2s;margin-left:auto;flex:none}
+.tc-fold[open]>summary::after{transform:rotate(180deg)}
+.tc-fold>summary:hover{background:rgba(255,211,92,.05)}
+.tc-fold>summary:focus-visible{outline:2px solid var(--gold2);outline-offset:-2px}
+.tc-num{min-width:30px;height:30px;display:grid;place-items:center;border-radius:8px;background:rgba(255,225,138,.12);color:var(--gold2);font-family:"Fraunces",serif;font-weight:700;flex:none}
+.team-card .tname{font-family:"Fraunces",serif;font-size:1.05rem;font-weight:600;flex:1;min-width:0;overflow-wrap:anywhere}
+.tc-table{font-size:.72rem;color:var(--muted);border:1px solid rgba(255,220,130,.16);border-radius:999px;padding:2px 9px;flex:none}
+.tc-body{padding:0 16px 16px;display:flex;flex-direction:column;gap:12px;border-top:1px solid rgba(255,220,130,.1);padding-top:12px}
+.tc-players{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.tc-players li{display:flex;align-items:center;gap:8px;color:#d9deea;font-size:.92rem;flex-wrap:wrap}
 .tc-players .pm{width:1.2em;text-align:center;color:#5d6577}
+.tc-players .pn{flex:1;min-width:0;overflow-wrap:anywhere}
 .tc-players li.cap{color:var(--gold2);font-weight:700}.tc-players li.cap .pm{color:var(--gold)}
-.cap-tag{margin-left:auto;font-size:.75rem;color:var(--gold2);border:1px solid rgba(255,225,138,.35);border-radius:999px;padding:1px 8px;font-weight:600}
-.tc-pbtn{background:none;border:0;padding:0;color:inherit;font:inherit;text-align:left;cursor:pointer;text-decoration:underline dotted rgba(255,255,255,.3);text-underline-offset:3px}
+.cap-tag{font-size:.75rem;color:var(--gold2);border:1px solid rgba(255,225,138,.35);border-radius:999px;padding:1px 8px;font-weight:600}
+.cap-btn{font-size:.72rem;padding:3px 10px;border-radius:999px;border:1px solid rgba(255,225,138,.45);background:rgba(255,225,138,.08);color:var(--gold2);font-weight:700;white-space:nowrap}
+.cap-btn:hover{background:rgba(255,225,138,.18)}
+.cap-btn.on{background:rgba(214,76,94,.12);border-color:rgba(214,76,94,.45);color:#ff9aa6}
 .team-card.dq{opacity:.65;border-color:rgba(214,76,94,.4)}
-.team-card .team-actions{margin:auto 0 0;display:flex;gap:6px;flex-wrap:wrap}
+.team-card .team-actions{margin:0;display:flex;gap:6px;flex-wrap:wrap}
 </style>
 </head>
 
@@ -439,7 +449,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
           <p>Las inscripciones están cerradas. Estos son los equipos que compiten en la liga.</p>
           <div class="progress-row"><span id="progressLabel">Cargando inscritos…</span><span class="count" id="progressCount">—</span></div>
           <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-          <p class="table-note" id="captainHint" style="display:none">Organizador: toca el nombre de un jugador para nombrarlo capitán; tócalo otra vez para quitarlo.</p>
+          <p class="table-note" id="captainHint" style="display:none">Organizador: abre un equipo y usa el botón «Hacer capitán» junto al jugador que quieras nombrar.</p>
           <ul class="team-grid" id="teamList"></ul>
           <p class="empty-note" id="emptyNote" style="display:none;">Aún no hay equipos registrados.</p>
           <div class="decision-panel" id="decisionPanel" style="display:none;"></div>
@@ -1498,6 +1508,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
     ).join('') : '<div class="activity-empty">No hay equipos para evaluar.</div>';
   }
 
+  const openTeams = new Set();
   function render() {
     const cap = capacity();
     const n = teams.length;
@@ -1519,30 +1530,35 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
         const capIdx = Number.isInteger(t.captain) ? t.captain : -1;
         const li = document.createElement('li');
         li.className = 'team-card' + (t.disqualified ? ' dq' : '');
-        const head = document.createElement('div'); head.className = 'tc-head';
+        const det = document.createElement('details'); det.className = 'tc-fold';
+        if (openTeams.has(t.id)) det.open = true;
+        det.addEventListener('toggle', () => { if (det.open) openTeams.add(t.id); else openTeams.delete(t.id); });
+        const sum = document.createElement('summary'); sum.className = 'tc-head';
         const num = document.createElement('span'); num.className = 'tc-num'; num.textContent = i + 1;
         const nm = document.createElement('span'); nm.className = 'tname'; nm.textContent = t.name || 'Equipo';
         if (t.disqualified) { const tag = document.createElement('span'); tag.className = 'dq-tag'; tag.textContent = 'DESCALIFICADO'; nm.appendChild(tag); }
-        head.append(num, nm);
-        if (teams.length > 16) { const tb = document.createElement('span'); tb.className = 'tc-table'; tb.textContent = 'Tabla ' + (i < 16 ? 1 : 2); head.appendChild(tb); }
+        sum.append(num, nm);
+        if (teams.length > 16) { const tb = document.createElement('span'); tb.className = 'tc-table'; tb.textContent = 'Tabla ' + (i < 16 ? 1 : 2); sum.appendChild(tb); }
+        const body = document.createElement('div'); body.className = 'tc-body';
         const ul = document.createElement('ul'); ul.className = 'tc-players';
         players.forEach((pname, idx) => {
           const pl = document.createElement('li');
-          if (idx === capIdx) pl.className = 'cap';
-          const pm = document.createElement('span'); pm.className = 'pm'; pm.setAttribute('aria-hidden', 'true'); pm.textContent = idx === capIdx ? '♛' : '·';
-          pl.appendChild(pm);
+          const isCap = idx === capIdx;
+          if (isCap) pl.className = 'cap';
+          const pm = document.createElement('span'); pm.className = 'pm'; pm.setAttribute('aria-hidden', 'true'); pm.textContent = isCap ? '♛' : '·';
+          const pn = document.createElement('span'); pn.className = 'pn'; pn.textContent = pname;
+          pl.append(pm, pn);
+          if (isCap && !isAdmin) { const ct = document.createElement('span'); ct.className = 'cap-tag'; ct.textContent = 'Capitán'; pl.appendChild(ct); }
           if (isAdmin) {
-            const b = document.createElement('button'); b.type = 'button'; b.className = 'tc-pbtn'; b.textContent = pname;
-            b.title = idx === capIdx ? 'Quitar capitán' : 'Nombrar capitán';
-            b.onclick = () => setCaptain(t, idx);
-            pl.appendChild(b);
-          } else {
-            const s = document.createElement('span'); s.textContent = pname; pl.appendChild(s);
+            const cb = document.createElement('button'); cb.type = 'button';
+            cb.className = 'cap-btn' + (isCap ? ' on' : '');
+            cb.textContent = isCap ? 'Quitar capitán' : '♛ Hacer capitán';
+            cb.onclick = () => setCaptain(t, idx);
+            pl.appendChild(cb);
           }
-          if (idx === capIdx) { const ct = document.createElement('span'); ct.className = 'cap-tag'; ct.textContent = 'Capitán'; pl.appendChild(ct); }
           ul.appendChild(pl);
         });
-        li.append(head, ul);
+        body.appendChild(ul);
         if (isAdmin) {
           const acts = document.createElement('span'); acts.className = 'team-actions';
           const bEdit = document.createElement('button'); bEdit.type = 'button'; bEdit.className = 'btn-mini'; bEdit.textContent = 'Editar';
@@ -1557,8 +1573,10 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
           const bDel = document.createElement('button'); bDel.type = 'button'; bDel.className = 'btn-mini danger'; bDel.textContent = 'Borrar';
           bDel.onclick = () => deleteTeam(t);
           acts.appendChild(bDel);
-          li.appendChild(acts);
+          body.appendChild(acts);
         }
+        det.append(sum, body);
+        li.appendChild(det);
         list.appendChild(li);
       });
     }
