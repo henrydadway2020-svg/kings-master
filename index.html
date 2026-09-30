@@ -236,7 +236,7 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
 
 .goleo-box{margin-top:34px}
 .goleo-box h3{margin:4px 0 6px}
-#goleoList{margin-top:12px;max-height:520px;overflow-y:auto;border:1px solid rgba(255,220,130,.12);border-radius:15px;background:rgba(10,13,18,.7);padding:4px 16px}
+#goleoList{margin-top:12px;border:1px solid rgba(255,220,130,.12);border-radius:15px;background:rgba(10,13,18,.7);padding:4px 16px}
 .goleo-row{display:grid;grid-template-columns:34px 1fr auto;gap:12px;align-items:center;padding:11px 0;border-top:1px solid rgba(255,220,130,.08)}.goleo-row:first-child{border-top:0}
 .goleo-rank{color:#7f899d;font-size:.82rem;text-align:center}.goleo-row.top .goleo-rank{color:var(--gold2);font-weight:800}
 .goleo-name{color:#f5f0df;font-weight:700}.goleo-team{display:block;color:#8992a5;font-size:.78rem;font-weight:400}
@@ -308,6 +308,21 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
 .cap-btn.on{background:rgba(214,76,94,.12);border-color:rgba(214,76,94,.45);color:#ff9aa6}
 .team-card.dq{opacity:.65;border-color:rgba(214,76,94,.4)}
 .team-card .team-actions{margin:0;display:flex;gap:6px;flex-wrap:wrap}
+
+.pager{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:14px;flex-wrap:wrap}
+.pager button{padding:8px 16px;border-radius:999px;border:1px solid rgba(255,225,138,.35);background:rgba(255,225,138,.07);color:var(--gold2);font-weight:700;font-size:.82rem}
+.pager button:hover:not(:disabled){background:rgba(255,225,138,.18)}
+.pager button:disabled{opacity:.35;cursor:default}
+.pager .pg-info{color:var(--muted);font-size:.85rem;min-width:110px;text-align:center}
+.act-group{border-top:1px solid rgba(255,255,255,.08)}
+.act-group>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:13px 4px;user-select:none}
+.act-group>summary::-webkit-details-marker{display:none}
+.act-group>summary::after{content:"▾";color:var(--gold2);margin-left:auto;transition:transform .2s}
+.act-group[open]>summary::after{transform:rotate(180deg)}
+.act-group>summary:hover{background:rgba(255,211,92,.04)}
+.act-group>summary:focus-visible{outline:2px solid var(--gold2);outline-offset:-2px}
+.act-count{font-family:"Fraunces",serif;font-weight:700;color:var(--gold2);min-width:1.6em;text-align:center;border:1px solid rgba(255,225,138,.3);border-radius:999px;padding:0 9px}
+.act-group .activity-row:first-of-type{border-top:1px solid rgba(255,255,255,.08)}
 </style>
 </head>
 
@@ -471,6 +486,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
           <h3>Tabla de goleo</h3>
           <p class="table-note">Cada jugador acumula su propio goleo, que registra la administración durante la liga. Cada partida ganada suma 1 punto (2-0: 2 puntos al ganador; 2-1: 2 al ganador y 1 al perdedor). La muerte súbita no suma goleo individual. Quien tenga más puntos gana el goleo.</p>
           <div id="goleoList"></div>
+          <div class="pager" id="goleoPager"></div>
         </div>
         <div class="activity-control" id="activityControl" style="display:none;">
           <div class="activity-head">
@@ -959,6 +975,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
       uiAlert('No se pudo guardar el goleo: ' + err.message);
     }
   }
+  let goleoPage = 0;
+  const GOLEO_PER_PAGE = 10;
   function renderGoleo() {
     const box = document.getElementById('goleo');
     const list = document.getElementById('goleoList');
@@ -967,7 +985,10 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
     if (!rows.length) { box.style.display = 'none'; return; }
     box.style.display = 'block';
     list.innerHTML = '';
-    rows.forEach(r => {
+    const pages = Math.max(1, Math.ceil(rows.length / GOLEO_PER_PAGE));
+    if (goleoPage > pages - 1) goleoPage = pages - 1;
+    if (goleoPage < 0) goleoPage = 0;
+    rows.slice(goleoPage * GOLEO_PER_PAGE, (goleoPage + 1) * GOLEO_PER_PAGE).forEach(r => {
       const row = document.createElement('div'); row.className = 'goleo-row' + (r.rank <= 3 && r.score > 0 ? ' top' : '');
       const rk = document.createElement('div'); rk.className = 'goleo-rank'; rk.textContent = String(r.rank);
       const nm = document.createElement('div'); nm.className = 'goleo-name'; nm.textContent = r.name;
@@ -991,6 +1012,18 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
       }
       list.appendChild(row);
     });
+    const pager = document.getElementById('goleoPager');
+    if (pager) {
+      pager.innerHTML = '';
+      pager.style.display = pages > 1 ? 'flex' : 'none';
+      const prev = document.createElement('button'); prev.type = 'button'; prev.textContent = '‹ Anterior'; prev.disabled = goleoPage === 0;
+      prev.onclick = () => { goleoPage--; renderGoleo(); };
+      const info = document.createElement('span'); info.className = 'pg-info';
+      info.textContent = 'Página ' + (goleoPage + 1) + ' de ' + pages + ' · ' + rows.length + ' jugadores';
+      const next = document.createElement('button'); next.type = 'button'; next.textContent = 'Siguiente ›'; next.disabled = goleoPage >= pages - 1;
+      next.onclick = () => { goleoPage++; renderGoleo(); };
+      pager.append(prev, info, next);
+    }
   }
 
   // --- Respaldo restaurable (.json) ---
@@ -1501,13 +1534,37 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
       return order[a.cls]-order[b.cls] || a.name.localeCompare(b.name);
     });
 
-    list.innerHTML = rows.length ? rows.map(r =>
-      '<div class="activity-row"><div><div class="activity-team">' + esc(r.name) + '</div><div class="activity-meta">' + esc(r.detail) + '</div></div>' +
-      '<div class="activity-meta">Rondas anteriores cumplidas: ' + r.completedPast + '</div>' +
-      '<span class="activity-status ' + r.cls + '">' + r.status + '</span></div>'
-    ).join('') : '<div class="activity-empty">No hay equipos para evaluar.</div>';
+    if (!rows.length) { list.innerHTML = '<div class="activity-empty">No hay equipos para evaluar.</div>'; return; }
+    const GROUPS = [
+      { cls: 'black', label: '⚫ Revisión / abandono / descalificados' },
+      { cls: 'red', label: '🔴 Incumplimiento' },
+      { cls: 'yellow', label: '🟡 En riesgo' },
+      { cls: 'green', label: '🟢 Activos / descansan' }
+    ];
+    list.innerHTML = '';
+    GROUPS.forEach(g => {
+      const items = rows.filter(r => r.cls === g.cls);
+      if (!items.length) return;
+      const det = document.createElement('details'); det.className = 'act-group';
+      if (openActGroups.has(g.cls)) det.open = true;
+      det.addEventListener('toggle', () => { if (det.open) openActGroups.add(g.cls); else openActGroups.delete(g.cls); });
+      const sm = document.createElement('summary');
+      const lb = document.createElement('span'); lb.className = 'activity-team'; lb.textContent = g.label;
+      const ct = document.createElement('span'); ct.className = 'act-count'; ct.textContent = String(items.length);
+      sm.append(lb, ct);
+      det.appendChild(sm);
+      const inner = document.createElement('div');
+      inner.innerHTML = items.map(r =>
+        '<div class="activity-row"><div><div class="activity-team">' + esc(r.name) + '</div><div class="activity-meta">' + esc(r.detail) + '</div></div>' +
+        '<div class="activity-meta">Rondas anteriores cumplidas: ' + r.completedPast + '</div>' +
+        '<span class="activity-status ' + r.cls + '">' + r.status + '</span></div>'
+      ).join('');
+      det.appendChild(inner);
+      list.appendChild(det);
+    });
   }
 
+  const openActGroups = new Set();
   const openTeams = new Set();
   function render() {
     const cap = capacity();
