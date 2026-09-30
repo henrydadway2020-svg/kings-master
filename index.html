@@ -253,6 +253,13 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
 .bye-row{padding:10px 0;border-top:1px solid rgba(255,220,130,.08);color:#8992a5;font-size:.9rem}
 .btn-outline.secondary,.btn-pick.secondary{opacity:.85}
 .activity-status.rest{color:#9ec5ff}
+.publish-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 0 4px}
+.publish-bar .empty-note{flex:1 1 220px}
+.round-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.round-head h4{margin-bottom:0}
+.pub-tag{display:inline-block;margin-left:8px;font-size:.64rem;letter-spacing:.08em;font-weight:800;color:#8992a5;border:1px solid rgba(255,255,255,.18);padding:2px 7px;border-radius:999px}
+.pub-tag.on{color:#9fe8b2;border-color:rgba(159,232,178,.4)}
+.bye-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 @media(max-width:820px){
   .nav{flex-wrap:wrap}
   .nav-toggle{display:inline-grid;place-items:center}
@@ -453,7 +460,7 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
         </div>
       </section>
 
-      <section id="respaldo">
+      <section id="respaldo" style="display:none;">
         <div class="kicker">08 · CONTROL DEL CAMPEONATO</div>
         <h2>Respaldo</h2>
         <div class="backup-box">
@@ -640,6 +647,7 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
   }
 
   backupBtn.addEventListener('click', () => {
+    if (!isAdmin) return;
     backupMsg.className = '';
     backupMsg.textContent = '';
     const fname = 'king-masters-respaldo-' + new Date().toISOString().slice(0, 10) + '.html';
@@ -925,6 +933,7 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
   }
   function cleanMatch(m) {
     const o = { table: Number(m.table) === 2 ? 2 : 1, round: Number(m.round) || 1, teamAId: String(m.teamAId || ''), teamAName: String(m.teamAName || '') };
+    o.published = m.published === true;
     if (m.bye) { o.bye = true; return o; }
     o.teamBId = String(m.teamBId || ''); o.teamBName = String(m.teamBName || '');
     o.winner = (m.winner === 'A' || m.winner === 'B') ? m.winner : null;
@@ -1049,15 +1058,15 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
       for (let r = 0; r < roundsPairs.length; r++) {
         for (const [a, b] of roundsPairs[r]) {
           if (a === null) {
-            docs.push({ table: g.table, round: r + 1, bye: true, teamAId: b, teamAName: nameById[b] });
+            docs.push({ table: g.table, round: r + 1, bye: true, teamAId: b, teamAName: nameById[b], published: false });
           } else if (b === null) {
-            docs.push({ table: g.table, round: r + 1, bye: true, teamAId: a, teamAName: nameById[a] });
+            docs.push({ table: g.table, round: r + 1, bye: true, teamAId: a, teamAName: nameById[a], published: false });
           } else {
             docs.push({
               table: g.table, round: r + 1,
               teamAId: a, teamAName: nameById[a],
               teamBId: b, teamBName: nameById[b],
-              winner: null
+              winner: null, published: false
             });
           }
         }
@@ -1083,6 +1092,11 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
 
   function computeStandings(tableNum) {
     const stats = {};
+    if (!isAdmin) {
+      // Vista pública: solo hay cruces publicados; se listan todos los equipos de la tabla aunque aún no tengan versus visibles
+      const slice = (meta.expanded && tableNum === 2) ? teams.slice(16, 32) : teams.slice(0, 16);
+      slice.forEach(t => { stats[t.id] = { name: t.name || 'Equipo', wins: 0, losses: 0, dq: !!t.disqualified }; });
+    }
     matches.filter(m => m.table === tableNum && !m.bye).forEach(m => {
       if (!stats[m.teamAId]) stats[m.teamAId] = { name: m.teamAName, wins: 0, losses: 0, dq: isDq(m.teamAId) };
       if (!stats[m.teamBId]) stats[m.teamBId] = { name: m.teamBName, wins: 0, losses: 0, dq: isDq(m.teamBId) };
@@ -1114,7 +1128,7 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
   function renderStandings() {
     const el = document.getElementById('standingsContent');
     const resultsDetails = document.getElementById('resultsDetails');
-    if (!meta.scheduleStart || matches.length === 0) {
+    if (!meta.scheduleStart || (isAdmin && matches.length === 0)) {
       el.innerHTML = '<p class="pending-note">La tabla aparece en cuanto se generan las fechas.</p>';
       resultsDetails.style.display = 'none';
       return;
@@ -1144,22 +1158,77 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
     });
   }
 
+  async function setPublishedMany(list, value, label) {
+    if (!isAdmin) return;
+    const targets = list.filter(m => (m.published === true) !== value);
+    if (!targets.length) return;
+    try {
+      for (let i = 0; i < targets.length; i += 400) {
+        const batch = db.batch();
+        targets.slice(i, i + 400).forEach(m => batch.update(db.doc('matches/' + m.id), { published: value }));
+        if (i + 400 >= targets.length) batch.set(db.collection('log').doc(), logEntry('publish', (value ? 'Publicó ' : 'Ocultó ') + label + ' (' + targets.length + ')'));
+        await batch.commit();
+      }
+    } catch (err) {
+      alert('No se pudo actualizar la visibilidad: ' + err.message);
+    }
+  }
+
   function renderResults() {
     const el = document.getElementById('resultsContent');
     el.innerHTML = '';
     const tableNums = meta.expanded ? [1, 2] : [1];
+    const shown = matches.filter(m => isAdmin || m.published === true);
+    const mkBtn = (text, fn, cls) => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = cls || 'btn-mini'; b.textContent = text; b.onclick = fn; return b;
+    };
+    if (!shown.length) {
+      const p = document.createElement('p'); p.className = 'empty-note';
+      p.textContent = 'Todavía no hay versus publicados.';
+      el.appendChild(p);
+      return;
+    }
+    if (isAdmin) {
+      const bar = document.createElement('div'); bar.className = 'publish-bar';
+      const pub = shown.filter(m => m.published === true).length;
+      const info = document.createElement('span'); info.className = 'empty-note';
+      info.textContent = 'Publicados: ' + pub + ' de ' + shown.length + '. El público solo ve los publicados.';
+      bar.appendChild(info);
+      bar.appendChild(mkBtn('Publicar todos', () => setPublishedMany(shown, true, 'todos los cruces')));
+      bar.appendChild(mkBtn('Ocultar todos', () => setPublishedMany(shown, false, 'todos los cruces')));
+      el.appendChild(bar);
+    }
     tableNums.forEach(tn => {
-      const tableMatches = matches.filter(m => m.table === tn);
+      const tableMatches = shown.filter(m => m.table === tn);
       const roundsSet = Array.from(new Set(tableMatches.map(m => m.round))).sort((a, b) => a - b);
       roundsSet.forEach(rn => {
         const wrap = document.createElement('div'); wrap.className = 'round-group';
+        const head = document.createElement('div'); head.className = 'round-head';
         const h4 = document.createElement('h4');
         h4.textContent = (tableNums.length > 1 ? ('Tabla ' + tn + ' · ') : '') + 'Ronda ' + rn;
-        wrap.appendChild(h4);
-        tableMatches.filter(m => m.round === rn).forEach(m => {
+        head.appendChild(h4);
+        const roundMatches = tableMatches.filter(m => m.round === rn);
+        if (isAdmin) {
+          const rb = document.createElement('div'); rb.className = 'match-buttons';
+          const lbl = 'la ronda ' + rn + (tableNums.length > 1 ? ' de la Tabla ' + tn : '');
+          rb.appendChild(mkBtn('Publicar ronda', () => setPublishedMany(roundMatches, true, lbl)));
+          rb.appendChild(mkBtn('Ocultar ronda', () => setPublishedMany(roundMatches, false, lbl)));
+          head.appendChild(rb);
+        }
+        wrap.appendChild(head);
+        roundMatches.forEach(m => {
+          const pubTag = () => {
+            const t = document.createElement('span'); t.className = 'pub-tag' + (m.published === true ? ' on' : '');
+            t.textContent = m.published === true ? 'PUBLICADO' : 'OCULTO'; return t;
+          };
           if (m.bye) {
             const byeDiv = document.createElement('div'); byeDiv.className = 'bye-row';
-            byeDiv.textContent = m.teamAName + ' descansa esta ronda';
+            const tx = document.createElement('span'); tx.textContent = m.teamAName + ' descansa esta ronda';
+            byeDiv.appendChild(tx);
+            if (isAdmin) {
+              byeDiv.appendChild(pubTag());
+              byeDiv.appendChild(mkBtn(m.published === true ? 'Ocultar' : 'Publicar', () => setPublishedMany([m], m.published !== true, 'el descanso de ' + m.teamAName + ' (ronda ' + m.round + ')')));
+            }
             wrap.appendChild(byeDiv);
             return;
           }
@@ -1170,6 +1239,7 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
           const bSpan = document.createElement('span'); bSpan.textContent = m.teamBName; if (m.winner === 'B') bSpan.className = 'winner';
           teamsSpan.appendChild(aSpan); teamsSpan.appendChild(vsSpan); teamsSpan.appendChild(bSpan);
           if (m.forfeit) { const f = document.createElement('span'); f.className = 'forfeit-tag'; f.textContent = 'victoria administrativa'; teamsSpan.appendChild(f); }
+          if (isAdmin) teamsSpan.appendChild(pubTag());
           row.appendChild(teamsSpan);
           if (isAdmin) {
             const btnWrap = document.createElement('div'); btnWrap.className = 'match-buttons';
@@ -1186,6 +1256,7 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
               btnClear.onclick = () => setWinner(m.id, null);
               btnWrap.appendChild(btnClear);
             }
+            btnWrap.appendChild(mkBtn(m.published === true ? 'Ocultar' : 'Publicar', () => setPublishedMany([m], m.published !== true, 'el cruce ' + m.teamAName + ' vs ' + m.teamBName + ' (ronda ' + m.round + ')')));
             row.appendChild(btnWrap);
           } else {
             const status = document.createElement('span');
@@ -1273,7 +1344,7 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
     const list = document.getElementById('activityList');
     const dayEl = document.getElementById('activityDay');
     const note = document.getElementById('activityNote');
-    if (!box || !list || !meta.scheduleStart || !matches.length || !teams.length) {
+    if (!box || !list || !isAdmin || !meta.scheduleStart || !matches.length || !teams.length) {
       if (box) box.style.display = 'none';
       return;
     }
@@ -1391,6 +1462,7 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
     const ab = document.getElementById('adminBackupBox'), lb = document.getElementById('adminLogBox');
     if (ab) ab.style.display = isAdmin ? 'flex' : 'none';
     if (lb) lb.style.display = isAdmin ? 'block' : 'none';
+    const rs = document.getElementById('respaldo'); if (rs) rs.style.display = isAdmin ? '' : 'none';
     renderDecisionPanel();
     renderRounds();
     renderStandings();
@@ -1555,12 +1627,28 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
     });
   }
 
+  // El organizador recibe todos los cruces; el público solo los publicados.
+  let unsubMatches = null;
+  function watchMatches() {
+    if (unsubMatches) { unsubMatches(); unsubMatches = null; }
+    matches = [];
+    const col = db.collection('matches');
+    const q = isAdmin ? col : col.where('published', '==', true);
+    unsubMatches = q.onSnapshot((snap) => {
+      matches = snap.docs.map(d => Object.assign({ id: d.id }, d.data()));
+      render();
+    }, () => {
+      document.getElementById('standingsContent').innerHTML = '<p class="pending-note">No se pudieron cargar los cruces.</p>';
+    });
+  }
+
   function init() {
     setupAdminToggle();
 
     auth.onAuthStateChanged((user) => {
       isAdmin = !!user;
       watchLog();
+      watchMatches();
       render();
     });
 
@@ -1584,12 +1672,6 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
       document.getElementById('standingsContent').innerHTML = '<p class="pending-note">No se pudo conectar con la base de datos.</p>';
     });
 
-    db.collection('matches').onSnapshot((snap) => {
-      matches = snap.docs.map(d => Object.assign({ id: d.id }, d.data()));
-      render();
-    }, () => {
-      document.getElementById('standingsContent').innerHTML = '<p class="pending-note">No se pudieron cargar los cruces.</p>';
-    });
   }
 
   init();
