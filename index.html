@@ -237,6 +237,11 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
 #logList{margin-top:14px;max-height:420px;overflow-y:auto}
 
 .goleo-box{margin-top:34px}
+.goleo-filter{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.goleo-filter input,.goleo-filter select{flex:1 1 200px;min-width:0;padding:11px 14px;border-radius:10px;border:1px solid var(--line);background:rgba(10,13,18,.85);color:#f5f0df;font:inherit;font-size:.95rem}
+.goleo-filter input:focus,.goleo-filter select:focus{outline:2px solid var(--gold);outline-offset:1px}
+.goleo-empty{padding:18px 6px;color:#8992a5;text-align:center}
+
 .goleo-box h3{margin:4px 0 6px}
 #goleoList{margin-top:12px;border:1px solid rgba(255,220,130,.12);border-radius:15px;background:rgba(10,13,18,.7);padding:4px 16px}
 .goleo-row{display:grid;grid-template-columns:34px 1fr auto;gap:12px;align-items:center;padding:11px 0;border-top:1px solid rgba(255,220,130,.08)}.goleo-row:first-child{border-top:0}
@@ -758,6 +763,10 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
           <div class="subkicker">GOLEO INDIVIDUAL</div>
           <h3>Tabla de goleo</h3>
           <p class="table-note">Cada jugador acumula su propio goleo, que registra la administración durante la liga. Cada partida ganada suma 1 punto (2-0: 2 puntos al ganador; 2-1: 2 al ganador y 1 al perdedor). La muerte súbita no suma goleo individual. Quien tenga más puntos gana el goleo.</p>
+          <div class="goleo-filter">
+            <input type="search" id="goleoSearch" placeholder="🔍 Buscar jugador o equipo…" autocomplete="off" aria-label="Buscar jugador o equipo">
+            <select id="goleoTeam" aria-label="Filtrar por equipo"><option value="">Todos los equipos</option></select>
+          </div>
           <div id="goleoPodium"></div>
           <div id="goleoList"></div>
           <div class="pager" id="goleoPager"></div>
@@ -1302,6 +1311,10 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
     }
   }
   let goleoPage = 0;
+  ['goleoSearch', 'goleoTeam'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener(id === 'goleoSearch' ? 'input' : 'change', () => { goleoPage = 0; renderGoleo(); });
+  });
   const GOLEO_PER_PAGE = 10;
   function renderGoleo() {
     const box = document.getElementById('goleo');
@@ -1311,6 +1324,24 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
     const rows = goleoRows();
     if (!rows.length) { box.style.display = 'none'; return; }
     box.style.display = 'block';
+    // Buscador + filtro por equipo
+    const norm = (x) => String(x || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+    const qEl = document.getElementById('goleoSearch'), tEl = document.getElementById('goleoTeam');
+    if (tEl) {
+      const prevSel = tEl.value;
+      const names = teams.map(t => t.name || 'Equipo').sort((a, b) => a.localeCompare(b));
+      const sig = names.join('|');
+      if (tEl.dataset.sig !== sig) {
+        tEl.innerHTML = '';
+        const o0 = document.createElement('option'); o0.value = ''; o0.textContent = 'Todos los equipos'; tEl.appendChild(o0);
+        teams.slice().sort((a, b) => (a.name || '').localeCompare(b.name || '')).forEach(t => { const o = document.createElement('option'); o.value = t.id; o.textContent = t.name || 'Equipo'; tEl.appendChild(o); });
+        tEl.dataset.sig = sig;
+        tEl.value = [...tEl.options].some(o => o.value === prevSel) ? prevSel : '';
+      }
+    }
+    const q = norm(qEl && qEl.value), tf = tEl ? tEl.value : '';
+    const filtering = !!(q || tf);
+    const visible = filtering ? rows.filter(r => (!tf || r.team.id === tf) && (!q || norm(r.name).includes(q) || norm(r.teamName).includes(q))) : rows;
     const scoreCtl = (r) => {
       if (isAdmin) {
         const ctrl = document.createElement('div'); ctrl.className = 'goleo-ctrl';
@@ -1330,7 +1361,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
 
     // Podio: los primeros 3 con goleo mayor a 0
     const podium = [];
-    for (let i = 0; i < rows.length && i < 3 && rows[i].score > 0; i++) podium.push(rows[i]);
+    if (!filtering) for (let i = 0; i < rows.length && i < 3 && rows[i].score > 0; i++) podium.push(rows[i]);
     if (podEl) {
       podEl.innerHTML = '';
       const medals = ['🥇', '🥈', '🥉'];
@@ -1348,13 +1379,15 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
     }
 
     // Resto de la lista, por páginas
-    const rest = rows.slice(podium.length);
+    const rest = filtering ? visible : rows.slice(podium.length);
     list.innerHTML = '';
     list.style.display = rest.length ? '' : 'none';
-    const pages = Math.max(1, Math.ceil(rest.length / GOLEO_PER_PAGE));
+    const perPage = filtering ? 9999 : GOLEO_PER_PAGE;
+    const pages = Math.max(1, Math.ceil(rest.length / perPage));
     if (goleoPage > pages - 1) goleoPage = pages - 1;
     if (goleoPage < 0) goleoPage = 0;
-    rest.slice(goleoPage * GOLEO_PER_PAGE, (goleoPage + 1) * GOLEO_PER_PAGE).forEach(r => {
+    if (filtering && !rest.length) { list.style.display = ''; const em = document.createElement('div'); em.className = 'goleo-empty'; em.textContent = 'Sin resultados.'; list.appendChild(em); }
+    rest.slice(goleoPage * perPage, (goleoPage + 1) * perPage).forEach(r => {
       const row = document.createElement('div'); row.className = 'goleo-row';
       const rk = document.createElement('div'); rk.className = 'goleo-rank'; rk.textContent = String(r.rank);
       const nm = document.createElement('div'); nm.className = 'goleo-name'; nm.textContent = r.name;
