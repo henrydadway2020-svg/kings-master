@@ -242,7 +242,6 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
 .goleo-name{color:#f5f0df;font-weight:700}.goleo-team{display:block;color:#8992a5;font-size:.78rem;font-weight:400}
 .goleo-score{font-family:"Fraunces",serif;color:var(--gold2);font-size:1.3rem;min-width:34px;text-align:center}
 .goleo-ctrl{display:flex;align-items:center;gap:6px}
-.standings td.num:nth-child(3){color:var(--gold2);font-weight:800}
 </style>
 <style id="mk-fixes">
 .nav-toggle{display:none;background:transparent;border:1px solid rgba(244,212,119,.3);color:var(--gold2);font-size:1.25rem;line-height:1;width:44px;height:44px;border-radius:10px}
@@ -381,6 +380,67 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
   .nav.open .navlinks{background:linear-gradient(180deg,#10141f,#090b12);border:1px solid rgba(255,220,130,.25);border-radius:14px;box-shadow:0 22px 44px rgba(0,0,0,.7);padding:6px 10px;margin-bottom:14px}
   .nav.open .navlinks a{color:#f2efe4;font-size:.85rem}
   .nav.open .navlinks a:last-child{border-bottom:0}
+}
+</style>
+<style id="mk-premium-tables">
+/* ===== Tablas premium ===== */
+.table-group{margin-bottom:38px}
+.tg-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.tg-head h3{margin:0;font-size:1.25rem;color:var(--gold3);letter-spacing:.01em}
+.tg-head::after{content:"";flex:1;height:1px;order:1;background:linear-gradient(90deg,rgba(255,211,92,.35),transparent)}
+.tg-count{order:2;font-size:.74rem;color:var(--muted);border:1px solid rgba(255,220,130,.18);border-radius:999px;padding:3px 11px;background:rgba(255,255,255,.02);white-space:nowrap}
+.st-card{position:relative;border:1px solid rgba(255,220,130,.2);border-radius:18px;overflow:hidden;
+ background:linear-gradient(160deg,rgba(24,28,39,.96),rgba(9,11,16,.96));
+ box-shadow:0 24px 60px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,236,170,.08)}
+.st-card::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;z-index:2;background:linear-gradient(90deg,transparent,#e8bd45 30%,#fff0a7 50%,#e8bd45 70%,transparent)}
+.st-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(255,211,92,.3) transparent}
+.standings{width:100%;min-width:0;border-collapse:separate;border-spacing:0;font-size:.93rem;font-variant-numeric:tabular-nums}
+.standings thead th{padding:15px 12px;background:linear-gradient(180deg,rgba(255,211,92,.10),rgba(255,211,92,.02));color:#c9b57a;font-weight:700;font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;border-top:0;border-bottom:1px solid rgba(255,220,130,.25);white-space:nowrap}
+.standings tbody td{padding:13px 12px;border-top:0;border-bottom:1px solid rgba(255,220,130,.07);color:#cfd5e1;transition:background .18s}
+.standings tbody tr:last-child td{border-bottom:0}
+.standings tbody tr:nth-child(even) td{background:rgba(255,255,255,.014)}
+.standings tbody tr:hover td{background:rgba(255,211,92,.06)}
+.standings th.rk,.standings td.rk{width:58px;text-align:center;padding-left:14px;padding-right:6px}
+.standings td.tm{font-weight:700;color:#f5f0df;min-width:150px}
+.standings td.num{text-align:center}
+.standings td.pts{font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:1.12rem;color:var(--gold2)}
+.standings td.w{color:#86d9a6;font-weight:700}
+.standings td.l{color:#e8909c;font-weight:700}
+.standings td.gl{color:#9ca5b8}
+.rk-chip{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;font-weight:800;font-size:.82rem;color:#9aa3b6;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03)}
+.standings tr.qualify td.rk .rk-chip{color:#1b1405;border-color:rgba(255,229,160,.7);background:linear-gradient(145deg,#fff0b0,#d9a928 60%,#9d6d0d);box-shadow:0 4px 12px rgba(217,169,40,.28),inset 0 1px 0 rgba(255,255,255,.55)}
+.standings tr.qualify.r2 td.rk .rk-chip{background:linear-gradient(145deg,#f4f6fa,#b5bdcb 60%,#7b8496);border-color:rgba(255,255,255,.55);box-shadow:0 4px 12px rgba(180,190,205,.2),inset 0 1px 0 rgba(255,255,255,.6)}
+.standings tr.qualify.r3 td.rk .rk-chip{background:linear-gradient(145deg,#f1c79d,#c4813f 60%,#7d4a1d);border-color:rgba(240,190,140,.6);box-shadow:0 4px 12px rgba(196,129,63,.22),inset 0 1px 0 rgba(255,255,255,.4)}
+.standings tr.qualify.r4 td.rk .rk-chip{background:rgba(255,211,92,.1);color:var(--gold2);border-color:rgba(255,220,130,.45);box-shadow:none}
+.standings tr.qualify td{background:linear-gradient(90deg,rgba(255,211,92,.075),rgba(255,211,92,.012) 70%)}
+.standings tr.qualify td:first-child{box-shadow:inset 3px 0 0 var(--gold);color:inherit;font-weight:inherit}
+.standings tr.qualify:hover td{background:linear-gradient(90deg,rgba(255,211,92,.13),rgba(255,211,92,.03) 70%)}
+.standings tr.qualify td.tm{color:#fff6dc}
+.standings tr.cut td{border-bottom:1px dashed rgba(255,211,92,.45)}
+.standings tr.dq td{opacity:.5}
+.standings tr.dq td.tm{text-decoration:line-through;text-decoration-color:rgba(214,76,94,.7)}
+.zone-legend{display:flex;align-items:center;gap:8px;margin:14px 4px 0;font-size:.82rem;color:#8992a5}
+.zone-legend .up{display:inline-block;width:16px;height:0;border-top:2px dashed rgba(255,211,92,.7);font-size:0;overflow:hidden}
+/* ===== Goleo ===== */
+#goleoList{margin-top:16px;padding:0;border:1px solid rgba(255,220,130,.2);border-radius:18px;overflow:hidden;position:relative;
+ background:linear-gradient(160deg,rgba(24,28,39,.96),rgba(9,11,16,.96));box-shadow:0 24px 60px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,236,170,.08)}
+#goleoList::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,#e8bd45 30%,#fff0a7 50%,#e8bd45 70%,transparent)}
+.goleo-row{grid-template-columns:44px 1fr auto;gap:12px;padding:13px 18px;border-top:0;border-bottom:1px solid rgba(255,220,130,.07);transition:background .18s}
+.goleo-row:last-child{border-bottom:0}
+.goleo-row:nth-child(even){background:rgba(255,255,255,.014)}
+.goleo-row:hover{background:rgba(255,211,92,.06)}
+.goleo-rank{display:grid;place-items:center;width:30px;height:30px;margin:0 auto;border-radius:50%;font-weight:800;font-size:.8rem;color:#9aa3b6;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);font-variant-numeric:tabular-nums}
+.goleo-row.top .goleo-rank{color:var(--gold2);border-color:rgba(255,220,130,.45);background:rgba(255,211,92,.1)}
+.goleo-row>.goleo-score{min-width:44px;padding:3px 12px;border-radius:999px;background:rgba(255,211,92,.08);border:1px solid rgba(255,220,130,.22);font-size:1.15rem;line-height:1.35;font-variant-numeric:tabular-nums}
+@media(max-width:560px){
+ .standings{font-size:.86rem}
+ .standings thead th{padding:12px 6px;letter-spacing:.08em;font-size:.64rem}
+ .standings tbody td{padding:11px 6px}
+ .standings th.rk,.standings td.rk{width:44px;padding-left:8px;padding-right:2px}
+ .standings td.tm{min-width:0}
+ .rk-chip,.goleo-rank{width:26px;height:26px;font-size:.74rem}
+ .goleo-row{grid-template-columns:34px 1fr auto;padding:12px 12px}
+ .tg-head h3{font-size:1.1rem}
 }
 </style>
 </head>
@@ -1358,24 +1418,37 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
     el.innerHTML = '';
     tableNums.forEach(tn => {
       const group = document.createElement('div'); group.className = 'table-group';
-      const h3 = document.createElement('h3'); h3.textContent = tableNums.length > 1 ? 'Tabla ' + tn : 'Tabla general'; group.appendChild(h3);
-      const table = document.createElement('table'); table.className = 'standings';
-      table.innerHTML = '<thead><tr><th>#</th><th>Equipo</th><th class="num">Pts</th><th class="num">G</th><th class="num">P</th><th class="num">Goleo</th></tr></thead>';
-      const tbody = document.createElement('tbody');
       const rowsS = computeStandings(tn);
+      const head = document.createElement('div'); head.className = 'tg-head';
+      const h3 = document.createElement('h3'); h3.textContent = tableNums.length > 1 ? 'Tabla ' + tn : 'Tabla general'; head.appendChild(h3);
+      const cnt = document.createElement('span'); cnt.className = 'tg-count'; cnt.textContent = rowsS.length + ' equipos'; head.appendChild(cnt);
+      group.appendChild(head);
+      const card = document.createElement('div'); card.className = 'st-card';
+      const scroll = document.createElement('div'); scroll.className = 'st-scroll';
+      const table = document.createElement('table'); table.className = 'standings';
+      table.innerHTML = '<thead><tr><th class="rk">#</th><th>Equipo</th><th class="num">Pts</th><th class="num">G</th><th class="num">P</th><th class="num">Goleo</th></tr></thead>';
+      const tbody = document.createElement('tbody');
+      const clsByCol = ['rk', 'tm', 'num pts', 'num w', 'num l', 'num gl'];
       rowsS.forEach((s, i) => {
         const tr = document.createElement('tr');
-        if (i < 4 && !s.dq) tr.className = 'qualify';
+        const cls = [];
+        if (i < 4 && !s.dq) cls.push('qualify', 'r' + (i + 1));
+        if (i === 3) cls.push('cut');
+        if (s.dq) cls.push('dq');
+        tr.className = cls.join(' ');
         [String(i + 1), s.name + (s.dq ? ' (DESCALIFICADO)' : ''), String(s.pts), String(s.wins), String(s.losses), String(s.goleo)].forEach((val, ci) => {
           const td = document.createElement('td');
-          if (ci !== 1) td.className = 'num';
-          td.textContent = val;
+          td.className = clsByCol[ci];
+          if (ci === 0) { const chip = document.createElement('span'); chip.className = 'rk-chip'; chip.textContent = val; td.appendChild(chip); }
+          else td.textContent = val;
           tr.appendChild(td);
         });
         tbody.appendChild(tr);
       });
       table.appendChild(tbody);
-      group.appendChild(table);
+      scroll.appendChild(table);
+      card.appendChild(scroll);
+      group.appendChild(card);
       {
         const lg = document.createElement('p'); lg.className = 'zone-legend';
         lg.innerHTML = '<span class="zl up">■</span> Clasifican a las rondas finales (4 primeros)';
