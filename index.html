@@ -9,12 +9,15 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="MASTER KING | Liga Oficial">
 <meta property="og:description" content="Liga de Pokémon TCG por equipos. Consulta el calendario, la tabla y los resultados.">
-<meta name="twitter:card" content="summary">
-<!-- Para que WhatsApp/Facebook muestren imagen al compartir el enlace, descomenta y pon tu URL real
-     (mejor un PNG o JPG de 1200x630 que el .webp):
-<meta property="og:image" content="https://TU-DOMINIO/og-image.png">
-<meta property="og:url" content="https://TU-DOMINIO/">
-<link rel="canonical" href="https://TU-DOMINIO/"> -->
+<meta property="og:image" content="https://kings-master.pages.dev/og-image.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="MASTER KING — Liga oficial de Pokémon TCG por equipos">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kings-master.pages.dev/og-image.jpg">
+<meta property="og:url" content="https://kings-master.pages.dev/">
+<link rel="canonical" href="https://kings-master.pages.dev/">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>♛</text></svg>">
 <link rel="preload" as="image" href="logo.webp" type="image/webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -255,6 +258,30 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
 .round-head h4{margin-bottom:0}
 .pub-tag{display:inline-block;margin-left:8px;font-size:.75rem;letter-spacing:.08em;font-weight:800;color:#8992a5;border:1px solid rgba(255,255,255,.18);padding:2px 7px;border-radius:999px}
 .pub-tag.on{color:#9fe8b2;border-color:rgba(159,232,178,.4)}
+
+/* --- Mis versus --- */
+.my-vs{margin:0 0 18px;padding:16px 18px;border:1px solid rgba(255,220,130,.22);background:rgba(255,255,255,.02);border-radius:13px}
+.my-vs .field{margin-bottom:0}
+.my-vs .field input{width:100%;background:#07090d;border:1px solid rgba(255,220,130,.13);color:#f2eee3;padding:12px 13px;font-size:1rem;border-radius:9px;font-family:inherit}
+.my-card{margin-top:14px;display:flex;flex-direction:column;gap:12px}
+.my-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.my-head h4{font-size:1.25rem;color:#fff6df}
+.my-chip{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:var(--gold2);border:1px solid rgba(255,220,130,.3);padding:2px 9px;border-radius:999px}
+.my-chip.dq{color:#ff8b9a;border-color:rgba(214,76,94,.5)}
+.my-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.my-stat{padding:10px 8px;text-align:center;border:1px solid rgba(255,220,130,.14);border-radius:10px;background:rgba(255,255,255,.025)}
+.my-stat b{display:block;font-size:1.25rem;color:var(--gold2);font-family:"Fraunces",Georgia,serif}
+.my-stat span{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:#8992a5}
+.my-sub{font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:#8992a5;margin-top:2px}
+.my-row{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:9px 12px;border:1px solid rgba(255,220,130,.12);border-radius:10px;background:rgba(255,255,255,.02);font-size:.9rem}
+.my-row .mr-main{min-width:0;overflow-wrap:anywhere}
+.my-row .mr-main small{display:block;color:#8992a5;font-size:.74rem}
+.my-row.win{border-color:rgba(159,232,178,.35)}
+.my-row.lose{border-color:rgba(214,76,94,.3)}
+.my-tag{font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.my-tag.win{color:#9fe8b2}.my-tag.lose{color:#ff8b9a}.my-tag.review{color:#ffd35c}.my-tag.pend{color:#8992a5}
+.vs-meta .vs-status.review{color:#ffd35c}
+@media (max-width:480px){.my-stats{grid-template-columns:repeat(2,1fr)}}
 /* --- Reportes de capitanes --- */
 .field textarea{width:100%;background:#07090d;border:1px solid rgba(255,220,130,.13);color:#f2eee3;padding:12px 13px;font-size:.95rem;border-radius:9px;font-family:inherit;resize:vertical;min-height:70px}
 .field textarea:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
@@ -752,6 +779,10 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
         <div class="kicker">06 · VERSUS</div>
         <h2>Versus de la liga</h2>
         <p class="table-note">Elige la tabla y la ronda para ver cada enfrentamiento. El ganador de cada duelo se ilumina en dorado y alimenta la tabla de posiciones.</p>
+        <div class="my-vs" id="myVs" style="display:none;">
+          <div class="field"><label for="myTeamIn">Buscar mi equipo o mi nick</label><input type="search" id="myTeamIn" list="myTeamList" placeholder="Escribe tu equipo o tu nick…" autocomplete="off" autocapitalize="off" spellcheck="false"><datalist id="myTeamList"></datalist></div>
+          <div id="myVsPanel" aria-live="polite"></div>
+        </div>
         <div class="report-cta" id="reportCta" style="display:none;">
           <div><div class="subkicker">CAPITANES</div><strong>¿Ya jugaste tu versus?</strong><p class="table-note">Reporta el resultado y sube una captura como evidencia. La administración lo revisa y lo registra.</p></div>
           <button type="button" class="btn-outline" id="reportOpenBtn">Reportar resultado</button>
@@ -790,6 +821,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
           <div class="decision-buttons">
             <button class="btn-outline" id="jsonBackupBtn" type="button">Descargar respaldo (.json)</button>
             <button class="btn-outline secondary" id="jsonRestoreBtn" type="button">Restaurar desde .json</button>
+            <button class="btn-mini" id="migratePhotosBtn" type="button">Optimizar fotos (mover a documento aparte)</button>
             <button class="btn-mini danger" id="clearMatchesBtn" type="button">Borrar todos los cruces</button>
             <button class="btn-mini danger" id="shuffleBtn" type="button">Barajar equipos y generar cruces nuevos</button>
             <input type="file" id="jsonFile" accept="application/json,.json" style="display:none;">
@@ -1179,6 +1211,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
     try {
       const batch = db.batch();
       batch.delete(db.doc('teams/' + t.id));
+      batch.delete(db.doc('teamPhotos/' + t.id));
       related.forEach(m => {
         const ref = db.doc('matches/' + m.id);
         if (m.bye) { batch.delete(ref); return; }
@@ -1378,6 +1411,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
       registeredAt: Number(t.registeredAt) || Date.now()
     };
     if (Number.isInteger(t.captain) && t.captain >= 0 && t.captain < 4) o.captain = t.captain;
+    if (t.hasPhotos) o.hasPhotos = true;
     if (Array.isArray(t.scores)) o.scores = getScores(t);
     if (t.disqualified) {
       o.disqualified = true;
@@ -1581,9 +1615,31 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
 
   // --- Fotos de jugadores (se guardan reducidas en teams/{id}.photos.{n}) ---
   const closedTeams = new Set();
+  // Las fotos viven en teamPhotos/{teamId} (campos p0..p3), aparte del equipo, y se piden solo cuando
+  // la tarjeta del equipo está a la vista. Así la tabla y los cruces no arrastran las fotos de los 32 equipos.
+  // Lo antiguo (teams/{id}.photos) se sigue mostrando hasta que se use "Optimizar fotos".
+  const photoCache = {};            // teamId -> { idx: dataURL }
+  const photoLoading = new Set();
+  let photoIO = null, photoRenderTimer = null;
+  function okImg(p) { return (typeof p === 'string' && p.indexOf('data:image/') === 0) ? p : ''; }
   function playerPhoto(t, idx) {
-    const p = t.photos && t.photos[idx];
-    return (typeof p === 'string' && p.indexOf('data:image/') === 0) ? p : '';
+    const c = photoCache[t.id];
+    if (c && okImg(c[idx])) return c[idx];
+    return okImg(t.photos && t.photos[idx]);
+  }
+  async function loadTeamPhotos(id) {
+    if (photoCache[id] || photoLoading.has(id)) return;
+    photoLoading.add(id);
+    try {
+      const snap = await db.doc('teamPhotos/' + id).get();
+      const d = snap.exists ? snap.data() : {};
+      const o = {};
+      for (let i = 0; i < 4; i++) if (okImg(d['p' + i])) o[i] = d['p' + i];
+      photoCache[id] = o;
+      clearTimeout(photoRenderTimer);
+      photoRenderTimer = setTimeout(render, 120);
+    } catch (e) { /* sin conexión o sin foto: se queda el escudo */ }
+    finally { photoLoading.delete(id); }
   }
   function readCropped(file, W, H, q) {
     return new Promise((resolve, reject) => {
@@ -1618,9 +1674,11 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
     try {
       const data = await readCropped(f, 280, 392, 0.74);
       const batch = db.batch();
-      batch.update(db.doc('teams/' + tg.id), { ['photos.' + tg.idx]: data });
+      batch.set(db.doc('teamPhotos/' + tg.id), { ['p' + tg.idx]: data }, { merge: true });
+      batch.update(db.doc('teams/' + tg.id), { hasPhotos: true, ['photos.' + tg.idx]: FV().delete() });
       batch.set(db.collection('log').doc(), logEntry('photo', 'Foto de ' + tg.name + ' (' + tg.team + ')'));
       await batch.commit();
+      if (photoCache[tg.id]) { photoCache[tg.id][tg.idx] = data; render(); } else { loadTeamPhotos(tg.id); }
     } catch (err) {
       uiAlert('No se pudo subir la foto: ' + (err && err.message ? err.message : err));
     }
@@ -1629,13 +1687,36 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
     if (!isAdmin || !(await uiConfirm('¿Quitar la foto de ' + ((t.players || [])[idx] || 'este jugador') + '?'))) return;
     try {
       const batch = db.batch();
+      batch.set(db.doc('teamPhotos/' + t.id), { ['p' + idx]: FV().delete() }, { merge: true });
       batch.update(db.doc('teams/' + t.id), { ['photos.' + idx]: FV().delete() });
       batch.set(db.collection('log').doc(), logEntry('photo', 'Quitó la foto de ' + ((t.players || [])[idx] || 'jugador') + ' (' + (t.name || 'Equipo') + ')'));
       await batch.commit();
+      if (photoCache[t.id]) { delete photoCache[t.id][idx]; render(); }
     } catch (err) {
       uiAlert('No se pudo quitar la foto: ' + (err && err.message ? err.message : err));
     }
   }
+  async function migratePhotos() {
+    if (!isAdmin) return;
+    const legacy = teams.filter(t => t.photos && Object.keys(t.photos).some(k => okImg(t.photos[k])));
+    if (!legacy.length) { uiAlert('No hay fotos pendientes de mover. Todo está al día.'); return; }
+    if (!await uiConfirm('Se moverán las fotos de ' + legacy.length + ' equipos a un documento aparte para que la página cargue más rápido. No se pierde ninguna foto. ¿Continuar?')) return;
+    let ok = 0, fail = 0;
+    for (const t of legacy) {
+      try {
+        const o = {};
+        Object.keys(t.photos).forEach(k => { if (okImg(t.photos[k])) o['p' + k] = t.photos[k]; });
+        const batch = db.batch();
+        batch.set(db.doc('teamPhotos/' + t.id), o, { merge: true });
+        batch.update(db.doc('teams/' + t.id), { hasPhotos: true, photos: FV().delete() });
+        await batch.commit();
+        delete photoCache[t.id]; ok++;
+      } catch (e) { fail++; }
+    }
+    await logAction('photo', 'Movió las fotos de ' + ok + ' equipos a teamPhotos' + (fail ? ' (' + fail + ' fallaron)' : ''));
+    uiAlert(fail ? ('Se movieron ' + ok + ' equipos y ' + fail + ' fallaron. Revisa que las reglas de teamPhotos estén publicadas y repite.') : ('Listo: se movieron las fotos de ' + ok + ' equipos.'));
+  }
+  document.getElementById('migratePhotosBtn').addEventListener('click', migratePhotos);
   (function () {
     const tb = document.getElementById('tcToolbar');
     document.getElementById('tcCollapse').onclick = () => { teams.forEach(t => closedTeams.add(t.id)); render(); };
@@ -1652,6 +1733,19 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
   const rTeam = document.getElementById('rTeam'), rMatch = document.getElementById('rMatch');
   const rFile = document.getElementById('rFile'), rPrev = document.getElementById('rPrev');
   const reportMsg = document.getElementById('reportMsg'), reportSubmit = document.getElementById('reportSubmit');
+  // Etiquetas públicas "reportado": reportFlags/{matchId_teamId} (sin imagen ni resultado, solo avisa que hay un reporte)
+  let reportFlags = {};   // matchId -> { teamId: true }
+  function flagged(matchId, teamId) {
+    const f = reportFlags[matchId];
+    return !!(f && (teamId ? f[teamId] : Object.keys(f).length));
+  }
+  function watchFlags() {
+    db.collection('reportFlags').onSnapshot(snap => {
+      const o = {};
+      snap.docs.forEach(d => { const x = d.data(); if (x && x.matchId && x.teamId) (o[x.matchId] = o[x.matchId] || {})[x.teamId] = true; });
+      reportFlags = o; render();
+    }, () => {});
+  }
   let reportImage = '';
   let reportsData = [];
   let unsubReports = null;
@@ -1691,7 +1785,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
     list.forEach(m => {
       const rival = m.teamAId === tid ? m.teamBName : m.teamAName;
       const o = document.createElement('option'); o.value = m.id;
-      o.textContent = 'Ronda ' + m.round + ' · vs ' + rival; rMatch.appendChild(o);
+      o.textContent = 'Ronda ' + m.round + ' · vs ' + rival;
+      if (flagged(m.id, tid)) { o.disabled = true; o.textContent += ' — ya reportado, en revisión'; }
+      rMatch.appendChild(o);
     });
   }
   function resetReportForm() {
@@ -1699,8 +1795,11 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
     reportMsg.className = 'form-msg'; reportMsg.textContent = ''; reportSubmit.disabled = false;
     fillReportMatches();
   }
-  function openReport() {
-    resetReportForm(); fillReportTeams(); fillReportMatches();
+  function openReport(teamId, matchId) {
+    resetReportForm(); fillReportTeams();
+    if (teamId && [...rTeam.options].some(o => o.value === teamId)) rTeam.value = teamId;
+    fillReportMatches();
+    if (matchId && [...rMatch.options].some(o => o.value === matchId && !o.disabled)) rMatch.value = matchId;
     reportBackdrop.classList.add('open');
   }
   function closeReport() { reportBackdrop.classList.remove('open'); }
@@ -1732,7 +1831,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
     });
   }
 
-  document.getElementById('reportOpenBtn').addEventListener('click', openReport);
+  document.getElementById('reportOpenBtn').addEventListener('click', () => openReport(myTeamId));
   document.getElementById('reportCancel').addEventListener('click', closeReport);
   reportBackdrop.addEventListener('click', (e) => { if (e.target === reportBackdrop) closeReport(); });
   imgBackdrop.addEventListener('click', closeImg);
@@ -1762,6 +1861,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
     if (!t || !m || !nick || !result || !score) return fail('Completa todos los campos.');
     if (!reportImage) return fail('Sube la captura del resultado.');
     if (m.winner) return fail('Ese versus ya tiene resultado registrado.');
+    if (flagged(m.id, tid)) return fail('Tu equipo ya reportó este versus. La administración lo está revisando.');
     const mine = m.teamAId === tid ? 'A' : 'B';
     const claimed = result === 'won' ? mine : (mine === 'A' ? 'B' : 'A');
     const doc = {
@@ -1774,7 +1874,11 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
     };
     reportSubmit.disabled = true; reportMsg.className = 'form-msg'; reportMsg.textContent = 'Enviando…';
     try {
-      await db.collection('reports').doc(m.id + '_' + tid).set(doc);
+      const rid = m.id + '_' + tid;
+      const batch = db.batch();
+      batch.set(db.doc('reports/' + rid), doc);
+      batch.set(db.doc('reportFlags/' + rid), { matchId: m.id, teamId: tid, at: doc.at });
+      await batch.commit();
       reportMsg.className = 'form-msg ok';
       reportMsg.textContent = '¡Reporte enviado! La administración lo revisará.';
       setTimeout(() => { closeReport(); resetReportForm(); }, 1600);
@@ -1850,6 +1954,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
       const batch = db.batch();
       batch.update(db.doc('matches/' + r.matchId), { winner: r.claimedWinner, forfeit: FV().delete(), forfeitBy: FV().delete() });
       batch.update(db.doc('reports/' + r.id), { status: 'approved' });
+      batch.delete(db.doc('reportFlags/' + r.id));
       batch.set(db.collection('log').doc(), logEntry('result', 'Aprobó reporte de ' + r.reporter + ': ' + r.teamName + ' vs ' + r.rivalName + ' (ronda ' + r.round + ') — ganó ' + r.claimedWinnerName + ' (' + r.score + ')'));
       await batch.commit();
     } catch (err) { uiAlert('No se pudo aprobar: ' + (err && err.message ? err.message : err)); }
@@ -1860,6 +1965,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
     try {
       const batch = db.batch();
       batch.delete(db.doc('reports/' + r.id));
+      batch.delete(db.doc('reportFlags/' + r.id));
       batch.set(db.collection('log').doc(), logEntry('result', (reject ? 'Rechazó' : 'Eliminó') + ' reporte de ' + r.reporter + ': ' + r.teamName + ' vs ' + r.rivalName + ' (ronda ' + r.round + ')'));
       await batch.commit();
     } catch (err) { uiAlert('No se pudo completar: ' + (err && err.message ? err.message : err)); }
@@ -1873,6 +1979,98 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
     } else if (!isAdmin && unsubReports) {
       unsubReports(); unsubReports = null; reportsData = []; renderReports();
     }
+  }
+
+
+  // --- Mis versus: buscador por equipo o nick, con posición, pendientes y jugados ---
+  const MY_KEY = 'mk_myteam';
+  let myTeamId = '';
+  try { myTeamId = localStorage.getItem(MY_KEY) || ''; } catch (e) {}
+  const myIn = document.getElementById('myTeamIn'), myList = document.getElementById('myTeamList');
+  let myMap = {}, mySig = '';
+  function buildMyList() {
+    const sig = teams.map(t => t.id + '|' + t.name + '|' + (t.players || []).join(',')).join(';');
+    if (sig === mySig) return;
+    mySig = sig; myMap = {}; myList.innerHTML = '';
+    teams.slice().sort((a, b) => (a.name || '').localeCompare(b.name || '', 'es')).forEach(t => {
+      const add = (label) => {
+        const k = label.toLowerCase(); if (myMap[k]) return;
+        myMap[k] = t.id; const o = document.createElement('option'); o.value = label; myList.appendChild(o);
+      };
+      add(t.name || 'Equipo');
+      (t.players || []).forEach(pl => add(pl + ' · ' + (t.name || 'Equipo')));
+    });
+  }
+  function resolveMyTeam(v) {
+    const k = String(v || '').trim().toLowerCase();
+    if (!k) return '';
+    if (myMap[k]) return myMap[k];
+    const hits = new Set();
+    Object.keys(myMap).forEach(l => { if (l.indexOf(k) !== -1) hits.add(myMap[l]); });
+    return hits.size === 1 ? [...hits][0] : '';
+  }
+  function saveMyTeam() { try { if (myTeamId) localStorage.setItem(MY_KEY, myTeamId); else localStorage.removeItem(MY_KEY); } catch (e) {} }
+  myIn.addEventListener('input', () => {
+    const id = resolveMyTeam(myIn.value);
+    if (id !== myTeamId) { myTeamId = id; saveMyTeam(); renderMyVs(); }
+  });
+  function renderMyVs() {
+    const box = document.getElementById('myVs'), panel = document.getElementById('myVsPanel');
+    if (!box) return;
+    box.style.display = (meta.scheduleStart && teams.length) ? 'block' : 'none';
+    buildMyList();
+    panel.innerHTML = '';
+    const t = teams.find(x => x.id === myTeamId);
+    if (!t) return;
+    if (!myIn.value && document.activeElement !== myIn) myIn.value = t.name || '';
+    const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt !== undefined) e.textContent = txt; return e; };
+    const tn = teams.indexOf(t) < 16 ? 1 : 2;
+    const st = computeStandings(tn), pos = st.findIndex(x => x.id === t.id), row = pos >= 0 ? st[pos] : null;
+    const mine = matches.filter(m => !m.bye && (m.teamAId === t.id || m.teamBId === t.id)).sort((a, b) => (a.round || 0) - (b.round || 0));
+    const byes = matches.filter(m => m.bye && m.teamAId === t.id).sort((a, b) => (a.round || 0) - (b.round || 0));
+    const card = el('div', 'my-card');
+    const head = el('div', 'my-head');
+    head.append(el('h4', '', t.name || 'Equipo'), el('span', 'my-chip', 'Tabla ' + tn));
+    if (t.disqualified) head.appendChild(el('span', 'my-chip dq', 'Descalificado'));
+    card.appendChild(head);
+    const stats = el('div', 'my-stats');
+    const stat = (v, l) => { const d = el('div', 'my-stat'); d.append(el('b', '', v), el('span', '', l)); return d; };
+    stats.append(
+      stat(row ? ('#' + (pos + 1) + ' / ' + st.length) : '—', 'Posición'),
+      stat(row ? String(row.pts) : '0', 'Puntos'),
+      stat(row ? (row.wins + '-' + row.losses) : '0-0', 'Récord'),
+      stat(String(teamGoleo(t.id)), 'Goleo')
+    );
+    card.appendChild(stats);
+    const pend = mine.filter(m => !m.winner), done = mine.filter(m => m.winner);
+    const mkRow = (m) => {
+      const isA = m.teamAId === t.id, rival = isA ? m.teamBName : m.teamAName;
+      const won = m.winner && ((m.winner === 'A') === isA);
+      const r = el('div', 'my-row' + (m.winner ? (won ? ' win' : ' lose') : ''));
+      const main = el('div', 'mr-main', 'Ronda ' + m.round + ' · vs ' + rival);
+      if (m.forfeit) main.appendChild(el('small', '', 'Victoria administrativa'));
+      if (isAdmin && m.published !== true) main.appendChild(el('small', '', 'Aún sin publicar'));
+      r.appendChild(main);
+      if (m.winner) {
+        r.appendChild(el('span', 'my-tag ' + (won ? 'win' : 'lose'), won ? 'Ganaste' : 'Perdiste'));
+      } else if (flagged(m.id)) {
+        r.appendChild(el('span', 'my-tag review', 'Reportado · en revisión'));
+      } else {
+        const right = el('span', 'my-tag pend', 'Pendiente');
+        r.appendChild(right);
+        if (!isAdmin && !t.disqualified && m.published === true) {
+          const b = el('button', 'btn-mini', 'Reportar'); b.type = 'button';
+          b.onclick = () => openReport(t.id, m.id);
+          r.appendChild(b);
+        }
+      }
+      return r;
+    };
+    if (!mine.length && !byes.length) card.appendChild(el('p', 'empty-note', 'Aún no hay versus publicados para este equipo.'));
+    if (pend.length) { card.appendChild(el('div', 'my-sub', 'Pendientes (' + pend.length + ')')); pend.forEach(m => card.appendChild(mkRow(m))); }
+    if (done.length) { card.appendChild(el('div', 'my-sub', 'Jugados (' + done.length + ')')); done.forEach(m => card.appendChild(mkRow(m))); }
+    if (byes.length) { card.appendChild(el('div', 'my-sub', 'Descansos')); byes.forEach(m => card.appendChild(el('div', 'my-row', 'Descansa en la ronda ' + m.round))); }
+    panel.appendChild(card);
   }
 
   // --- MVP cada 3 fechas (se guarda en Firestore: meta/mvps) ---
@@ -2227,7 +2425,9 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
 
       const meta2 = document.createElement('div'); meta2.className = 'vs-meta';
       const st = document.createElement('span'); st.className = 'vs-status' + (m.winner ? ' done' : '');
-      st.textContent = m.winner ? (m.forfeit ? 'Victoria administrativa' : 'Definido') : 'Pendiente';
+      const inReview = !m.winner && flagged(m.id);
+      st.textContent = m.winner ? (m.forfeit ? 'Victoria administrativa' : 'Definido') : (inReview ? 'Resultado reportado · en revisión' : 'Pendiente');
+      if (inReview) st.classList.add('review');
       meta2.appendChild(st);
       if (isAdmin) {
         meta2.appendChild(pubTag());
@@ -2423,6 +2623,12 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
       emptyNote.style.display = 'none';
       list.innerHTML = '';
       if (window.__tcToolbar) window.__tcToolbar.classList.add('show');
+      if (photoIO) { photoIO.disconnect(); photoIO = null; }
+      if (!isAdmin && 'IntersectionObserver' in window) {
+        photoIO = new IntersectionObserver((es) => {
+          es.forEach(en => { if (en.isIntersecting) { if (photoIO) photoIO.unobserve(en.target); loadTeamPhotos(en.target.dataset.tid); } });
+        }, { rootMargin: '300px 0px' });
+      }
       teams.forEach((t, i) => {
         const players = t.players || [];
         const capIdx = Number.isInteger(t.captain) ? t.captain : -1;
@@ -2430,7 +2636,11 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
         li.className = 'team-card' + (t.disqualified ? ' dq' : '');
         const det = document.createElement('details'); det.className = 'tc-fold';
         det.open = !closedTeams.has(t.id);
-        det.addEventListener('toggle', () => { if (det.open) closedTeams.delete(t.id); else closedTeams.add(t.id); });
+        det.addEventListener('toggle', () => { if (det.open) { closedTeams.delete(t.id); if (t.hasPhotos) loadTeamPhotos(t.id); } else closedTeams.add(t.id); });
+        if (t.hasPhotos && !photoCache[t.id] && !closedTeams.has(t.id)) {
+          if (isAdmin || !photoIO) loadTeamPhotos(t.id);
+          else { li.dataset.tid = t.id; photoIO.observe(li); }
+        }
         const sum = document.createElement('summary'); sum.className = 'tc-head';
         const num = document.createElement('span'); num.className = 'tc-num'; num.textContent = String(i + 1).padStart(2, '0');
         const nm = document.createElement('span'); nm.className = 'tname';
@@ -2517,6 +2727,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
     renderResults();
     updateReportCta();
     renderReports();
+    renderMyVs();
   }
 
   async function finalizeSchedule() {
@@ -2721,6 +2932,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
   function init() {
     setupAdminToggle();
     watchMvps();
+    watchFlags();
 
     auth.onAuthStateChanged((user) => {
       isAdmin = !!user;
