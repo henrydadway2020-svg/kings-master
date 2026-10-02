@@ -19,7 +19,7 @@
 <link rel="preload" as="image" href="logo.webp" type="image/webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Barlow+Condensed:ital,wght@0,600;0,700;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -133,7 +133,6 @@ h2{font-size:clamp(2rem,4vw,3rem);font-weight:600;color:#fff9e9;line-height:1.08
 .empty-note{color:#8992a5;font-size:.9rem}.decision-panel{margin-top:22px;border:1px solid rgba(255,220,130,.34);background:rgba(255,210,75,.05);padding:20px;border-radius:13px}.decision-buttons{display:flex;gap:10px;flex-wrap:wrap}
 .btn-outline{background:transparent;border:1px solid rgba(255,220,130,.35);color:var(--gold2);padding:10px 18px;font-size:.88rem;border-radius:9px}.btn-outline:hover{background:rgba(255,210,75,.08)}
 .rounds-list{list-style:none;margin:0;padding:0}.rounds-list li{display:grid;grid-template-columns:120px 1fr;gap:16px;padding:14px 0;border-top:1px solid rgba(255,220,130,.09)}.rounds-list li:first-child{border-top:0}.rounds-list .rlabel{color:var(--gold2);font-family:"Fraunces",serif}.rounds-list .rdate{color:#e4e8f0}
-.standings{width:100%;border-collapse:collapse;font-size:.9rem;min-width:650px}.standings th,.standings td{padding:14px 12px;text-align:left;border-top:1px solid rgba(255,220,130,.08)}.standings th{color:#7f899d;font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;border-top:0}.standings td.num,.standings th.num{text-align:center}.standings tr.qualify td{color:#eee9db}.standings tr.qualify td:first-child{color:var(--gold2);font-weight:800}.standings tr.qualify{background:linear-gradient(90deg,rgba(255,211,92,.07),transparent)}
 .table-group{margin-bottom:28px}.table-group h3{font-size:1.1rem;color:var(--gold2);margin-bottom:12px}
 .results-toggle{margin-top:28px;border:1px solid rgba(255,220,130,.10);padding:16px 18px;border-radius:12px;background:rgba(255,255,255,.018)}.results-toggle summary{cursor:pointer;color:#aeb6c7;font-size:.9rem;list-style:none}.results-toggle summary::before{content:"＋ ";color:var(--gold2)}.results-toggle[open] summary::before{content:"－ "}
 .round-group{margin-top:20px}.round-group h4{font-family:"Fraunces",serif;font-weight:500;color:var(--gold2);font-size:1rem;margin-bottom:8px}.match-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid rgba(255,220,130,.08);flex-wrap:wrap}.match-teams{font-size:.92rem}.match-teams .winner{color:var(--gold2);font-weight:700}.match-buttons{display:flex;gap:6px}.btn-pick{background:transparent;border:1px solid rgba(255,220,130,.14);color:#8f98aa;padding:6px 10px;font-size:.78rem;border-radius:7px}.btn-pick.active{border-color:var(--gold);color:var(--gold2);background:rgba(201,162,75,.1)}
@@ -383,64 +382,100 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
 }
 </style>
 <style id="mk-premium-tables">
-/* ===== Tablas premium ===== */
-.table-group{margin-bottom:38px}
-.tg-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
-.tg-head h3{margin:0;font-size:1.25rem;color:var(--gold3);letter-spacing:.01em}
-.tg-head::after{content:"";flex:1;height:1px;order:1;background:linear-gradient(90deg,rgba(255,211,92,.35),transparent)}
-.tg-count{order:2;font-size:.74rem;color:var(--muted);border:1px solid rgba(255,220,130,.18);border-radius:999px;padding:3px 11px;background:rgba(255,255,255,.02);white-space:nowrap}
-.st-card{position:relative;border:1px solid rgba(255,220,130,.2);border-radius:18px;overflow:hidden;
- background:linear-gradient(160deg,rgba(24,28,39,.96),rgba(9,11,16,.96));
- box-shadow:0 24px 60px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,236,170,.08)}
-.st-card::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;z-index:2;background:linear-gradient(90deg,transparent,#e8bd45 30%,#fff0a7 50%,#e8bd45 70%,transparent)}
-.st-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(255,211,92,.3) transparent}
-.standings{width:100%;min-width:0;border-collapse:separate;border-spacing:0;font-size:.93rem;font-variant-numeric:tabular-nums}
-.standings thead th{padding:15px 12px;background:linear-gradient(180deg,rgba(255,211,92,.10),rgba(255,211,92,.02));color:#c9b57a;font-weight:700;font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;border-top:0;border-bottom:1px solid rgba(255,220,130,.25);white-space:nowrap}
-.standings tbody td{padding:13px 12px;border-top:0;border-bottom:1px solid rgba(255,220,130,.07);color:#cfd5e1;transition:background .18s}
-.standings tbody tr:last-child td{border-bottom:0}
-.standings tbody tr:nth-child(even) td{background:rgba(255,255,255,.014)}
-.standings tbody tr:hover td{background:rgba(255,211,92,.06)}
-.standings th.rk,.standings td.rk{width:58px;text-align:center;padding-left:14px;padding-right:6px}
-.standings td.tm{font-weight:700;color:#f5f0df;min-width:150px}
-.standings td.num{text-align:center}
-.standings td.pts{font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:1.12rem;color:var(--gold2)}
-.standings td.w{color:#86d9a6;font-weight:700}
-.standings td.l{color:#e8909c;font-weight:700}
-.standings td.gl{color:#9ca5b8}
-.rk-chip{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;font-weight:800;font-size:.82rem;color:#9aa3b6;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03)}
-.standings tr.qualify td.rk .rk-chip{color:#1b1405;border-color:rgba(255,229,160,.7);background:linear-gradient(145deg,#fff0b0,#d9a928 60%,#9d6d0d);box-shadow:0 4px 12px rgba(217,169,40,.28),inset 0 1px 0 rgba(255,255,255,.55)}
-.standings tr.qualify.r2 td.rk .rk-chip{background:linear-gradient(145deg,#f4f6fa,#b5bdcb 60%,#7b8496);border-color:rgba(255,255,255,.55);box-shadow:0 4px 12px rgba(180,190,205,.2),inset 0 1px 0 rgba(255,255,255,.6)}
-.standings tr.qualify.r3 td.rk .rk-chip{background:linear-gradient(145deg,#f1c79d,#c4813f 60%,#7d4a1d);border-color:rgba(240,190,140,.6);box-shadow:0 4px 12px rgba(196,129,63,.22),inset 0 1px 0 rgba(255,255,255,.4)}
-.standings tr.qualify.r4 td.rk .rk-chip{background:rgba(255,211,92,.1);color:var(--gold2);border-color:rgba(255,220,130,.45);box-shadow:none}
-.standings tr.qualify td{background:linear-gradient(90deg,rgba(255,211,92,.075),rgba(255,211,92,.012) 70%)}
-.standings tr.qualify td:first-child{box-shadow:inset 3px 0 0 var(--gold);color:inherit;font-weight:inherit}
-.standings tr.qualify:hover td{background:linear-gradient(90deg,rgba(255,211,92,.13),rgba(255,211,92,.03) 70%)}
-.standings tr.qualify td.tm{color:#fff6dc}
-.standings tr.cut td{border-bottom:1px dashed rgba(255,211,92,.45)}
-.standings tr.dq td{opacity:.5}
-.standings tr.dq td.tm{text-decoration:line-through;text-decoration-color:rgba(214,76,94,.7)}
-.zone-legend{display:flex;align-items:center;gap:8px;margin:14px 4px 0;font-size:.82rem;color:#8992a5}
-.zone-legend .up{display:inline-block;width:16px;height:0;border-top:2px dashed rgba(255,211,92,.7);font-size:0;overflow:hidden}
-/* ===== Goleo ===== */
-#goleoList{margin-top:16px;padding:0;border:1px solid rgba(255,220,130,.2);border-radius:18px;overflow:hidden;position:relative;
- background:linear-gradient(160deg,rgba(24,28,39,.96),rgba(9,11,16,.96));box-shadow:0 24px 60px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,236,170,.08)}
-#goleoList::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,#e8bd45 30%,#fff0a7 50%,#e8bd45 70%,transparent)}
-.goleo-row{grid-template-columns:44px 1fr auto;gap:12px;padding:13px 18px;border-top:0;border-bottom:1px solid rgba(255,220,130,.07);transition:background .18s}
-.goleo-row:last-child{border-bottom:0}
-.goleo-row:nth-child(even){background:rgba(255,255,255,.014)}
-.goleo-row:hover{background:rgba(255,211,92,.06)}
-.goleo-rank{display:grid;place-items:center;width:30px;height:30px;margin:0 auto;border-radius:50%;font-weight:800;font-size:.8rem;color:#9aa3b6;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);font-variant-numeric:tabular-nums}
-.goleo-row.top .goleo-rank{color:var(--gold2);border-color:rgba(255,220,130,.45);background:rgba(255,211,92,.1)}
-.goleo-row>.goleo-score{min-width:44px;padding:3px 12px;border-radius:999px;background:rgba(255,211,92,.08);border:1px solid rgba(255,220,130,.22);font-size:1.15rem;line-height:1.35;font-variant-numeric:tabular-nums}
+/* ===== Tablas estilo e-sports =====
+   Para cambiar el color de todo: edita estas 3 variables */
+:root{--tb-a:#e10613;--tb-a2:#ff3030;--tb-a3:#5e060e}
+.table-group{margin-bottom:46px}
+.sb-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px;align-items:start}
+.sb-board{position:relative;padding:22px 22px 18px;border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,.07);
+ background:radial-gradient(ellipse at 50% -25%,rgba(225,6,19,.6),transparent 62%),linear-gradient(180deg,#150306 0,#080809 42%,#050506 100%);
+ box-shadow:0 26px 70px rgba(0,0,0,.55)}
+.sb-board::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(115deg,transparent 0 22px,rgba(255,255,255,.014) 22px 23px)}
+.sb-board>*{position:relative;z-index:1}
+.sb-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px}
+.table-group h3.sb-title{margin:0 0 0 -4px;padding:7px 44px 7px 24px;transform:skewX(-18deg);border:1px solid rgba(255,255,255,.9);
+ background:linear-gradient(90deg,rgba(0,0,0,.65),rgba(0,0,0,.1));color:#fff;font:italic 900 1.9rem/1 "Barlow Condensed","Arial Narrow",sans-serif;text-transform:uppercase;letter-spacing:.02em}
+.tg-count{font:600 .72rem "Barlow Condensed",sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#cdd1db;white-space:nowrap}
+.st-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:0 8px;scrollbar-width:thin;scrollbar-color:rgba(225,6,19,.5) transparent}
+.standings{width:100%;min-width:0;table-layout:fixed;border-collapse:separate;border-spacing:0 6px;font-variant-numeric:tabular-nums;font-size:1rem}
+.standings th{padding:0 3px 4px;border:0;background:none;color:#fff;font:600 .68rem/1 "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:.3em;text-transform:uppercase;text-align:center;white-space:nowrap}
+.standings th.tm{text-align:left;padding-left:20px}
+.standings th.rk,.standings td.rk{width:60px}
+.standings th.num,.standings td.num{width:68px}
+.standings td{padding:0 3px;border:0;background:none;position:relative}
+.standings td>.c{display:block;height:34px;transform:skewX(-18deg);border:1px solid rgba(255,255,255,.88);background:rgba(0,0,0,.58);color:#fff;text-align:center;
+ font:italic 700 1.12rem/32px "Barlow Condensed","Arial Narrow",sans-serif;transition:filter .15s,background .15s}
+.standings td.rk>.c{border-color:transparent;background:linear-gradient(90deg,var(--tb-a),var(--tb-a3));font-weight:800}
+.standings td.tm>.c{border-color:transparent;text-align:left;padding:0 16px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+ background:linear-gradient(90deg,var(--tb-a) 0%,var(--tb-a3) 100%)}
+.standings td.pts>.c{font-weight:900;font-size:1.25rem}
+.standings tbody tr:hover td>.c{filter:brightness(1.25)}
+.standings tbody tr:not(.qualify) td.rk>.c{background:linear-gradient(90deg,#4a0a10,#1d0507);color:#e5c5c8}
+.standings tbody tr:not(.qualify) td.tm>.c{background:linear-gradient(90deg,#5a0a12,#1a0406);color:#ecd3d5}
+.standings tr.r1 td.tm>.c{box-shadow:0 0 24px rgba(255,48,48,.5)}
+.standings tr.cut td::after{content:"";position:absolute;left:0;right:0;bottom:-4px;border-bottom:1px dashed rgba(255,255,255,.32)}
+.standings tr.dq td>.c{opacity:.45}
+.standings tr.dq td.tm>.c{text-decoration:line-through}
+.zone-legend{display:flex;align-items:center;gap:10px;margin:12px 4px 0;font:600 .76rem "Manrope",sans-serif;color:#aab0bd}
+.zone-legend .up{display:inline-block;width:18px;height:9px;transform:skewX(-18deg);background:linear-gradient(90deg,var(--tb-a),var(--tb-a3));font-size:0;overflow:hidden}
+/* ===== Panel MVP ===== */
+.mvp-panel{display:flex;flex-direction:column;gap:14px}
+.mvp-title{display:flex;align-items:baseline;gap:12px;margin:0;font:italic 900 4rem/.9 "Barlow Condensed","Arial Narrow",sans-serif;color:var(--tb-a2);text-transform:uppercase;text-shadow:0 0 34px rgba(225,6,19,.55)}
+.mvp-range{font:700 .74rem "Barlow Condensed",sans-serif;font-style:normal;letter-spacing:.22em;color:#cdd1db;text-shadow:none}
+.mvp-tabs{display:flex;gap:6px;flex-wrap:wrap;padding-left:6px}
+.mvp-tab{transform:skewX(-18deg);border:1px solid rgba(255,255,255,.4);background:rgba(0,0,0,.5);color:#cfd3dc;padding:5px 12px;font:italic 700 .88rem "Barlow Condensed",sans-serif;letter-spacing:.06em;border-radius:0}
+.mvp-tab:hover{border-color:#fff;color:#fff}
+.mvp-tab.on{background:linear-gradient(90deg,var(--tb-a),var(--tb-a3));border-color:transparent;color:#fff}
+.mvp-tab.empty{opacity:.5}
+.mvp-frame{position:relative;width:100%;aspect-ratio:1;padding:12px;background:#000;border:1px solid rgba(225,6,19,.3);box-shadow:0 0 40px rgba(225,6,19,.18)}
+.mvp-frame::before{content:"";position:absolute;inset:-1px;pointer-events:none;z-index:2;filter:drop-shadow(0 0 6px rgba(225,6,19,.85));
+ background:
+ linear-gradient(var(--tb-a2),var(--tb-a2)) top left/38px 4px,linear-gradient(var(--tb-a2),var(--tb-a2)) top left/4px 38px,
+ linear-gradient(var(--tb-a2),var(--tb-a2)) top right/38px 4px,linear-gradient(var(--tb-a2),var(--tb-a2)) top right/4px 38px,
+ linear-gradient(var(--tb-a2),var(--tb-a2)) bottom left/38px 4px,linear-gradient(var(--tb-a2),var(--tb-a2)) bottom left/4px 38px,
+ linear-gradient(var(--tb-a2),var(--tb-a2)) bottom right/38px 4px,linear-gradient(var(--tb-a2),var(--tb-a2)) bottom right/4px 38px;
+ background-repeat:no-repeat}
+.mvp-photo{display:block;width:100%;height:100%;object-fit:cover;background:#0b0b0d}
+.mvp-empty{display:grid;place-items:center;width:100%;height:100%;background:linear-gradient(160deg,#16070a,#050506);color:rgba(255,255,255,.16);font:italic 900 6rem "Barlow Condensed",sans-serif}
+.mvp-row{display:flex;align-items:baseline;gap:10px;padding:9px 22px 9px 16px;border-left:4px solid var(--tb-a);background:linear-gradient(90deg,rgba(255,255,255,.11),rgba(255,255,255,0) 92%);clip-path:polygon(0 0,100% 0,calc(100% - 14px) 100%,0 100%)}
+.mvp-row b{flex:none;font:italic 900 1.5rem/1 "Barlow Condensed","Arial Narrow",sans-serif;color:var(--tb-a2);text-transform:uppercase}
+.mvp-row span{min-width:0;font:italic 700 1.35rem/1.1 "Barlow Condensed","Arial Narrow",sans-serif;color:#fff;overflow-wrap:anywhere;text-transform:uppercase}
+.mvp-edit{align-self:flex-start;margin-left:6px}
+.mvp-pending{margin:0 0 0 6px;font-size:.82rem;color:#8d95a6}
+.field select,.field input[type=number]{width:100%;background:#07090d;border:1px solid rgba(255,220,130,.13);color:#f2eee3;padding:12px 13px;font-size:.95rem;border-radius:9px;font-family:inherit}
+.field input[type=file]{padding:9px;font-size:.85rem}
+.mvp-prev{display:flex;align-items:flex-end;gap:10px;margin-top:8px}
+.mvp-prev img{width:96px;height:96px;object-fit:cover;border:1px solid rgba(255,220,130,.25)}
+/* ===== Tabla de goleo ===== */
+#goleoList{margin-top:16px;padding:16px 20px 12px;border:1px solid rgba(255,255,255,.07);border-radius:6px;overflow:hidden;position:relative;
+ background:radial-gradient(ellipse at 50% -30%,rgba(225,6,19,.5),transparent 62%),linear-gradient(180deg,#150306 0,#080809 45%,#050506 100%);box-shadow:0 26px 70px rgba(0,0,0,.5)}
+.goleo-row{position:relative;grid-template-columns:54px 1fr auto;gap:8px;align-items:center;min-height:46px;padding:4px 10px 4px 4px;border:0;background:none}
+.goleo-row:nth-child(even),.goleo-row:hover{background:none}
+.goleo-rank{display:grid;place-items:center;width:46px;height:34px;margin:0;transform:skewX(-18deg);border:0;border-radius:0;background:linear-gradient(90deg,var(--tb-a),var(--tb-a3));color:#fff;font:italic 800 1.05rem "Barlow Condensed",sans-serif;font-variant-numeric:tabular-nums}
+.goleo-name{position:relative;z-index:0;padding:3px 18px;color:#fff;font:italic 700 1.12rem/1.15 "Barlow Condensed","Arial Narrow",sans-serif;text-transform:uppercase;letter-spacing:.03em}
+.goleo-name::before{content:"";position:absolute;inset:0;z-index:-1;transform:skewX(-18deg);background:linear-gradient(90deg,#8f0a15,#3a070c 85%)}
+.goleo-team{font:600 .7rem "Manrope",sans-serif;text-transform:none;letter-spacing:0;color:rgba(255,255,255,.62)}
+.goleo-row:hover .goleo-name::before{filter:brightness(1.25)}
+.goleo-row>.goleo-score{display:grid;place-items:center;min-width:68px;height:34px;padding:0 10px;transform:skewX(-18deg);border:1px solid rgba(255,255,255,.88);border-radius:0;background:rgba(0,0,0,.58);color:#fff;font:italic 800 1.2rem "Barlow Condensed",sans-serif;font-variant-numeric:tabular-nums}
+@media(max-width:980px){
+ .sb-layout{grid-template-columns:1fr}
+ .mvp-panel{width:100%;max-width:340px;margin:0 auto}
+}
 @media(max-width:560px){
- .standings{font-size:.86rem}
- .standings thead th{padding:12px 6px;letter-spacing:.08em;font-size:.64rem}
- .standings tbody td{padding:11px 6px}
- .standings th.rk,.standings td.rk{width:44px;padding-left:8px;padding-right:2px}
- .standings td.tm{min-width:0}
- .rk-chip,.goleo-rank{width:26px;height:26px;font-size:.74rem}
- .goleo-row{grid-template-columns:34px 1fr auto;padding:12px 12px}
- .tg-head h3{font-size:1.1rem}
+ .sb-board{padding:16px 10px 14px}
+ .table-group h3.sb-title{font-size:1.45rem;padding:6px 30px 6px 18px}
+ .st-scroll{padding:0 6px}
+ .standings th{letter-spacing:.12em;font-size:.6rem}
+ .standings th.rk,.standings td.rk{width:42px}
+ .standings th.num,.standings td.num{width:44px}
+ .standings td{padding:0 2px}
+ .standings td>.c{height:30px;font-size:.95rem;line-height:28px}
+ .standings td.tm>.c{padding:0 9px}
+ .standings td.pts>.c{font-size:1.05rem}
+ .goleo-row{grid-template-columns:44px 1fr auto}
+ .goleo-rank{width:38px}
+ .goleo-row>.goleo-score{min-width:52px}
+ .mvp-title{font-size:3.4rem}
 }
 </style>
 </head>
@@ -682,6 +717,23 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
         <div class="field"><label for="e4">Jugador 4</label><input type="text" id="e4" required maxlength="30"></div>
         <div class="modal-actions"><button type="button" class="cancel" id="editCancelBtn">Cancelar</button><button type="submit">Guardar cambios</button></div>
         <div class="form-msg" id="editMsg"></div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="mvpBackdrop">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mvpModalTitle">
+      <h3 id="mvpModalTitle">MVP</h3>
+      <p class="sub" id="mvpModalSub">Solo organizadores.</p>
+      <form id="mvpForm">
+        <div class="field"><label for="mvpPick">Elegir jugador (opcional)</label><select id="mvpPick"><option value="">— Escribir a mano —</option></select></div>
+        <div class="field"><label for="mvpNick">Nick</label><input type="text" id="mvpNick" maxlength="30"></div>
+        <div class="field"><label for="mvpGoleo">Goleo</label><input type="number" id="mvpGoleo" min="0" max="999" inputmode="numeric"></div>
+        <div class="field"><label for="mvpTeam">Equipo</label><input type="text" id="mvpTeam" maxlength="40"></div>
+        <div class="field"><label for="mvpPhoto">Foto</label><input type="file" id="mvpPhoto" accept="image/*"><div class="mvp-prev" id="mvpPrev"></div></div>
+        <div class="modal-actions"><button type="button" class="cancel" id="mvpCancel">Cancelar</button><button type="submit">Guardar MVP</button></div>
+        <button type="button" class="btn-mini danger" id="mvpRemove" style="margin-top:14px">Quitar este MVP</button>
+        <div class="form-msg" id="mvpMsg"></div>
       </form>
     </div>
   </div>
@@ -1405,6 +1457,172 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
     return out;
   }
 
+  // --- MVP cada 3 fechas (se guarda en Firestore: meta/mvps) ---
+  const MVP_PER = 3;
+  let mvps = {};
+  const mvpSel = {};
+  function mvpKey(tn, b) { return 't' + tn + 'b' + b; }
+  function mvpBlocks() {
+    const maxR = matches.reduce((a, m) => Math.max(a, Number(m.round) || 0), 0) || 15;
+    return Math.max(1, Math.ceil(maxR / MVP_PER));
+  }
+  function mvpRange(b) { const a = (b - 1) * MVP_PER + 1; return 'Fechas ' + a + '–' + (a + MVP_PER - 1); }
+  function watchMvps() {
+    db.doc('meta/mvps').onSnapshot((snap) => { mvps = snap.exists ? (snap.data() || {}) : {}; render(); }, () => { /* sin permiso o sin conexión: se muestran los MVP vacíos */ });
+  }
+  function buildMvpPanel(tn) {
+    const nB = mvpBlocks();
+    let b = mvpSel[tn];
+    if (!b || b > nB) { b = 1; for (let i = nB; i >= 1; i--) { if (mvps[mvpKey(tn, i)]) { b = i; break; } } }
+    const d = mvps[mvpKey(tn, b)] || null;
+    const panel = document.createElement('div'); panel.className = 'mvp-panel';
+    const title = document.createElement('h4'); title.className = 'mvp-title';
+    title.appendChild(document.createTextNode('MVP'));
+    const rng = document.createElement('span'); rng.className = 'mvp-range'; rng.textContent = mvpRange(b);
+    title.appendChild(rng);
+    panel.appendChild(title);
+
+    const visible = [];
+    for (let i = 1; i <= nB; i++) if (isAdmin || mvps[mvpKey(tn, i)]) visible.push(i);
+    if (visible.length > 1 || (visible.length === 1 && isAdmin)) {
+      const tabs = document.createElement('div'); tabs.className = 'mvp-tabs'; tabs.setAttribute('role', 'tablist');
+      visible.forEach(i => {
+        const t = document.createElement('button'); t.type = 'button'; t.className = 'mvp-tab' + (i === b ? ' on' : '') + (mvps[mvpKey(tn, i)] ? '' : ' empty');
+        t.textContent = mvpRange(i).replace('Fechas ', ''); t.title = mvpRange(i);
+        t.setAttribute('role', 'tab'); t.setAttribute('aria-selected', String(i === b));
+        t.onclick = () => { mvpSel[tn] = i; render(); };
+        tabs.appendChild(t);
+      });
+      panel.appendChild(tabs);
+    }
+
+    const frame = document.createElement('div'); frame.className = 'mvp-frame';
+    if (d && typeof d.photo === 'string' && d.photo.indexOf('data:image/') === 0) {
+      const img = document.createElement('img'); img.className = 'mvp-photo'; img.alt = 'MVP ' + (d.nick || ''); img.src = d.photo; frame.appendChild(img);
+    } else {
+      const em = document.createElement('div'); em.className = 'mvp-empty'; em.setAttribute('aria-hidden', 'true'); em.textContent = d ? (String(d.nick || '?').charAt(0).toUpperCase()) : '?'; frame.appendChild(em);
+    }
+    panel.appendChild(frame);
+
+    const rows = [['Nick:', d ? d.nick : '—'], ['Goleo:', d ? String(d.goleo != null ? d.goleo : '—') : '—'], ['Equipo:', d ? (d.team || '—') : '—']];
+    rows.forEach(r => {
+      const row = document.createElement('div'); row.className = 'mvp-row';
+      const l = document.createElement('b'); l.textContent = r[0];
+      const v = document.createElement('span'); v.textContent = r[1];
+      row.append(l, v); panel.appendChild(row);
+    });
+    if (!d && !isAdmin) {
+      const p = document.createElement('p'); p.className = 'mvp-pending'; p.textContent = 'Se anuncia al cerrar las ' + mvpRange(b).toLowerCase() + '.'; panel.appendChild(p);
+    }
+    if (isAdmin) {
+      const e = document.createElement('button'); e.type = 'button'; e.className = 'btn-mini mvp-edit'; e.textContent = d ? 'Editar MVP' : 'Poner MVP';
+      e.onclick = () => openMvp(tn, b);
+      panel.appendChild(e);
+    }
+    return panel;
+  }
+
+  const mvpBackdrop = document.getElementById('mvpBackdrop');
+  const mvpForm = document.getElementById('mvpForm');
+  const mvpMsg = document.getElementById('mvpMsg');
+  let mvpEditing = null;
+  let mvpPhotoData = '';
+  function mvpPlayersOf(tn) { return tn === 2 ? teams.slice(16, 32) : teams.slice(0, 16); }
+  function renderMvpPrev() {
+    const prev = document.getElementById('mvpPrev'); prev.innerHTML = '';
+    if (!mvpPhotoData) return;
+    const img = document.createElement('img'); img.alt = 'Vista previa'; img.src = mvpPhotoData; prev.appendChild(img);
+    const rm = document.createElement('button'); rm.type = 'button'; rm.className = 'btn-mini danger'; rm.textContent = 'Quitar foto';
+    rm.onclick = () => { mvpPhotoData = ''; document.getElementById('mvpPhoto').value = ''; renderMvpPrev(); };
+    prev.appendChild(rm);
+  }
+  function openMvp(tn, b) {
+    if (!isAdmin) return;
+    mvpEditing = { tn, b };
+    const d = mvps[mvpKey(tn, b)] || null;
+    document.getElementById('mvpModalTitle').textContent = 'MVP · ' + (tn ? 'Tabla ' + tn + ' · ' : '') + mvpRange(b);
+    document.getElementById('mvpModalSub').textContent = 'Solo organizadores. Se publica al guardar.';
+    const pick = document.getElementById('mvpPick');
+    pick.innerHTML = '<option value="">— Escribir a mano —</option>';
+    mvpPlayersOf(tn).forEach((t, ti) => (t.players || []).forEach((p, pi) => {
+      const o = document.createElement('option'); o.value = ti + ':' + pi; o.textContent = p + ' — ' + (t.name || 'Equipo'); pick.appendChild(o);
+    }));
+    document.getElementById('mvpNick').value = d ? (d.nick || '') : '';
+    document.getElementById('mvpGoleo').value = d && d.goleo != null ? d.goleo : '';
+    document.getElementById('mvpTeam').value = d ? (d.team || '') : '';
+    document.getElementById('mvpPhoto').value = '';
+    mvpPhotoData = d && d.photo ? d.photo : '';
+    renderMvpPrev();
+    document.getElementById('mvpRemove').style.display = d ? '' : 'none';
+    mvpMsg.className = 'form-msg'; mvpMsg.textContent = '';
+    mvpBackdrop.classList.add('open');
+  }
+  function closeMvp() { mvpBackdrop.classList.remove('open'); mvpEditing = null; }
+  document.getElementById('mvpCancel').addEventListener('click', closeMvp);
+  mvpBackdrop.addEventListener('click', (e) => { if (e.target === mvpBackdrop) closeMvp(); });
+  document.getElementById('mvpPick').addEventListener('change', (e) => {
+    if (!mvpEditing || !e.target.value) return;
+    const [ti, pi] = e.target.value.split(':').map(Number);
+    const t = mvpPlayersOf(mvpEditing.tn)[ti]; if (!t) return;
+    document.getElementById('mvpNick').value = (t.players || [])[pi] || '';
+    document.getElementById('mvpTeam').value = t.name || '';
+    document.getElementById('mvpGoleo').value = getScores(t)[pi] || 0;
+  });
+  function readMvpPhoto(file) {
+    return new Promise((resolve, reject) => {
+      const fr = new FileReader();
+      fr.onerror = () => reject(new Error('No se pudo leer la imagen.'));
+      fr.onload = () => {
+        const img = new Image();
+        img.onerror = () => reject(new Error('Ese archivo no es una imagen válida.'));
+        img.onload = () => {
+          const S = 360, c = document.createElement('canvas'); c.width = c.height = S;
+          const side = Math.min(img.width, img.height);
+          c.getContext('2d').drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, S, S);
+          resolve(c.toDataURL('image/jpeg', 0.82));
+        };
+        img.src = fr.result;
+      };
+      fr.readAsDataURL(file);
+    });
+  }
+  document.getElementById('mvpPhoto').addEventListener('change', async (e) => {
+    const f = e.target.files && e.target.files[0]; if (!f) return;
+    try { mvpPhotoData = await readMvpPhoto(f); renderMvpPrev(); mvpMsg.textContent = ''; }
+    catch (err) { mvpMsg.className = 'form-msg error'; mvpMsg.textContent = err.message; }
+  });
+  async function saveMvp(remove) {
+    if (!isAdmin || !mvpEditing) return;
+    const { tn, b } = mvpEditing, key = mvpKey(tn, b);
+    const nick = document.getElementById('mvpNick').value.trim();
+    if (!remove && !nick) { mvpMsg.className = 'form-msg error'; mvpMsg.textContent = 'Escribe el nick del MVP.'; return; }
+    mvpMsg.className = 'form-msg'; mvpMsg.textContent = 'Guardando…';
+    try {
+      const batch = db.batch();
+      let text;
+      if (remove) {
+        batch.set(db.doc('meta/mvps'), { [key]: FV().delete() }, { merge: true });
+        text = 'Quitó el MVP de la Tabla ' + tn + ' (' + mvpRange(b) + ')';
+      } else {
+        const team = document.getElementById('mvpTeam').value.trim();
+        const g = document.getElementById('mvpGoleo').value;
+        const data = { nick, goleo: g === '' ? null : Math.max(0, Math.min(999, Math.round(Number(g)) || 0)), team, photo: mvpPhotoData || '', at: Date.now() };
+        batch.set(db.doc('meta/mvps'), { [key]: data }, { merge: true });
+        text = 'MVP de la Tabla ' + tn + ' (' + mvpRange(b) + '): ' + nick + (team ? ' — ' + team : '');
+      }
+      batch.set(db.collection('log').doc(), logEntry('mvp', text));
+      await batch.commit();
+      closeMvp();
+    } catch (err) {
+      mvpMsg.className = 'form-msg error';
+      mvpMsg.textContent = err && err.code === 'permission-denied'
+        ? 'Firestore no permite guardar en meta/mvps. Hay que agregar esa regla (ver instrucciones).'
+        : 'No se pudo guardar: ' + (err && err.message ? err.message : err);
+    }
+  }
+  mvpForm.addEventListener('submit', (e) => { e.preventDefault(); saveMvp(false); });
+  document.getElementById('mvpRemove').addEventListener('click', async () => { if (await uiConfirm('¿Quitar este MVP?')) saveMvp(true); });
+
   function renderStandings() {
     const el = document.getElementById('standingsContent');
     const resultsDetails = document.getElementById('resultsDetails');
@@ -1419,16 +1637,18 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
     tableNums.forEach(tn => {
       const group = document.createElement('div'); group.className = 'table-group';
       const rowsS = computeStandings(tn);
-      const head = document.createElement('div'); head.className = 'tg-head';
-      const h3 = document.createElement('h3'); h3.textContent = tableNums.length > 1 ? 'Tabla ' + tn : 'Tabla general'; head.appendChild(h3);
-      const cnt = document.createElement('span'); cnt.className = 'tg-count'; cnt.textContent = rowsS.length + ' equipos'; head.appendChild(cnt);
-      group.appendChild(head);
-      const card = document.createElement('div'); card.className = 'st-card';
+      const layout = document.createElement('div'); layout.className = 'sb-layout';
+      const board = document.createElement('div'); board.className = 'sb-board';
+      const head = document.createElement('div'); head.className = 'sb-head';
+      const ttl = document.createElement('h3'); ttl.className = 'sb-title'; ttl.textContent = tableNums.length > 1 ? 'Tabla ' + tn : 'Tabla general';
+      const cnt = document.createElement('span'); cnt.className = 'tg-count'; cnt.textContent = rowsS.length + ' equipos';
+      head.append(ttl, cnt);
+      board.appendChild(head);
       const scroll = document.createElement('div'); scroll.className = 'st-scroll';
       const table = document.createElement('table'); table.className = 'standings';
-      table.innerHTML = '<thead><tr><th class="rk">#</th><th>Equipo</th><th class="num">Pts</th><th class="num">G</th><th class="num">P</th><th class="num">Goleo</th></tr></thead>';
+      table.innerHTML = '<thead><tr><th class="rk">Pos.</th><th class="tm">Equipo</th><th class="num">Pts</th><th class="num">G</th><th class="num">P</th><th class="num">Goleo</th></tr></thead>';
       const tbody = document.createElement('tbody');
-      const clsByCol = ['rk', 'tm', 'num pts', 'num w', 'num l', 'num gl'];
+      const clsByCol = ['rk', 'tm', 'num pts', 'num', 'num', 'num'];
       rowsS.forEach((s, i) => {
         const tr = document.createElement('tr');
         const cls = [];
@@ -1436,24 +1656,26 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
         if (i === 3) cls.push('cut');
         if (s.dq) cls.push('dq');
         tr.className = cls.join(' ');
-        [String(i + 1), s.name + (s.dq ? ' (DESCALIFICADO)' : ''), String(s.pts), String(s.wins), String(s.losses), String(s.goleo)].forEach((val, ci) => {
+        [String(i + 1).padStart(2, '0'), s.name + (s.dq ? ' (DESCALIFICADO)' : ''), String(s.pts), String(s.wins), String(s.losses), String(s.goleo)].forEach((val, ci) => {
           const td = document.createElement('td');
           td.className = clsByCol[ci];
-          if (ci === 0) { const chip = document.createElement('span'); chip.className = 'rk-chip'; chip.textContent = val; td.appendChild(chip); }
-          else td.textContent = val;
+          const c = document.createElement('span'); c.className = 'c'; c.textContent = val;
+          if (ci === 1) c.title = val;
+          td.appendChild(c);
           tr.appendChild(td);
         });
         tbody.appendChild(tr);
       });
       table.appendChild(tbody);
       scroll.appendChild(table);
-      card.appendChild(scroll);
-      group.appendChild(card);
+      board.appendChild(scroll);
       {
         const lg = document.createElement('p'); lg.className = 'zone-legend';
         lg.innerHTML = '<span class="zl up">■</span> Clasifican a las rondas finales (4 primeros)';
-        group.appendChild(lg);
+        board.appendChild(lg);
       }
+      layout.append(board, buildMvpPanel(tn));
+      group.appendChild(layout);
       el.appendChild(group);
     });
   }
@@ -1971,7 +2193,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
   (function watchModals() {
     const focusBefore = new WeakMap();
     const wasOpen = new WeakMap();
-    const backs = [editBackdrop, loginBackdrop];
+    const backs = [editBackdrop, loginBackdrop, mvpBackdrop];
     function sync(b) {
       const open = b.classList.contains('open');
       if (open === !!wasOpen.get(b)) return;
@@ -1994,6 +2216,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
     if (e.key !== 'Escape') return;
     closeEdit();
     closeLogin();
+    closeMvp();
   });
 
   // Menú móvil
@@ -2049,6 +2272,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
 
   function init() {
     setupAdminToggle();
+    watchMvps();
 
     auth.onAuthStateChanged((user) => {
       isAdmin = !!user;
