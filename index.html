@@ -909,6 +909,61 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
 .bottomnav a.on::before{background:linear-gradient(90deg,transparent,#fff,transparent);box-shadow:0 0 12px rgba(255,255,255,.5)}
 .bottomnav a.on[data-t="tabla"]::before,.bottomnav a.on[data-t="goleo"]::before{background:linear-gradient(90deg,transparent,#ffd35c,transparent);box-shadow:0 0 12px rgba(255,211,92,.8)}
 </style>
+<style id="mk-table-hero">
+/* ===== TABLA PROTAGONISTA: misma lógica, otra percepción =====
+   Todas las filas iguales y neutras. Dorado = solo una señal pequeña
+   (barra + número) en los 4 que clasifican, y la corona del líder.   */
+#tabla h2{font-size:clamp(2.4rem,5.4vw,4rem);margin-bottom:26px}
+.table-group{margin-bottom:56px}
+.sb-board{padding:30px 30px 26px;border-radius:10px;border:1px solid rgba(255,255,255,.14);
+  background:radial-gradient(ellipse at 50% -20%,rgba(255,255,255,.08),transparent 60%),linear-gradient(180deg,#0e1015 0,#07080b 55%,#050506 100%);
+  box-shadow:0 34px 90px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.06)}
+.sb-head{margin-bottom:24px}
+.table-group h3.sb-title{font-size:2.7rem;padding:9px 58px 9px 28px}
+.tg-count{font-size:.86rem;letter-spacing:.24em;color:var(--c-white2)}
+.standings{border-spacing:0 8px;font-size:1.1rem}
+.standings th{color:#8f98aa;font-size:.74rem;letter-spacing:.26em;padding:0 3px 12px}
+.standings th.num:nth-child(4){color:#fff}
+.standings th.rk,.standings td.rk{width:78px}
+.standings th.num,.standings td.num{width:78px}
+.standings th.num:nth-child(4),.standings td.num.pts{width:100px}
+.standings td>.c{height:46px;line-height:44px;font-size:1.35rem;border-color:rgba(255,255,255,.14);background:rgba(255,255,255,.035);color:#fff}
+.standings td.rk>.c{border-color:transparent;background:rgba(255,255,255,.05);color:#8f98aa;font-size:1.3rem}
+.standings td.tm>.c{border-color:transparent;background:linear-gradient(90deg,rgba(255,255,255,.1),rgba(255,255,255,.03));color:#fff;font-size:1.45rem;box-shadow:none}
+.standings td.pts>.c{color:#fff;font-size:1.85rem;font-weight:900;background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.3)}
+/* Los 4 que clasifican: señal dorada pequeña */
+.standings tr.qualify td.rk>.c{color:var(--c-gold);background:linear-gradient(90deg,rgba(255,211,92,.18),rgba(255,255,255,.04));box-shadow:inset 4px 0 0 var(--c-gold)}
+.standings tr.qualify td.tm>.c,.standings tr.r1 td.tm>.c{box-shadow:none}
+.standings tr.r1 td.tm>.c::before{content:"♛";display:inline-block;margin-right:10px;color:var(--c-gold);transform:skewX(18deg);text-shadow:0 0 12px rgba(255,211,92,.55)}
+.standings tr.qualify td.rk>.c .mv.up,.standings td.rk>.c .mv.up{color:#9fffb8}
+.standings tr.qualify td.rk>.c .mv.down,.standings td.rk>.c .mv.down{color:#ffd0d0}
+/* No clasificados: neutros (el rojo queda solo para descalificados) */
+.standings tbody tr:not(.qualify) td.rk>.c{background:rgba(255,255,255,.04);color:#8f98aa}
+.standings tbody tr:not(.qualify) td.tm>.c{background:linear-gradient(90deg,rgba(255,255,255,.07),rgba(255,255,255,.02));color:#e4e8f0}
+.standings tr.cut td::after{bottom:-6px;border-bottom:2px dashed rgba(255,255,255,.28)}
+.zone-legend{margin-top:18px}
+/* Goleo: mismo lenguaje (sin rojo; dorado solo en el top) */
+#goleoList{background:radial-gradient(ellipse at 50% -30%,rgba(255,255,255,.07),transparent 62%),linear-gradient(180deg,#0e1015 0,#07080b 45%,#050506 100%)}
+.goleo-rank{background:rgba(255,255,255,.06);color:#9aa3b5}
+.goleo-row.top .goleo-rank{background:linear-gradient(90deg,rgba(255,211,92,.18),rgba(255,255,255,.04));color:var(--c-gold);box-shadow:inset 4px 0 0 var(--c-gold)}
+.goleo-name::before{background:linear-gradient(90deg,rgba(255,255,255,.09),rgba(255,255,255,.02) 85%)}
+.goleo-row.top>.goleo-score{color:var(--c-gold)}
+@media(max-width:980px){.table-group h3.sb-title{font-size:2.2rem}}
+@media(max-width:560px){
+  .sb-board{padding:18px 10px 16px}
+  .table-group h3.sb-title{font-size:1.6rem;padding:6px 32px 6px 18px}
+  .standings{border-spacing:0 6px}
+  .standings th{font-size:.58rem;letter-spacing:.1em}
+  .standings th.rk,.standings td.rk{width:46px}
+  .standings th.num,.standings td.num{width:42px}
+  .standings th.num:nth-child(4),.standings td.num.pts{width:54px}
+  .standings td>.c{height:36px;line-height:34px;font-size:1rem}
+  .standings td.rk>.c{font-size:1rem}
+  .standings td.tm>.c{font-size:clamp(.7rem,3.4vw,.95rem);padding:0 9px}
+  .standings td.pts>.c{font-size:1.2rem}
+  .standings tr.r1 td.tm>.c::before{margin-right:5px}
+}
+</style>
 </head>
 
 <body>
