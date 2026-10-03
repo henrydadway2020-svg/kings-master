@@ -823,6 +823,87 @@ body.is-admin.ap-open #adminPanel{display:flex}
 /* Vista pública (previsualización): el admin ve el sitio sin herramientas */
 body.admin-public :is(.team-actions,.lu-admin,.champ-admin,.publish-bar,.tablevis-bar,.admin-box,.admin-badge,#batchPhotoBox,#captainHint,.mvp-edit,.goleo-ctrl,.match-buttons,.cap-btn,#respaldo){display:none!important}
 </style>
+<style id="mk-color-roles">
+/* ===== IDENTIDAD VISUAL: el color comunica información =====
+   GOLD   → posición · puntos · campeón · MVP · destacados
+   PURPLE → VS · partidos · competición · ronda actual
+   RED    → sanciones · incumplimientos · descalificados
+   WHITE  → información principal: nombres y números
+   (el cian queda solo para el panel de administración)            */
+:root{
+  --c-gold:#ffd35c; --c-gold-d:#d9a928;
+  --c-vs:#a24dff; --c-vs-hi:#c79bff;
+  --c-red:#d64c5e; --c-red-hi:#ff8b9a;
+  --c-white:#f8f5eb; --c-white2:#cfd6e4;
+  --edge:rgba(255,255,255,.12); --line:rgba(255,255,255,.14);
+  --tb-a:#d9a928; --tb-a2:#ffe18a; --tb-a3:#5c4308;
+}
+/* ---- Lo decorativo pasa a blanco/neutro ---- */
+a{color:var(--c-white2)}
+.kicker,.subkicker{color:var(--c-white2)}
+.navlinks a:hover{color:#fff;background:rgba(255,255,255,.06);border-color:var(--edge)}
+.nav-toggle{color:#fff;border-color:rgba(255,255,255,.25)}
+.topbar,section{border-bottom-color:var(--edge)}
+section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent)}
+.fact{border-color:var(--edge)}.fact strong,.stat .n,.progress-row .count{color:#fff}
+.clause .num{color:var(--c-white2)}
+.clause:hover{background:rgba(255,255,255,.03)}
+.grid-2 .cell,.dash-card,.dash-t,.backup-box,.results-toggle,.activity-card,.activity-control,.stats{border-color:var(--edge)}
+.roster-box{border-color:var(--edge)!important}
+.modal{border-color:rgba(255,255,255,.2)}
+.grid-2 .cell h3,.table-group h3{color:#fff}
+.steps{border-left-color:var(--edge)}
+.step::before{background:var(--c-white2);box-shadow:0 0 0 5px rgba(255,255,255,.06)}
+.pill{border-color:var(--edge)!important;background:rgba(255,255,255,.04)!important;color:var(--c-white2)!important}
+.progress-fill{background:linear-gradient(90deg,#8a93a6,#e8ecf5);box-shadow:0 0 14px rgba(255,255,255,.18)}
+.btn-outline{border-color:rgba(255,255,255,.3);color:var(--c-white2)}.btn-outline:hover{background:rgba(255,255,255,.07)}
+.decision-panel{border-color:var(--edge);background:rgba(255,255,255,.03)}
+.pager button{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.05);color:var(--c-white2)}
+.btn-mini,.admin-badge{color:var(--cyan);border-color:rgba(117,217,255,.4)}.btn-mini:hover{background:rgba(117,217,255,.1)}
+.cap-btn.on{background:rgba(255,211,92,.2);border-color:var(--c-gold);color:var(--c-gold)}
+.activity-card .day,.activity-day{color:var(--c-white2)}
+.activity-card.final{border-color:rgba(255,255,255,.3);box-shadow:inset 0 2px 0 rgba(255,255,255,.4)}
+.clause.activity.final-rule{border-color:var(--edge)}
+.clause.behavior.final-rule{border-color:var(--danger-line,rgba(214,76,94,.45))}
+/* ---- PURPLE: ronda actual, rondas, partidos, estados de partido ---- */
+.dash-round{border-color:var(--c-vs);background:radial-gradient(ellipse 70% 120% at 50% 0%,rgba(162,77,255,.22),transparent 70%),#07050d;box-shadow:0 0 36px rgba(162,77,255,.22)}
+.dash-round b{color:var(--c-vs-hi)}
+.round-group h4,.rounds-list .rlabel{color:var(--c-vs-hi)}
+.rounds-list li{border-top-color:var(--edge)}
+.dash-card:has(#dashLast){border-color:var(--vs-line,rgba(162,77,255,.34))}
+.dash-card:has(#dashLast) h3{color:var(--c-vs-hi)}
+.vs-meta .vs-status.done{color:var(--c-white2)}
+.vs-meta .vs-status.review,.my-tag.review{color:var(--c-vs-hi)}
+/* ---- GOLD: puntos, MVP y destacados ---- */
+.dash-card h3,.dash-t h3{color:#fff}
+.dash-card:has(#dashMvp){border-color:rgba(255,211,92,.3)}
+.dash-card:has(#dashMvp) h3{color:var(--c-gold)}
+.dash-t .r em{color:var(--c-gold)}
+.dash-t a,.dash-card a.go,.dash-more a{color:var(--c-white2)}.dash-more a{border-color:var(--edge)}
+/* ---- WHITE: nombres y números ---- */
+.my-chip{color:var(--c-white2);border-color:var(--edge)}
+.my-stat,.my-row{border-color:var(--edge)}.my-stat b{color:#fff}
+.lu-frame{background:linear-gradient(135deg,#f1f4fa,#5d6576 45%,#f1f4fa 72%,#5d6576)}
+.lu-name{background:linear-gradient(135deg,#f1f4fa,#4b5262 50%,#f1f4fa)}
+.lu-name>span{color:#fff}
+.team-card .tname .tn-b{background:none;-webkit-text-fill-color:#fff;color:#fff}
+/* ---- Tabla de posiciones: dorado = clasificación; rojo solo descalificados ---- */
+.sb-board{background:radial-gradient(ellipse at 50% -25%,rgba(217,169,40,.28),transparent 62%),linear-gradient(180deg,#0e0b05 0,#080809 42%,#050506 100%)}
+.st-scroll{scrollbar-color:rgba(217,169,40,.5) transparent}
+.standings td.rk>.c{color:#140f04}
+.standings td.tm>.c{background:linear-gradient(90deg,#222733,#0f1218);color:#fff}
+.standings td.pts>.c{color:var(--c-gold)}
+.standings tr.qualify td.tm>.c{box-shadow:inset 4px 0 0 var(--c-gold-d)}
+.standings tr.r1 td.tm>.c{box-shadow:0 0 24px rgba(255,211,92,.45),inset 4px 0 0 var(--c-gold)}
+.standings tr.qualify td.rk>.c .mv.up{color:#0b5d22}.standings tr.qualify td.rk>.c .mv.down{color:#7a0e1a}
+.standings tbody tr:not(.qualify) td.rk>.c{background:linear-gradient(90deg,#3a4050,#1a1e27);color:#d3d9e6}
+.standings tbody tr:not(.qualify) td.tm>.c{background:linear-gradient(90deg,#1c202a,#0d0f14);color:#e4e8f0}
+.standings tbody tr.dq:not(.qualify) td.rk>.c{background:linear-gradient(90deg,#5a0a12,#1d0507);color:#ffc9d0}
+.standings tbody tr.dq:not(.qualify) td.tm>.c{background:linear-gradient(90deg,#5a0a12,#1a0406);color:#ffd2d8}
+/* ---- Barra inferior móvil: cada pestaña con el color de su significado ---- */
+.bottomnav a.on::before{background:linear-gradient(90deg,transparent,#fff,transparent);box-shadow:0 0 12px rgba(255,255,255,.5)}
+.bottomnav a.on[data-t="tabla"]::before,.bottomnav a.on[data-t="goleo"]::before{background:linear-gradient(90deg,transparent,#ffd35c,transparent);box-shadow:0 0 12px rgba(255,211,92,.8)}
+</style>
 </head>
 
 <body>
