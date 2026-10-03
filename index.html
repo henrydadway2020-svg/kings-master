@@ -608,6 +608,26 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
  .lu-cap-badge{font-size:.76rem;padding:3px 11px}
 }
 </style>
+<style id="mk-black-premium">
+/* ===== Fondo negro premium ===== */
+:root{--bg:#000;--bg2:#050505;color-scheme:dark}
+html{background:#000}
+body{
+ background-color:#000;
+ background-image:
+  radial-gradient(ellipse 60% 28% at 50% -6%,rgba(226,173,45,.13),transparent 65%),
+  radial-gradient(ellipse 40% 26% at 100% 30%,rgba(201,150,36,.04),transparent 70%),
+  radial-gradient(ellipse 40% 26% at 0% 70%,rgba(201,150,36,.035),transparent 70%),
+  linear-gradient(180deg,#000 0%,#040405 50%,#000 100%);
+ background-attachment:fixed;
+}
+/* cuadrícula casi imperceptible + viñeta oscura en los bordes */
+body::before{opacity:.07;background-size:56px 56px;
+ mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000,transparent 75%);-webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000,transparent 75%)}
+/* sin líneas de escaneo: se ve más limpio y caro */
+body::after{display:none}
+.topbar{background:linear-gradient(180deg,rgba(0,0,0,.97),rgba(0,0,0,.82));border-bottom:1px solid rgba(244,212,119,.14)}
+</style>
 </head>
 
 <body>
