@@ -537,6 +537,13 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
 .team-grid{grid-template-columns:1fr;gap:34px;margin-top:26px}
 .tc-toolbar{display:none;gap:8px;margin-top:20px;flex-wrap:wrap}
 .tc-toolbar.show{display:flex}
+.tc-toolbar{align-items:center}
+.tc-toolbar #teamSearch{flex:1 1 260px;min-width:0;padding:11px 14px;border-radius:10px;border:1px solid var(--line);background:rgba(10,13,18,.85);color:#f5f0df;font:inherit;font-size:.95rem}
+.tc-toolbar #teamSearch:focus{outline:2px solid var(--gold);outline-offset:1px}
+.team-search-info{flex:1 0 100%;font-size:.84rem;color:#8992a5;min-height:1em}
+.team-search-info:empty{display:none}
+.lu-card.lu-hit .lu-frame{box-shadow:0 0 0 3px #ffd04d,0 0 26px rgba(255,208,77,.65)}
+.lu-card.lu-hit .lu-name>span{background:linear-gradient(180deg,#ffeaa6,#d9a928);color:#140f04}
 .team-card{border:0;background:none;border-radius:0;overflow:visible}
 .team-card[open],.team-card:has(details[open]){border-color:transparent}
 .team-card.dq{opacity:.7;border-color:transparent}
@@ -742,7 +749,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
           <div class="progress-row"><span id="progressLabel">Cargando inscritos…</span><span class="count" id="progressCount">—</span></div>
           <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
           <p class="table-note" id="captainHint" style="display:none">Organizador: debajo de cada jugador tienes «📷 Foto» para subir su imagen y «♛ Capitán» para nombrarlo.</p>
-          <div class="tc-toolbar" id="tcToolbar"><button type="button" class="btn-mini" id="tcCollapse">Contraer todos</button><button type="button" class="btn-mini" id="tcExpand">Expandir todos</button></div>
+          <div class="tc-toolbar" id="tcToolbar"><input type="search" id="teamSearch" placeholder="🔍 Buscar jugador o equipo…" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Buscar jugador o equipo"><button type="button" class="btn-mini" id="tcCollapse">Contraer todos</button><button type="button" class="btn-mini" id="tcExpand">Expandir todos</button><div class="team-search-info" id="teamSearchInfo" aria-live="polite"></div></div>
           <ul class="team-grid" id="teamList"></ul>
           <p class="empty-note" id="emptyNote" style="display:none;">Aún no hay equipos registrados.</p>
           <div class="decision-panel" id="decisionPanel" style="display:none;"></div>
@@ -2636,6 +2643,43 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
     });
   }
 
+  // ===== Buscador de jugadores / equipos (sección Equipos) =====
+  function normSearch(x) { return String(x || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim(); }
+  function applyTeamFilter() {
+    const inp = document.getElementById('teamSearch'), info = document.getElementById('teamSearchInfo');
+    const list = document.getElementById('teamList');
+    if (!inp || !list) return;
+    const q = normSearch(inp.value);
+    let teamsShown = 0, playersHit = 0;
+    list.querySelectorAll('li.team-card').forEach(li => {
+      const cards = li.querySelectorAll('.lu-card');
+      const teamMatch = !!q && (li.dataset.tn || '').includes(q);
+      let hits = 0;
+      cards.forEach(c => {
+        const hit = !!q && (c.dataset.n || '').includes(q);
+        c.classList.toggle('lu-hit', hit);
+        if (hit) hits++;
+      });
+      const show = !q || teamMatch || hits > 0;
+      li.style.display = show ? '' : 'none';
+      if (show && q) {
+        teamsShown++; playersHit += hits;
+        const det = li.querySelector('details.tc-fold');
+        if (det && !det.open) det.open = true;
+        const t = teams.find(x => x.id === li.dataset.tid);
+        if (t && t.hasPhotos) loadTeamPhotos(t.id);
+      }
+    });
+    if (!info) return;
+    if (!q) { info.textContent = ''; return; }
+    if (!teamsShown) info.textContent = 'Sin resultados para «' + inp.value.trim() + '».';
+    else info.textContent = (playersHit ? playersHit + (playersHit === 1 ? ' jugador encontrado' : ' jugadores encontrados') + ' · ' : '') + teamsShown + (teamsShown === 1 ? ' equipo' : ' equipos');
+  }
+  (function () {
+    const inp = document.getElementById('teamSearch');
+    if (inp) inp.addEventListener('input', applyTeamFilter);
+  })();
+
   const openActGroups = new Set();
   const openTeams = new Set();
   function render() {
@@ -2667,6 +2711,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
         const capIdx = Number.isInteger(t.captain) ? t.captain : -1;
         const li = document.createElement('li');
         li.className = 'team-card' + (t.disqualified ? ' dq' : '');
+        li.dataset.tid = t.id; li.dataset.tn = normSearch(t.name || 'Equipo');
         const det = document.createElement('details'); det.className = 'tc-fold';
         det.open = !closedTeams.has(t.id);
         det.addEventListener('toggle', () => { if (det.open) { closedTeams.delete(t.id); if (t.hasPhotos) loadTeamPhotos(t.id); } else closedTeams.add(t.id); });
@@ -2691,6 +2736,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
         players.forEach((pname, idx) => {
           const isCap = idx === capIdx;
           const card = document.createElement('div'); card.className = 'lu-card' + (isCap ? ' cap' : '');
+          card.dataset.n = normSearch(pname);
           if (isCap) { const bd = document.createElement('div'); bd.className = 'lu-cap-badge'; bd.textContent = '♛ Capitán'; card.appendChild(bd); }
           const frame = document.createElement('div'); frame.className = 'lu-frame';
           const ph = document.createElement('div'); const src = playerPhoto(t, idx);
@@ -2744,6 +2790,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,s
         li.appendChild(det);
         list.appendChild(li);
       });
+      applyTeamFilter();
     }
 
     const ab = document.getElementById('adminBackupBox'), lb = document.getElementById('adminLogBox');
