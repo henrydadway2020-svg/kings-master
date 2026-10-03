@@ -694,6 +694,44 @@ body::after{display:none}
  .tc-toolbar #teamSearch{flex-basis:100%}
 }
 </style>
+<style id="mk-dashboard">
+.hero{min-height:0!important;padding:30px 0 16px!important}
+.hero .lede,.hero .facts,.hero-actions{display:none!important}
+.hero .crest{max-width:120px!important;height:auto!important;margin:0 auto 6px!important}
+.hero h1{font-size:clamp(2.2rem,8vw,3.6rem)!important;margin:2px 0!important}
+.hero-eyebrow{letter-spacing:.34em!important;order:2}
+.dash{display:grid;gap:16px;margin:22px 0 34px}
+.dash-round{text-align:center;padding:20px 16px;border:1px solid rgba(244,212,119,.5);border-radius:16px;background:radial-gradient(ellipse 70% 120% at 50% 0%,rgba(244,212,119,.16),transparent 70%),#050505;box-shadow:0 0 36px rgba(217,169,40,.14)}
+.dash-round b{display:block;font:italic 900 clamp(2rem,8vw,3.2rem)/1 "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:.04em;color:var(--mk-gold2,#f4d477)}
+.dash-round span{font:700 .78rem "Cinzel",Georgia,serif;letter-spacing:.34em;color:#c9cfdb}
+.dash-round small{display:block;margin-top:6px;color:#8992a5}
+.dash-tables{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.dash-card,.dash-t{padding:16px 18px;border:1px solid rgba(244,212,119,.2);border-radius:14px;background:linear-gradient(170deg,rgba(21,25,35,.7),rgba(6,7,9,.95));min-width:0}
+.dash-card h3,.dash-t h3{font:700 .8rem "Cinzel",Georgia,serif;letter-spacing:.28em;text-transform:uppercase;color:var(--mk-gold2,#f4d477);margin:0 0 10px;text-align:center}
+.dash-t .r{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:8px;padding:7px 0;border-top:1px solid rgba(255,220,130,.09);font-size:.92rem;align-items:center}
+.dash-t .r:first-of-type{border-top:0}
+.dash-t .r i{font-style:normal;font-weight:800;color:var(--mk-gold2,#f4d477)}
+.dash-t .r span{overflow-wrap:anywhere;text-transform:uppercase;letter-spacing:.02em}
+.dash-t .r em{font-style:normal;font-weight:800}
+.dash-t a,.dash-card a.go{display:block;margin-top:8px;text-align:center;font-size:.8rem;color:var(--mk-gold2,#f4d477)}
+.dash-lock{grid-column:1/-1;text-align:center;color:#8992a5;padding:18px}
+.dash-vs{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;padding:9px 0;border-top:1px solid rgba(255,220,130,.09);text-align:center;font-weight:700;overflow-wrap:anywhere}
+.dash-vs:first-child{border-top:0}
+.dash-vs u{text-decoration:none;color:var(--mk-gold2,#f4d477);font-size:.78rem;letter-spacing:.18em}
+.dash-vs small{flex-basis:100%;color:#8992a5;font-weight:500}
+.dash-vs .w{color:var(--mk-gold2,#f4d477)}
+.dash-empty{text-align:center;color:#8992a5;padding:8px}
+.dash-pills{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.dash-pills span{padding:8px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.14);font-weight:700;font-size:.92rem}
+.dash-mvps{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.dash-mvp{display:flex;gap:12px;align-items:center;min-width:0}
+.dash-mvp img,.dash-mvp .ph{width:54px;height:76px;object-fit:cover;border-radius:8px;border:1px solid rgba(244,212,119,.5);flex:none;display:grid;place-items:center;background:#111;color:var(--mk-gold2,#f4d477);font-weight:800}
+.dash-mvp div{min-width:0;overflow-wrap:anywhere;font-size:.9rem}
+.dash-mvp small{display:block;color:#8992a5}
+.dash-more{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.dash-more a{padding:8px 16px;border-radius:999px;border:1px solid rgba(244,212,119,.28);color:var(--mk-gold2,#f4d477);text-decoration:none;font-size:.85rem}
+@media(max-width:640px){.dash-tables{grid-template-columns:1fr}}
+</style>
 </head>
 
 <body>
@@ -703,8 +741,7 @@ body::after{display:none}
       <a class="brand" href="#inicio"><img class="brand-logo" src="logo.webp" alt="MASTER KING" width="52" height="42"><span>MASTER KING</span></a>
       <button class="nav-toggle" id="navToggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="navLinks">☰</button>
       <nav class="navlinks" id="navLinks" aria-label="Navegación principal">
-        <a href="#reglamento">Reglas</a><a href="#formato">Formato</a><a href="#inscripcion">Equipos</a>
-        <a href="#fechas">Calendario</a><a href="#tabla">Tabla</a><a href="#goleo">Goleo</a><a href="#versus">Versus</a><a href="#premiacion">Premios</a>
+        <a href="#inicio">Inicio</a><a href="#tabla">Tabla</a><a href="#versus">Versus</a><a href="#inscripcion">Equipos</a><a href="#goleo">Goleo</a>
       </nav>
     </div>
   </header>
@@ -712,9 +749,9 @@ body::after{display:none}
   <main id="contenido">
     <section class="hero" id="inicio">
       <div class="wrap hero-inner">
-        <div class="hero-eyebrow">Liga competitiva · Pokémon TCG · Temporada oficial</div>
+        <div class="hero-eyebrow">LIGA COMPETITIVA OFICIAL</div>
         <img class="crest" src="logo.webp" alt="Escudo de MASTER KING" width="900" height="600" fetchpriority="high">
-        <h1>La batalla por el <span class="accent">trono</span> comienza aquí.</h1>
+        <h1><span class="accent">MASTER KING</span></h1>
         <p class="lede">Cuatro jugadores. Un mismo estandarte. Una liga donde cada victoria acerca a tu equipo a la corona de MASTER KING.</p>
         <div class="facts">
           <span class="fact"><strong>4</strong> jugadores por equipo</span>
@@ -729,15 +766,93 @@ body::after{display:none}
     </section>
 
     <div class="wrap">
-      <div class="stats" aria-label="Datos principales">
+      <section id="panel" class="dash" aria-label="Panel de la liga">
+      <div class="dash-round" id="dashRound"></div>
+      <div class="dash-tables" id="dashTables"></div>
+      <div class="dash-card"><h3>Próximos versus</h3><div id="dashNext"></div></div>
+      <div class="dash-card" id="dashActCard"><h3>Actividad</h3><div id="dashAct"></div></div>
+      <div class="dash-card"><h3>Últimos resultados</h3><div id="dashLast"></div></div>
+      <div class="dash-card"><h3>MVP</h3><div id="dashMvp" class="dash-mvps"></div></div>
+      <div class="dash-more"><a href="#reglamento">Reglas</a><a href="#formato">Formato</a><a href="#fechas">Calendario</a><a href="#premiacion">Premios</a></div>
+    </section>
+
+<div class="stats" aria-label="Datos principales" hidden>
         <div class="stat"><div class="n">4</div><div class="l">Jugadores / equipo</div></div>
         <div class="stat"><div class="n">BO3</div><div class="l">Formato de duelo</div></div>
         <div class="stat"><div class="n">TOP 4</div><div class="l">Clasificación</div></div>
         <div class="stat"><div class="n">♛</div><div class="l">Una sola corona</div></div>
       </div>
 
+      <section id="tabla">
+        <div class="kicker">01 · TABLA DE POSICIONES</div>
+        <h2>Tabla de posiciones</h2>
+        <div id="tableVisBar"></div>
+        <div id="championBanner"></div>
+        <div id="standingsContent"><p class="pending-note">La tabla aparece en cuanto se generan las fechas.</p></div>
+        <div class="goleo-box" id="goleo" style="display:none;">
+          <div class="subkicker">GOLEO INDIVIDUAL</div>
+          <h3>Tabla de goleo</h3>
+          <p class="table-note">Cada jugador acumula su propio goleo, que registra la administración durante la liga. Cada partida ganada suma 1 punto (2-0: 2 puntos al ganador; 2-1: 2 al ganador y 1 al perdedor). La muerte súbita no suma goleo individual. Quien tenga más puntos gana el goleo.</p>
+          <div class="goleo-filter">
+            <input type="search" id="goleoSearch" placeholder="🔍 Buscar jugador o equipo…" autocomplete="off" aria-label="Buscar jugador o equipo">
+            <select id="goleoTeam" aria-label="Filtrar por equipo"><option value="">Todos los equipos</option></select>
+          </div>
+          <div id="goleoPodium"></div>
+          <div id="goleoList"></div>
+          <div class="pager" id="goleoPager"></div>
+        </div>
+        <div class="activity-control" id="activityControl" style="display:none;">
+          <div class="activity-head">
+            <div><div class="subkicker">CONTROL AUTOMÁTICO</div><h3>Actividad de los equipos</h3></div>
+            <div class="activity-day" id="activityDay">—</div>
+          </div>
+          <p class="activity-note" id="activityNote"></p>
+          <div class="activity-legend">
+            <span>🟢 ACTIVO</span><span>🟡 EN RIESGO</span><span>🔴 INCUMPLIMIENTO</span><span>⚫ REVISIÓN / ABANDONO</span>
+          </div>
+          <div id="activityList"></div>
+        </div>
+      </section>
+
+      <section id="versus">
+        <div class="kicker">02 · VERSUS</div>
+        <h2>Versus de la liga</h2>
+        <p class="table-note">Elige la tabla y la ronda para ver cada enfrentamiento. El ganador de cada duelo se ilumina en dorado y alimenta la tabla de posiciones.</p>
+        <div class="my-vs" id="myVs" style="display:none;">
+          <div class="field"><label for="myTeamIn">Buscar mi equipo o mi nick</label><input type="search" id="myTeamIn" list="myTeamList" placeholder="Escribe tu equipo o tu nick…" autocomplete="off" autocapitalize="off" spellcheck="false"><datalist id="myTeamList"></datalist></div>
+          <div id="myVsPanel" aria-live="polite"></div>
+        </div>
+        <div class="report-cta" id="reportCta" style="display:none;">
+          <div><div class="subkicker">CAPITANES</div><strong>¿Ya jugaste tu versus?</strong><p class="table-note">Reporta el resultado y sube una captura como evidencia. La administración lo revisa y lo registra.</p></div>
+          <button type="button" class="btn-outline" id="reportOpenBtn">Reportar resultado</button>
+        </div>
+        <details class="results-toggle admin-box" id="adminReportsBox" style="display:none;" open>
+          <summary id="adminReportsSummary">Reportes de capitanes (solo organizador)</summary>
+          <div id="reportsList"></div>
+        </details>
+        <div class="vs-hub" id="resultsDetails" style="display:none;">
+          <div id="resultsContent"></div>
+        </div>
+      </section>
+
+      <section id="inscripcion">
+        <div class="kicker">03 · EQUIPOS</div>
+        <h2>Equipos inscritos</h2>
+        <div class="roster-box">
+          <p>Las inscripciones están cerradas. Estos son los equipos que compiten en la liga.</p>
+          <div class="progress-row"><span id="progressLabel">Cargando inscritos…</span><span class="count" id="progressCount">—</span></div>
+          <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+          <div id="batchPhotoBox" style="display:none;margin-top:14px"><button type="button" class="btn-mini" id="batchPhotoBtn">📷 Subir fotos en lote</button> <span class="table-note" style="display:inline">Nombra cada archivo como el nick del jugador (ej. <em>AshKetchum.jpg</em>) y se asigna solo.</span><input type="file" id="batchPhotoFile" accept="image/*" multiple hidden></div>
+          <p class="table-note" id="captainHint" style="display:none">Organizador: debajo de cada jugador tienes «📷 Foto» para subir su imagen y «♛ Capitán» para nombrarlo.</p>
+          <div class="tc-toolbar" id="tcToolbar"><input type="search" id="teamSearch" placeholder="🔍 Buscar jugador o equipo…" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Buscar jugador o equipo"><button type="button" class="btn-mini" id="tcCollapse">Contraer todos</button><button type="button" class="btn-mini" id="tcExpand">Expandir todos</button><div class="team-search-info" id="teamSearchInfo" aria-live="polite"></div></div>
+          <ul class="team-grid" id="teamList"></ul>
+          <p class="empty-note" id="emptyNote" style="display:none;">Aún no hay equipos registrados.</p>
+          <div class="decision-panel" id="decisionPanel" style="display:none;"></div>
+        </div>
+      </section>
+
       <section id="reglamento">
-        <div class="kicker">01 · El código del rey</div>
+        <div class="kicker">04 · El código del rey</div>
         <h2>Reglas del duelo</h2>
         <div class="rules-toolbar"><button type="button" class="btn-mini" id="rulesOpenAll">Abrir todas</button><button type="button" class="btn-mini" id="rulesCloseAll">Cerrar todas</button></div>
         <div class="rules-subsection activity-rules-none" id="reglas-generales">
@@ -822,7 +937,7 @@ body::after{display:none}
       </section>
 
       <section id="formato">
-        <div class="kicker">02 · FORMATO DE LA LIGA</div>
+        <div class="kicker">05 · FORMATO DE LA LIGA</div>
         <h2>Formato de liga</h2>
         <p class="table-note">La liga es de 32 equipos, divididos en dos tablas de 16. Dentro de cada tabla todos juegan contra todos y cada ronda dura 3 días, en total 15 rondas por tabla.</p>
         <div class="grid-2">
@@ -832,78 +947,10 @@ body::after{display:none}
         <div class="pill-row"><span class="pill">2 tablas de 16</span><span class="pill">15 rondas</span><span class="pill">Top 4 por tabla</span><span class="pill">Rondas finales</span></div>
       </section>
 
-      <section id="inscripcion">
-        <div class="kicker">03 · EQUIPOS</div>
-        <h2>Equipos inscritos</h2>
-        <div class="roster-box">
-          <p>Las inscripciones están cerradas. Estos son los equipos que compiten en la liga.</p>
-          <div class="progress-row"><span id="progressLabel">Cargando inscritos…</span><span class="count" id="progressCount">—</span></div>
-          <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-          <div id="batchPhotoBox" style="display:none;margin-top:14px"><button type="button" class="btn-mini" id="batchPhotoBtn">📷 Subir fotos en lote</button> <span class="table-note" style="display:inline">Nombra cada archivo como el nick del jugador (ej. <em>AshKetchum.jpg</em>) y se asigna solo.</span><input type="file" id="batchPhotoFile" accept="image/*" multiple hidden></div>
-          <p class="table-note" id="captainHint" style="display:none">Organizador: debajo de cada jugador tienes «📷 Foto» para subir su imagen y «♛ Capitán» para nombrarlo.</p>
-          <div class="tc-toolbar" id="tcToolbar"><input type="search" id="teamSearch" placeholder="🔍 Buscar jugador o equipo…" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Buscar jugador o equipo"><button type="button" class="btn-mini" id="tcCollapse">Contraer todos</button><button type="button" class="btn-mini" id="tcExpand">Expandir todos</button><div class="team-search-info" id="teamSearchInfo" aria-live="polite"></div></div>
-          <ul class="team-grid" id="teamList"></ul>
-          <p class="empty-note" id="emptyNote" style="display:none;">Aún no hay equipos registrados.</p>
-          <div class="decision-panel" id="decisionPanel" style="display:none;"></div>
-        </div>
-      </section>
-
       <section id="fechas">
-        <div class="kicker">04 · CALENDARIO DE LA LIGA</div>
+        <div class="kicker">06 · CALENDARIO DE LA LIGA</div>
         <h2>Fechas de la liga</h2>
         <div id="fechasContent"><p class="pending-note">Las fechas se publican en cuanto se cierra la inscripción de la tabla.</p></div>
-      </section>
-
-      <section id="tabla">
-        <div class="kicker">05 · TABLA DE POSICIONES</div>
-        <h2>Tabla de posiciones</h2>
-        <div id="tableVisBar"></div>
-        <div id="championBanner"></div>
-        <div id="standingsContent"><p class="pending-note">La tabla aparece en cuanto se generan las fechas.</p></div>
-        <div class="goleo-box" id="goleo" style="display:none;">
-          <div class="subkicker">GOLEO INDIVIDUAL</div>
-          <h3>Tabla de goleo</h3>
-          <p class="table-note">Cada jugador acumula su propio goleo, que registra la administración durante la liga. Cada partida ganada suma 1 punto (2-0: 2 puntos al ganador; 2-1: 2 al ganador y 1 al perdedor). La muerte súbita no suma goleo individual. Quien tenga más puntos gana el goleo.</p>
-          <div class="goleo-filter">
-            <input type="search" id="goleoSearch" placeholder="🔍 Buscar jugador o equipo…" autocomplete="off" aria-label="Buscar jugador o equipo">
-            <select id="goleoTeam" aria-label="Filtrar por equipo"><option value="">Todos los equipos</option></select>
-          </div>
-          <div id="goleoPodium"></div>
-          <div id="goleoList"></div>
-          <div class="pager" id="goleoPager"></div>
-        </div>
-        <div class="activity-control" id="activityControl" style="display:none;">
-          <div class="activity-head">
-            <div><div class="subkicker">CONTROL AUTOMÁTICO</div><h3>Actividad de los equipos</h3></div>
-            <div class="activity-day" id="activityDay">—</div>
-          </div>
-          <p class="activity-note" id="activityNote"></p>
-          <div class="activity-legend">
-            <span>🟢 ACTIVO</span><span>🟡 EN RIESGO</span><span>🔴 INCUMPLIMIENTO</span><span>⚫ REVISIÓN / ABANDONO</span>
-          </div>
-          <div id="activityList"></div>
-        </div>
-      </section>
-
-      <section id="versus">
-        <div class="kicker">06 · VERSUS</div>
-        <h2>Versus de la liga</h2>
-        <p class="table-note">Elige la tabla y la ronda para ver cada enfrentamiento. El ganador de cada duelo se ilumina en dorado y alimenta la tabla de posiciones.</p>
-        <div class="my-vs" id="myVs" style="display:none;">
-          <div class="field"><label for="myTeamIn">Buscar mi equipo o mi nick</label><input type="search" id="myTeamIn" list="myTeamList" placeholder="Escribe tu equipo o tu nick…" autocomplete="off" autocapitalize="off" spellcheck="false"><datalist id="myTeamList"></datalist></div>
-          <div id="myVsPanel" aria-live="polite"></div>
-        </div>
-        <div class="report-cta" id="reportCta" style="display:none;">
-          <div><div class="subkicker">CAPITANES</div><strong>¿Ya jugaste tu versus?</strong><p class="table-note">Reporta el resultado y sube una captura como evidencia. La administración lo revisa y lo registra.</p></div>
-          <button type="button" class="btn-outline" id="reportOpenBtn">Reportar resultado</button>
-        </div>
-        <details class="results-toggle admin-box" id="adminReportsBox" style="display:none;" open>
-          <summary id="adminReportsSummary">Reportes de capitanes (solo organizador)</summary>
-          <div id="reportsList"></div>
-        </details>
-        <div class="vs-hub" id="resultsDetails" style="display:none;">
-          <div id="resultsContent"></div>
-        </div>
       </section>
 
       <section id="premiacion">
@@ -2860,6 +2907,101 @@ body::after{display:none}
     if (inp) inp.addEventListener('input', applyTeamFilter);
   })();
 
+  // ===== Panel de inicio =====
+  function renderDashboard() {
+    const $ = (id) => document.getElementById(id);
+    if (!$('dashRound')) return;
+    const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+    const fill = (id, nodes) => { const el = $(id); el.innerHTML = ''; nodes.forEach(n => el.appendChild(n)); };
+    const vis = isAdmin ? matches : matches.filter(m => m.published === true);
+    const real = vis.filter(m => !m.bye);
+    const DAY = 86400000, total = vis.reduce((a, m) => Math.max(a, Number(m.round) || 0), 0);
+    let cur = 0, day = 0;
+    if (meta.scheduleStart) {
+      const el = Math.max(0, Date.now() - Number(meta.scheduleStart));
+      cur = Math.floor(el / (3 * DAY)) + 1; day = Math.min(3, Math.floor((el % (3 * DAY)) / DAY) + 1);
+      if (total) cur = Math.min(cur, total);
+    }
+    // Ronda actual
+    const rd = [];
+    if (cur) { rd.push(mk('b', '', 'RONDA ' + cur), mk('span', '', 'ACTUALMENTE'), mk('small', '', 'Día ' + day + ' de 3')); }
+    else { rd.push(mk('b', '', 'PRÓXIMAMENTE'), mk('span', '', 'LA LIGA AÚN NO INICIA')); }
+    fill('dashRound', rd);
+    // Tablas (top 5)
+    const tNodes = [];
+    if (!isAdmin && !meta.tableVisible) tNodes.push(mk('p', 'dash-lock', '🔒 La tabla de posiciones se publicará próximamente.'));
+    else if (!meta.scheduleStart || (isAdmin && !matches.length)) tNodes.push(mk('p', 'dash-lock', 'La tabla aparece en cuanto se generan las fechas.'));
+    else [1, 2].forEach(tn => {
+      const box = mk('div', 'dash-t'); box.appendChild(mk('h3', '', 'Tabla ' + tn));
+      computeStandings(tn).slice(0, 5).forEach((r, i) => {
+        const row = mk('div', 'r'); row.append(mk('i', '', String(i + 1)), mk('span', '', r.name), mk('em', '', r.pts + ' pts')); box.appendChild(row);
+      });
+      const a = mk('a', '', 'Ver tabla completa →'); a.href = '#tabla'; box.appendChild(a);
+      tNodes.push(box);
+    });
+    fill('dashTables', tNodes);
+    // Próximos versus
+    const pend = real.filter(m => !m.winner).sort((a, b) => a.round - b.round);
+    const nx = [];
+    if (!pend.length) nx.push(mk('p', 'dash-empty', meta.scheduleStart ? 'No hay versus pendientes.' : 'Aparecerán cuando se publiquen los cruces.'));
+    else {
+      pend.filter(m => m.round === pend[0].round).slice(0, 6).forEach(m => {
+        const r = mk('div', 'dash-vs'); r.append(mk('span', '', m.teamAName), mk('u', '', 'VS'), mk('span', '', m.teamBName), mk('small', '', 'Ronda ' + m.round + ' · Tabla ' + m.table)); nx.push(r);
+      });
+      const n = pend.filter(m => m.round === pend[0].round).length;
+      if (n > 6) { const a = mk('a', 'go', 'Ver los ' + n + ' en Versus →'); a.href = '#versus'; nx.push(a); }
+    }
+    fill('dashNext', nx);
+    // Actividad
+    const card = $('dashActCard');
+    if (!cur || !teams.length || !vis.length) { card.style.display = 'none'; }
+    else {
+      card.style.display = '';
+      const c = { green: 0, yellow: 0, red: 0, black: 0 };
+      teams.forEach(t => {
+        if (t.disqualified) { c.black++; return; }
+        const tm = vis.filter(m => !m.bye && (m.teamAId === t.id || m.teamBId === t.id));
+        const table = tm.length ? tm[0].table : 1;
+        const cm = vis.find(m => !m.bye && m.round === cur && m.table === table && (m.teamAId === t.id || m.teamBId === t.id));
+        const bye = vis.some(m => m.bye && m.round === cur && m.table === table && m.teamAId === t.id);
+        if (tm.filter(m => m.round < cur && !m.winner).length >= 2) c.black++;
+        else if (bye || (cm && cm.winner)) c.green++;
+        else if (cm) { if (day === 1) c.yellow++; else c.red++; }
+      });
+      const pills = mk('div', 'dash-pills');
+      [['green', '🟢', 'ACTIVOS'], ['yellow', '🟡', 'EN RIESGO'], ['red', '🔴', 'INCUMPLIMIENTO'], ['black', '⚫', 'REVISIÓN']].forEach(([k, e, l]) => {
+        if (c[k] || k === 'green' || k === 'yellow') pills.appendChild(mk('span', '', e + ' ' + c[k] + ' ' + l));
+      });
+      fill('dashAct', [pills]);
+    }
+    // Últimos resultados
+    const done = real.filter(m => m.winner).sort((a, b) => b.round - a.round).slice(0, 6);
+    const ls = [];
+    if (!done.length) ls.push(mk('p', 'dash-empty', 'Aún no hay resultados.'));
+    done.forEach(m => {
+      const r = mk('div', 'dash-vs'); const win = m.winner === 'A' ? m.teamAName : m.teamBName;
+      r.append(mk('span', m.winner === 'A' ? 'w' : '', m.teamAName), mk('u', '', 'VS'), mk('span', m.winner === 'B' ? 'w' : '', m.teamBName),
+        mk('small', '', '🏆 Ganó ' + win + (m.forfeit ? ' (victoria administrativa)' : '') + ' · Ronda ' + m.round));
+      ls.push(r);
+    });
+    fill('dashLast', ls);
+    // MVP (último por tabla)
+    const mv = [];
+    [1, 2].forEach(tn => {
+      for (let b = mvpBlocks(); b >= 1; b--) {
+        const d = mvps[mvpKey(tn, b)];
+        if (!d) continue;
+        const w = mk('div', 'dash-mvp');
+        if (typeof d.photo === 'string' && d.photo.indexOf('data:image/') === 0) { const im = mk('img'); im.src = d.photo; im.alt = 'MVP ' + (d.nick || ''); w.appendChild(im); }
+        else w.appendChild(mk('div', 'ph', String(d.nick || '?').charAt(0).toUpperCase()));
+        const t = mk('div'); t.append(mk('b', '', d.nick || '—'), mk('small', '', (d.team || '') + (d.goleo != null ? ' · Goleo ' + d.goleo : '')), mk('small', '', 'Tabla ' + tn + ' · ' + mvpRange(b)));
+        w.appendChild(t); mv.push(w); break;
+      }
+    });
+    if (!mv.length) mv.push(mk('p', 'dash-empty', 'Aún sin MVP.'));
+    fill('dashMvp', mv);
+  }
+
   // ===== Tabla de posiciones: oculta al público hasta que el organizador la autorice =====
   function setMetaStatus(data) { return db.doc('meta/status').set(data, { merge: true }); }
   async function setTableVisible(v) {
@@ -3070,6 +3212,7 @@ body::after{display:none}
     renderStandings();
     renderTableVisBar();
     renderChampions();
+    renderDashboard();
     renderGoleo();
     const gl = document.getElementById('goleo'), gn = document.querySelector('#navLinks a[href="#goleo"]');
     if (gl && gn) gn.style.display = gl.style.display === 'none' ? 'none' : '';
