@@ -653,6 +653,14 @@ body::after{display:none}
 @keyframes crownFloat{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-5px)}}
 @media(prefers-reduced-motion:reduce){.pod.p1::before{animation:none}}
 
+/* ===== Barra de visibilidad de la tabla (organizador) ===== */
+.tablevis-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:16px 0 4px;padding:12px 16px;border-radius:12px;border:1px solid rgba(255,139,139,.4);background:rgba(255,90,90,.07);font-size:.92rem}
+.tablevis-bar.on{border-color:rgba(159,232,178,.45);background:rgba(120,220,150,.07)}
+
+/* ===== Reglas: botones abrir/cerrar todas y bloque general ===== */
+.rules-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 4px}
+#reglas-generales{margin-top:18px;padding-top:0;border-top:0}
+
 /* ===== Banner de campeones ===== */
 .champ-wrap{margin:26px 0 10px;display:grid;gap:14px}
 .champ-banner{position:relative;text-align:center;padding:62px 20px 30px;border-radius:18px;border:1px solid rgba(244,212,119,.55);background:radial-gradient(ellipse 70% 90% at 50% 0%,rgba(244,212,119,.24),transparent 70%),linear-gradient(180deg,#0e0a03,#020202);box-shadow:0 0 64px rgba(217,169,40,.24),inset 0 0 0 1px rgba(255,235,160,.08);overflow:hidden}
@@ -731,6 +739,10 @@ body::after{display:none}
       <section id="reglamento">
         <div class="kicker">01 · El código del rey</div>
         <h2>Reglas del duelo</h2>
+        <div class="rules-toolbar"><button type="button" class="btn-mini" id="rulesOpenAll">Abrir todas</button><button type="button" class="btn-mini" id="rulesCloseAll">Cerrar todas</button></div>
+        <div class="rules-subsection activity-rules-none" id="reglas-generales">
+          <div class="subkicker">REGLAMENTO GENERAL</div>
+          <h2>Definiciones y reglas generales</h2>
         <div class="grid-2" id="definiciones">
           <div class="cell"><h3>Versus</h3><p>Duelo individual de un jugador contra un jugador rival. Se juega al mejor de tres partidas (Bo3).</p></div>
           <div class="cell"><h3>Encuentro</h3><p>Enfrentamiento de un equipo contra otro en una ronda: son 4 versus. Gana el equipo que gane más versus. La victoria vale <strong>3 puntos</strong> y la derrota <strong>0</strong>.</p></div>
@@ -745,6 +757,7 @@ body::after{display:none}
         <div class="clause"><div class="num">VI</div><div class="body">Cada equipo tiene <strong>3 días</strong> para completar su encuentro de la ronda.</div></div>
         <div class="clause"><div class="num">VII</div><div class="body"><strong>Sustituciones:</strong> los cambios de jugadores solo los realiza la <strong>administración</strong>, a solicitud del capitán y con causa justificada. El jugador sustituto ocupa el lugar del anterior y los resultados ya registrados se conservan.</div></div>
         <div class="clause"><div class="num">VIII</div><div class="body"><strong>Apelaciones:</strong> toda decisión administrativa puede apelarse <strong>una sola vez</strong>, por el canal oficial (<a href="https://chat.whatsapp.com/EfHegAr4nby2Zs7yp4FtEs" target="_blank" rel="noopener noreferrer">grupo de WhatsApp</a>), dentro de las <strong>24 horas</strong> siguientes y aportando pruebas nuevas. La resolución de la administración es final.</div></div>
+        </div>
         <div class="rules-subsection activity-rules" id="actividad">
           <div class="subkicker">ACTIVIDAD OBLIGATORIA</div>
           <h2>Control de actividad y cumplimiento de rondas</h2>
@@ -844,6 +857,7 @@ body::after{display:none}
       <section id="tabla">
         <div class="kicker">05 · TABLA DE POSICIONES</div>
         <h2>Tabla de posiciones</h2>
+        <div id="tableVisBar"></div>
         <div id="championBanner"></div>
         <div id="standingsContent"><p class="pending-note">La tabla aparece en cuanto se generan las fechas.</p></div>
         <div class="goleo-box" id="goleo" style="display:none;">
@@ -1080,6 +1094,12 @@ body::after{display:none}
     while (el.firstChild) d.appendChild(el.firstChild);
     el.appendChild(d);
   });
+  (function () {
+    const set = (v) => document.querySelectorAll('details.rules-fold').forEach(d => { d.open = v; });
+    const o = document.getElementById('rulesOpenAll'), c = document.getElementById('rulesCloseAll');
+    if (o) o.onclick = () => set(true);
+    if (c) c.onclick = () => set(false);
+  })();
   function openFoldFromHash() {
     const target = location.hash && document.querySelector(location.hash);
     const d = target && target.closest && target.closest('details.rules-fold');
@@ -1101,7 +1121,7 @@ body::after{display:none}
 
   let teams = [];
   let matches = [];
-  let meta = { expansionDecided: true, expanded: true, scheduleStart: null, fixturesGenerating: false, fixturesGeneratingAt: 0 };
+  let meta = { expansionDecided: true, expanded: true, scheduleStart: null, fixturesGenerating: false, fixturesGeneratingAt: 0, tableVisible: false };
   const GEN_TIMEOUT = 2 * 60 * 1000; // si la generación lleva más de 2 min se considera abandonada
   let genTimer = null;
   function isGenerating() {
@@ -1572,7 +1592,7 @@ body::after{display:none}
     await writeDocs('teams', cleanTeams);
     await writeDocs('matches', cleanMatches);
     const m = data.meta || {};
-    await db.doc('meta/status').set({
+    await setMetaStatus({
       expansionDecided: true, expanded: true,
       scheduleStart: m.scheduleStart ? Number(m.scheduleStart) : null, fixturesGenerating: false
     });
@@ -1619,7 +1639,7 @@ body::after{display:none}
     try {
       downloadText('king-masters-antes-de-borrar-cruces-' + stamp() + '.json', buildJsonBackup(), 'application/json');
       await clearAllMatches();
-      await db.doc('meta/status').set({ expansionDecided: true, expanded: true, scheduleStart: null, fixturesGenerating: false });
+      await setMetaStatus({ expansionDecided: true, expanded: true, scheduleStart: null, fixturesGenerating: false });
       await logAction('clear', 'Borró todos los cruces y resultados (' + total + ') para volver a generar el calendario');
       say('ok', 'Cruces borrados. Los equipos siguen inscritos.');
     } catch (err) {
@@ -2430,6 +2450,10 @@ body::after{display:none}
   function renderStandings() {
     const el = document.getElementById('standingsContent');
     const resultsDetails = document.getElementById('resultsDetails');
+    if (!isAdmin && !meta.tableVisible) {
+      el.innerHTML = '<p class="pending-note">🔒 La tabla de posiciones se publicará próximamente.</p>';
+      return;
+    }
     if (!meta.scheduleStart || (isAdmin && matches.length === 0)) {
       el.innerHTML = '<p class="pending-note">La tabla aparece en cuanto se generan las fechas.</p>';
       resultsDetails.style.display = 'none';
@@ -2836,6 +2860,30 @@ body::after{display:none}
     if (inp) inp.addEventListener('input', applyTeamFilter);
   })();
 
+  // ===== Tabla de posiciones: oculta al público hasta que el organizador la autorice =====
+  function setMetaStatus(data) { return db.doc('meta/status').set(data, { merge: true }); }
+  async function setTableVisible(v) {
+    if (!isAdmin || !db) return;
+    if (v && !(await uiConfirm('¿Mostrar la tabla de posiciones a todo el público?'))) return;
+    try {
+      await db.doc('meta/status').set({ tableVisible: v }, { merge: true });
+      await logAction('table', v ? 'Mostró la tabla de posiciones al público' : 'Ocultó la tabla de posiciones al público');
+    } catch (err) { uiAlert('No se pudo cambiar: ' + (err && err.message ? err.message : err)); }
+  }
+  function renderTableVisBar() {
+    const el = document.getElementById('tableVisBar');
+    if (!el) return;
+    el.innerHTML = '';
+    if (!isAdmin) return;
+    const bar = document.createElement('div'); bar.className = 'tablevis-bar' + (meta.tableVisible ? ' on' : '');
+    const txt = document.createElement('span');
+    txt.textContent = meta.tableVisible ? '👁 La tabla está VISIBLE para todo el público.' : '🔒 La tabla está OCULTA al público (solo tú la ves).';
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'btn-mini' + (meta.tableVisible ? ' danger' : '');
+    b.textContent = meta.tableVisible ? 'Ocultar tabla' : 'Mostrar tabla al público';
+    b.onclick = () => setTableVisible(!meta.tableVisible);
+    bar.append(txt, b); el.appendChild(bar);
+  }
+
   // ===== Banner de campeones (el organizador lo declara al cierre) =====
   async function setPlacing(field, label) {
     if (!isAdmin || !db) return;
@@ -3020,6 +3068,7 @@ body::after{display:none}
     renderDecisionPanel();
     renderRounds();
     renderStandings();
+    renderTableVisBar();
     renderChampions();
     renderGoleo();
     const gl = document.getElementById('goleo'), gn = document.querySelector('#navLinks a[href="#goleo"]');
@@ -3034,7 +3083,7 @@ body::after{display:none}
   async function finalizeSchedule() {
     if (!db) return;
     try {
-      await db.doc('meta/status').set({ expansionDecided: true, expanded: true, scheduleStart: Date.now(), fixturesGenerating: true, fixturesGeneratingAt: Date.now() });
+      await setMetaStatus({ expansionDecided: true, expanded: true, scheduleStart: Date.now(), fixturesGenerating: true, fixturesGeneratingAt: Date.now() });
       await generateAndStoreFixtures();
       await logAction('fixtures', 'Generó fechas y cruces de la liga de 32 equipos');
     } catch (err) {
@@ -3088,7 +3137,7 @@ body::after{display:none}
       const order = teams.slice();
       for (let k = 0; k < 3; k++) shuffleInPlace(order);
       const base = Math.min.apply(null, teams.map(t => Number(t.registeredAt) || Date.now()));
-      await db.doc('meta/status').set({ expansionDecided: true, expanded: true, scheduleStart: meta.scheduleStart || Date.now(), fixturesGenerating: true, fixturesGeneratingAt: Date.now() });
+      await setMetaStatus({ expansionDecided: true, expanded: true, scheduleStart: meta.scheduleStart || Date.now(), fixturesGenerating: true, fixturesGeneratingAt: Date.now() });
       const batch = db.batch();
       order.forEach((t, i) => batch.update(db.doc('teams/' + t.id), { registeredAt: base + i * 1000 }));
       batch.set(db.collection('log').doc(), logEntry('shuffle', 'Barajó los 32 equipos (3 veces). Tabla 1: ' + order.slice(0, 16).map(t => t.name).join(', ') + '. Tabla 2: ' + order.slice(16).map(t => t.name).join(', ')));
@@ -3259,7 +3308,8 @@ body::after{display:none}
         fixturesGenerating: !!d.fixturesGenerating,
         fixturesGeneratingAt: Number(d.fixturesGeneratingAt) || 0,
         championId: d.championId || '',
-        runnerUpId: d.runnerUpId || ''
+        runnerUpId: d.runnerUpId || '',
+        tableVisible: d.tableVisible === true
       };
       render();
     }, () => {
