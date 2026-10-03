@@ -1801,7 +1801,7 @@ body::after{display:none}
   }
 
   // --- Fotos de jugadores (se guardan reducidas en teams/{id}.photos.{n}) ---
-  const closedTeams = new Set();
+  const openedTeams = new Set(); // los equipos arrancan cerrados: solo se cargan las fotos de los que se abren
   // Las fotos viven en teamPhotos/{teamId} (campos p0..p3), aparte del equipo, y se piden solo cuando
   // la tarjeta del equipo está a la vista. Así la tabla y los cruces no arrastran las fotos de los 32 equipos.
   // Lo antiguo (teams/{id}.photos) se sigue mostrando hasta que se use "Optimizar fotos".
@@ -1964,8 +1964,8 @@ body::after{display:none}
   document.getElementById('migratePhotosBtn').addEventListener('click', migratePhotos);
   (function () {
     const tb = document.getElementById('tcToolbar');
-    document.getElementById('tcCollapse').onclick = () => { teams.forEach(t => closedTeams.add(t.id)); render(); };
-    document.getElementById('tcExpand').onclick = () => { closedTeams.clear(); render(); };
+    document.getElementById('tcCollapse').onclick = () => { openedTeams.clear(); render(); };
+    document.getElementById('tcExpand').onclick = () => { teams.forEach(t => openedTeams.add(t.id)); render(); };
     window.__tcToolbar = tb;
   })();
 
@@ -3123,9 +3123,9 @@ body::after{display:none}
         li.dataset.tid = t.id; li.dataset.tn = normSearch(t.name || 'Equipo');
         if (window.__mkRevealCard) window.__mkRevealCard(li, t.id);
         const det = document.createElement('details'); det.className = 'tc-fold';
-        det.open = !closedTeams.has(t.id);
-        det.addEventListener('toggle', () => { if (det.open) { closedTeams.delete(t.id); if (t.hasPhotos) loadTeamPhotos(t.id); } else closedTeams.add(t.id); });
-        if (t.hasPhotos && !photoCache[t.id] && !closedTeams.has(t.id)) {
+        det.open = openedTeams.has(t.id);
+        det.addEventListener('toggle', () => { if (det.open) { openedTeams.add(t.id); if (t.hasPhotos) loadTeamPhotos(t.id); } else openedTeams.delete(t.id); });
+        if (t.hasPhotos && !photoCache[t.id] && openedTeams.has(t.id)) {
           if (isAdmin || !photoIO) loadTeamPhotos(t.id);
           else { li.dataset.tid = t.id; photoIO.observe(li); }
         }
@@ -3479,12 +3479,14 @@ body::after{display:none}
           el.removeEventListener('animationend', done);
         });
       });
-    }, { threshold: 0.08, rootMargin: '0px 0px -6% 0px' });
-    const SEL = '.clause, .cell, .step, .prize, .stat, .activity-card, .roster-box, .goleo-box, main section > h2, main section > .kicker';
+    }, { threshold: 0, rootMargin: '0px 0px -4% 0px' });
+    const SEL = '.clause, .cell, .step, .prize, .stat, .activity-card, main section > h2, main section > .kicker';
     document.querySelectorAll(SEL).forEach(el => {
       if (el.closest('.hero') || el.dataset.rv) return;
       el.dataset.rv = '1'; el.classList.add('mk-rv'); io.observe(el);
     });
+    // Red de seguridad: nada que ya esté en pantalla puede quedarse invisible
+    setTimeout(() => { document.querySelectorAll('.mk-rv:not(.mk-in)').forEach(el => { if (el.getBoundingClientRect().top < innerHeight) el.classList.remove('mk-rv'); }); }, 3500);
     window.__mkRevealCard = (li, id) => {
       if (seenCards.has(id)) return;
       li.classList.add('mk-rv'); io.observe(li);
