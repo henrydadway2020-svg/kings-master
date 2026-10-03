@@ -750,6 +750,79 @@ body::after{display:none}
  body.modal-open .bottomnav,body:has(input:focus,textarea:focus,select:focus) .bottomnav{display:none}
 }
 </style>
+<style id="mk-color-system">
+/* ===== SISTEMA DE COLOR FUNCIONAL =====
+   Dorado  → campeón / puntos / ranking
+   Morado  → versus / competición
+   Rojo    → problemas / sanciones                */
+:root{
+  --vs:#a24dff; --vs-hi:#c79bff; --vs-pink:#ff2e93; --vs-ink:#1b1650;
+  --vs-line:rgba(162,77,255,.34); --vs-bg:rgba(162,77,255,.08);
+  --danger:#d64c5e; --danger-hi:#ff8b9a;
+  --danger-line:rgba(214,76,94,.45); --danger-bg:rgba(214,76,94,.10);
+}
+
+/* ---- MORADO: Versus / competición ---- */
+#versus .kicker,#versus .subkicker{color:var(--vs-hi)}
+#versus h2{text-shadow:0 0 38px rgba(162,77,255,.22)}
+#versus::after{background:linear-gradient(90deg,transparent,var(--vs),transparent)}
+.vs-seg{border-color:var(--vs-line);background:var(--vs-bg)}
+.vs-seg button:hover:not(.on){color:var(--vs-hi)}
+.vs-seg button.on{background:linear-gradient(135deg,var(--vs-pink),var(--vs));color:#fff;box-shadow:0 0 18px rgba(162,77,255,.45)}
+.vs-chip{border-color:var(--vs-line)}
+.vs-chip:hover{border-color:var(--vs);color:var(--vs-hi)}
+.vs-chip.on{background:rgba(162,77,255,.18);border-color:var(--vs);color:#fff;box-shadow:0 0 14px rgba(162,77,255,.3)}
+.vs-roundhead h4{color:var(--vs-hi)}
+.my-vs{border-color:var(--vs-line);background:var(--vs-bg)}
+.my-vs .field input:focus-visible{outline:2px solid var(--vs);outline-offset:1px}
+.report-cta{border-color:var(--vs-line);background:var(--vs-bg)}
+.report-cta strong{color:var(--vs-hi)}
+.report-cta .btn-outline{border-color:var(--vs);color:var(--vs-hi)}
+.report-cta .btn-outline:hover{background:rgba(162,77,255,.16)}
+/* Panel de inicio: tarjeta "Próximos versus" y etiquetas VS */
+.dash-card:has(#dashNext){border-color:var(--vs-line);background:linear-gradient(170deg,rgba(162,77,255,.10),rgba(6,7,9,.95))}
+.dash-card:has(#dashNext) h3{color:var(--vs-hi)}
+.dash-vs u{color:var(--vs-hi)}
+/* Barra inferior móvil: pestaña Versus en morado */
+.bottomnav a.on[data-t="versus"]{color:var(--vs-hi)}
+.bottomnav a.on[data-t="versus"]::before{background:linear-gradient(90deg,transparent,var(--vs),transparent);box-shadow:0 0 12px rgba(162,77,255,.8)}
+
+/* ---- ROJO: problemas / sanciones (un solo tono en todo el sitio) ---- */
+.clause.ban,.clause.activity.severe,.clause.behavior.severe{border-color:var(--danger-line);box-shadow:inset 3px 0 0 var(--danger)}
+.clause.ban .num,.clause.activity.severe .num,.clause.behavior.severe .num{color:var(--danger-hi)}
+.activity-rules{border-top-color:var(--danger-line)}
+.activity-rules .subkicker,.behavior-rules .subkicker{color:var(--danger-hi)}
+.behavior-rules{border-top-color:var(--danger-line)}
+.dq-tag,.my-chip.dq,.my-tag.lose,.btn-mini.danger,.cap-btn.on{color:var(--danger-hi);border-color:var(--danger-line)}
+.activity-status.red{color:var(--danger-hi);border-color:var(--danger-line);background:var(--danger-bg)}
+</style>
+<style id="mk-admin-panel">
+/* Panel de administración: solo existe con sesión iniciada. Acento cian = admin/sistema */
+#adminPanel,#adminFab{display:none}
+body.is-admin #adminFab{display:flex}
+body.is-admin.ap-open #adminPanel{display:flex}
+#adminPanel{position:fixed;z-index:60;top:0;left:0;bottom:0;width:min(250px,86vw);flex-direction:column;gap:6px;background:linear-gradient(180deg,#07111b,#04070b);border-right:1px solid rgba(117,217,255,.3);box-shadow:20px 0 60px rgba(0,0,0,.55);padding:calc(14px + env(safe-area-inset-top,0px)) 12px calc(14px + env(safe-area-inset-bottom,0px));overflow-y:auto}
+.ap-head{display:flex;align-items:center;gap:10px;padding:4px 4px 12px;border-bottom:1px solid rgba(117,217,255,.18);margin-bottom:6px}
+.ap-head .ap-crown{font-size:1.5rem;color:var(--cyan)}
+.ap-head div{flex:1;line-height:1.15}.ap-head b{display:block;font:800 .95rem "Cinzel",serif;letter-spacing:.16em;color:#e8f8ff}.ap-head small{font-size:.68rem;letter-spacing:.2em;color:#7fb9cf}
+.ap-x{background:transparent;border:1px solid rgba(117,217,255,.3);color:var(--cyan);width:32px;height:32px;border-radius:8px}
+.ap-nav{display:flex;flex-direction:column;gap:2px;flex:1}
+.ap-nav button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 12px;border:1px solid transparent;border-radius:9px;background:transparent;color:#b9cdd6;font:700 .86rem "Manrope",sans-serif;letter-spacing:.04em}
+.ap-nav button:hover,.ap-nav button:focus-visible{background:rgba(117,217,255,.09);border-color:rgba(117,217,255,.3);color:#fff;outline:0}
+.ap-nav .ap-i{width:22px;text-align:center}
+.ap-foot{display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid rgba(117,217,255,.18)}
+.ap-foot button{padding:10px 12px;border-radius:9px;font:800 .8rem "Manrope",sans-serif;letter-spacing:.06em;text-transform:uppercase;border:1px solid rgba(117,217,255,.4);background:rgba(117,217,255,.08);color:var(--cyan)}
+.ap-foot button:hover{background:rgba(117,217,255,.18)}
+.ap-foot .ap-out{border-color:var(--danger-line,rgba(214,76,94,.45));background:transparent;color:var(--danger-hi,#ff8b9a)}
+.ap-note{margin:0;min-height:1.2em;font-size:.76rem;color:#7fb9cf}
+#adminFab{position:fixed;z-index:55;left:14px;bottom:calc(88px + env(safe-area-inset-bottom,0px));align-items:center;gap:8px;padding:11px 16px;border-radius:999px;border:1px solid rgba(117,217,255,.5);background:#07111b;color:var(--cyan);font:800 .8rem "Manrope",sans-serif;letter-spacing:.1em;text-transform:uppercase;box-shadow:0 8px 28px rgba(0,0,0,.6),0 0 18px rgba(117,217,255,.18)}
+@media(min-width:721px){#adminFab{bottom:18px}}
+@media(min-width:1100px){body.is-admin.ap-open{padding-left:250px}body.ap-open #adminFab{display:none}}
+.ap-login{display:inline-block;margin-top:14px;color:#6f7889;font-size:.72rem;letter-spacing:.14em;text-decoration:none;border-bottom:1px dotted #4a5262}
+.ap-login:hover{color:var(--cyan)}
+/* Vista pública (previsualización): el admin ve el sitio sin herramientas */
+body.admin-public :is(.team-actions,.lu-admin,.champ-admin,.publish-bar,.tablevis-bar,.admin-box,.admin-badge,#batchPhotoBox,#captainHint,.mvp-edit,.goleo-ctrl,.match-buttons,.cap-btn,#respaldo){display:none!important}
+</style>
 </head>
 
 <body>
@@ -759,7 +832,7 @@ body::after{display:none}
       <a class="brand" href="#inicio"><img class="brand-logo" src="logo.webp" alt="MASTER KING" width="52" height="42"><span>MASTER KING</span></a>
       <button class="nav-toggle" id="navToggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="navLinks">☰</button>
       <nav class="navlinks" id="navLinks" aria-label="Navegación principal">
-        <a href="#inicio">Inicio</a><a href="#tabla">Tabla</a><a href="#versus">Versus</a><a href="#inscripcion">Equipos</a><a href="#goleo">Goleo</a>
+        <a href="#inicio">Inicio</a><a href="#tabla">Tabla</a><a href="#versus">Versus</a><a href="#inscripcion">Equipos</a><a href="#goleo">Goleo</a><a href="#reglamento">Reglas</a><a href="#premiacion">Premiación</a>
       </nav>
     </div>
   </header>
@@ -3543,6 +3616,70 @@ body::after{display:none}
     window.addEventListener('resize', update);
     window.__mkBottomNavUpdate = update;
     update();
+  })();
+
+  // ===== Panel de administración (solo con sesión) =====
+  (function () {
+    const ITEMS = [
+      ['📊', 'Dashboard', '#panel'], ['👥', 'Equipos', '#inscripcion'], ['🃏', 'Jugadores', '#goleo'],
+      ['📅', 'Calendario', '#fechas'], ['⚔️', 'Resultados', '#versus'], ['📥', 'Reportes', '#adminReportsBox'],
+      ['📈', 'Actividad', '#activityControl'], ['⭐', 'MVP', '#versus'], ['🚫', 'Sanciones', '#reglamento'],
+      ['📢', 'Publicaciones', '#tableVisBar'], ['💾', 'Respaldos', '#respaldo']
+    ];
+    const body = document.body;
+    const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt) e.textContent = txt; return e; };
+    const panel = mk('aside'); panel.id = 'adminPanel'; panel.setAttribute('aria-label', 'Panel de administración');
+    const head = mk('div', 'ap-head');
+    const ttl = mk('div'); ttl.append(mk('b', '', 'ADMIN'), mk('small', '', 'MASTER KING'));
+    const x = mk('button', 'ap-x', '✕'); x.type = 'button'; x.setAttribute('aria-label', 'Cerrar panel');
+    head.append(mk('span', 'ap-crown', '♛'), ttl, x);
+    const nav = mk('nav', 'ap-nav'); nav.setAttribute('aria-label', 'Secciones de administración');
+    const note = mk('p', 'ap-note'); note.setAttribute('role', 'status');
+    let noteT = null;
+    const say = (t) => { note.textContent = t; clearTimeout(noteT); noteT = setTimeout(() => { note.textContent = ''; }, 3500); };
+    const isWide = () => window.innerWidth >= 1100;
+    ITEMS.forEach(([ico, label, sel]) => {
+      const b = mk('button'); b.type = 'button';
+      b.append(mk('span', 'ap-i', ico), document.createTextNode(label));
+      b.addEventListener('click', () => {
+        const el = document.querySelector(sel);
+        const shown = el && (el.offsetParent !== null || getComputedStyle(el).position === 'fixed');
+        if (!shown) { say(label + ': aún no hay herramientas activas aquí (se habilitan al generar las fechas).'); return; }
+        if (el.tagName === 'DETAILS') el.open = true;
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (!isWide()) body.classList.remove('ap-open');
+      });
+      nav.appendChild(b);
+    });
+    const foot = mk('div', 'ap-foot');
+    const view = mk('button', 'ap-view'); view.type = 'button';
+    const syncView = () => { view.textContent = body.classList.contains('admin-public') ? '🛠 Volver a vista admin' : '👁 Ver como público'; };
+    view.addEventListener('click', () => { body.classList.toggle('admin-public'); syncView(); });
+    const out = mk('button', 'ap-out', 'Cerrar sesión'); out.type = 'button';
+    out.addEventListener('click', async () => { if (await uiConfirm('¿Cerrar sesión de organizador?')) auth.signOut(); });
+    foot.append(view, out);
+    panel.append(head, nav, foot, note);
+    const fab = mk('button'); fab.id = 'adminFab'; fab.type = 'button'; fab.textContent = '⚙ Admin';
+    fab.addEventListener('click', () => body.classList.add('ap-open'));
+    x.addEventListener('click', () => body.classList.remove('ap-open'));
+    body.append(panel, fab);
+
+    // Acceso discreto en el pie (además de los 5 toques y de #admin)
+    const ft = document.querySelector('footer');
+    if (ft) {
+      const a = mk('a', 'ap-login', 'Acceso organizador'); a.href = '#admin';
+      a.addEventListener('click', (e) => { e.preventDefault(); openAdmin(); });
+      ft.appendChild(document.createElement('br')); ft.appendChild(a);
+    }
+    function openAdmin() { if (auth.currentUser) body.classList.add('ap-open'); else openLogin(); }
+    window.addEventListener('hashchange', () => { if (location.hash === '#admin') { openAdmin(); history.replaceState(null, '', location.pathname + location.search); } });
+    if (location.hash === '#admin') setTimeout(() => { openAdmin(); history.replaceState(null, '', location.pathname + location.search); }, 600);
+
+    auth.onAuthStateChanged((user) => {
+      body.classList.toggle('is-admin', !!user);
+      if (user) { body.classList.remove('admin-public'); syncView(); if (isWide()) body.classList.add('ap-open'); }
+      else body.classList.remove('ap-open', 'admin-public');
+    });
   })();
 
   init();
