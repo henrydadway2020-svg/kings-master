@@ -9,13 +9,15 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="MASTER KING | Liga Oficial">
 <meta property="og:description" content="Liga de Pokémon TCG por equipos. Consulta el calendario, la tabla y los resultados.">
-<meta property="og:image" content="https://kings-master.pages.dev/og-image.jpg">
+<meta property="og:image" content="https://kings-master.pages.dev/og-image.jpg?v=2">
 <meta property="og:image:type" content="image/jpeg">
+<meta property="og:locale" content="es_MX">
+<meta property="og:site_name" content="MASTER KING">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="MASTER KING — Liga oficial de Pokémon TCG por equipos">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://kings-master.pages.dev/og-image.jpg">
+<meta name="twitter:image" content="https://kings-master.pages.dev/og-image.jpg?v=2">
 <meta property="og:url" content="https://kings-master.pages.dev/">
 <link rel="canonical" href="https://kings-master.pages.dev/">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>♛</text></svg>">
@@ -628,6 +630,57 @@ body::before{opacity:.07;background-size:56px 56px;
 body::after{display:none}
 .topbar{background:linear-gradient(180deg,rgba(0,0,0,.97),rgba(0,0,0,.82));border-bottom:1px solid rgba(244,212,119,.14)}
 </style>
+<style id="mk-premium-extras">
+/* ===== Animaciones al hacer scroll ===== */
+.mk-rv{opacity:0}
+.mk-rv.mk-in{opacity:1;animation:mkRise .75s cubic-bezier(.2,.7,.2,1) backwards}
+@keyframes mkRise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.mk-rv{opacity:1!important}.mk-rv.mk-in{animation:none!important}}
+
+/* ===== Tabla: cambios de posición ===== */
+.standings td.rk>.c .mv{display:inline-block;margin-left:4px;font-size:.62rem;font-weight:800;letter-spacing:0;transform:skewX(18deg);vertical-align:middle}
+.standings td.rk>.c .mv.up{color:#9fffb8}.standings td.rk>.c .mv.down{color:#ffd0d0}
+@keyframes rkFlashUp{0%{box-shadow:0 0 0 2px #7dffa3,0 0 26px rgba(125,255,163,.8);filter:brightness(1.9)}100%{box-shadow:0 0 0 0 transparent;filter:none}}
+@keyframes rkFlashDown{0%{box-shadow:0 0 0 2px #ff7d7d,0 0 26px rgba(255,125,125,.7);filter:brightness(1.6)}100%{box-shadow:0 0 0 0 transparent;filter:none}}
+.standings tr.rk-up td>.c{animation:rkFlashUp 2.2s ease-out 1}
+.standings tr.rk-down td>.c{animation:rkFlashDown 2.2s ease-out 1}
+@media(max-width:560px){.standings td.rk>.c .mv .n{display:none}}
+
+/* ===== Podio de goleo con corona ===== */
+#goleoPodium{margin-top:46px}
+.pod.p1{position:relative;box-shadow:0 0 34px rgba(255,211,92,.32),inset 0 0 0 1px rgba(255,235,160,.18)}
+.pod.p1::before{content:"♛";position:absolute;top:-38px;left:50%;transform:translateX(-50%);font-size:2.6rem;line-height:1;color:#ffd35c;text-shadow:0 0 18px rgba(255,211,92,.8),0 2px 0 #7a5409;animation:crownFloat 3.2s ease-in-out infinite}
+@keyframes crownFloat{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-5px)}}
+@media(prefers-reduced-motion:reduce){.pod.p1::before{animation:none}}
+
+/* ===== Banner de campeones ===== */
+.champ-wrap{margin:26px 0 10px;display:grid;gap:14px}
+.champ-banner{position:relative;text-align:center;padding:62px 20px 30px;border-radius:18px;border:1px solid rgba(244,212,119,.55);background:radial-gradient(ellipse 70% 90% at 50% 0%,rgba(244,212,119,.24),transparent 70%),linear-gradient(180deg,#0e0a03,#020202);box-shadow:0 0 64px rgba(217,169,40,.24),inset 0 0 0 1px rgba(255,235,160,.08);overflow:hidden}
+.champ-crown{position:absolute;top:8px;left:50%;transform:translateX(-50%);font-size:3.2rem;line-height:1;color:#ffd35c;text-shadow:0 0 24px rgba(255,211,92,.85),0 2px 0 #7a5409;animation:crownFloat 3.2s ease-in-out infinite}
+.champ-kicker{font:700 .78rem "Cinzel",Georgia,serif;letter-spacing:.42em;color:var(--mk-gold2,#f4d477);text-transform:uppercase}
+.champ-team{margin:8px 0 0;font:italic 900 clamp(2rem,7vw,3.6rem)/1.05 "Barlow Condensed","Arial Narrow",sans-serif;text-transform:uppercase;letter-spacing:.02em;overflow-wrap:anywhere;background:linear-gradient(180deg,#fff0b0,#e0a921 60%,#b07c10);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.champ-players{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:12px;margin:22px auto 0;max-width:640px}
+.champ-p{min-width:0}
+.champ-p img{display:block;width:100%;aspect-ratio:280/392;object-fit:cover;border-radius:8px;border:1px solid rgba(244,212,119,.6)}
+.champ-p b{display:block;margin-top:7px;font-size:.92rem;color:#fff2ca;overflow-wrap:anywhere;line-height:1.15}
+.champ-ru{padding:16px 18px;border-radius:14px;border:1px solid rgba(201,209,222,.4);background:linear-gradient(170deg,rgba(201,209,222,.1),#0a0c11 70%);text-align:center}
+.champ-ru .champ-kicker{color:#c9d1de;letter-spacing:.3em}
+.champ-ru .champ-names{margin-top:6px;color:#8992a5;font-size:.88rem;overflow-wrap:anywhere}
+.champ-ru .rt{font:italic 800 clamp(1.4rem,5vw,2rem)/1.1 "Barlow Condensed","Arial Narrow",sans-serif;text-transform:uppercase;color:#f2f2ee;overflow-wrap:anywhere;margin-top:4px}
+.champ-admin{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.champ-admin small{color:#8992a5}
+
+/* ===== Celular: nombres largos sin cortarse ===== */
+.lu-name>span,.pod-name,.goleo-name,.goleo-team,.champ-team{overflow-wrap:anywhere;word-break:break-word;hyphens:auto}
+@media(max-width:560px){
+ .standings td.tm>.c{font-size:clamp(.62rem,3.2vw,.86rem);letter-spacing:.01em}
+ .team-card .tname{font-size:clamp(1.15rem,6.2vw,1.55rem)!important;line-height:1.08}
+ .lu-name>span{font-size:clamp(.78rem,3.7vw,.98rem)!important;line-height:1.08;padding:6px 5px!important}
+ .lu-crest span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .match-teams,.vs-meta{overflow-wrap:anywhere}
+ .tc-toolbar #teamSearch{flex-basis:100%}
+}
+</style>
 </head>
 
 <body>
@@ -768,6 +821,7 @@ body::after{display:none}
           <p>Las inscripciones están cerradas. Estos son los equipos que compiten en la liga.</p>
           <div class="progress-row"><span id="progressLabel">Cargando inscritos…</span><span class="count" id="progressCount">—</span></div>
           <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+          <div id="batchPhotoBox" style="display:none;margin-top:14px"><button type="button" class="btn-mini" id="batchPhotoBtn">📷 Subir fotos en lote</button> <span class="table-note" style="display:inline">Nombra cada archivo como el nick del jugador (ej. <em>AshKetchum.jpg</em>) y se asigna solo.</span><input type="file" id="batchPhotoFile" accept="image/*" multiple hidden></div>
           <p class="table-note" id="captainHint" style="display:none">Organizador: debajo de cada jugador tienes «📷 Foto» para subir su imagen y «♛ Capitán» para nombrarlo.</p>
           <div class="tc-toolbar" id="tcToolbar"><input type="search" id="teamSearch" placeholder="🔍 Buscar jugador o equipo…" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Buscar jugador o equipo"><button type="button" class="btn-mini" id="tcCollapse">Contraer todos</button><button type="button" class="btn-mini" id="tcExpand">Expandir todos</button><div class="team-search-info" id="teamSearchInfo" aria-live="polite"></div></div>
           <ul class="team-grid" id="teamList"></ul>
@@ -785,6 +839,7 @@ body::after{display:none}
       <section id="tabla">
         <div class="kicker">05 · TABLA DE POSICIONES</div>
         <h2>Tabla de posiciones</h2>
+        <div id="championBanner"></div>
         <div id="standingsContent"><p class="pending-note">La tabla aparece en cuanto se generan las fechas.</p></div>
         <div class="goleo-box" id="goleo" style="display:none;">
           <div class="subkicker">GOLEO INDIVIDUAL</div>
@@ -1743,6 +1798,64 @@ body::after{display:none}
       uiAlert('No se pudo subir la foto: ' + (err && err.message ? err.message : err));
     }
   });
+  // ===== Subida de fotos en lote: el nombre del archivo = nick del jugador =====
+  const keyName = (x) => String(x || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const batchFile = document.getElementById('batchPhotoFile');
+  document.getElementById('batchPhotoBtn').addEventListener('click', () => { if (!isAdmin) return; batchFile.value = ''; batchFile.click(); });
+  batchFile.addEventListener('change', async () => {
+    const files = Array.from(batchFile.files || []);
+    if (!files.length || !isAdmin) return;
+    const slots = [];
+    teams.forEach(t => (t.players || []).forEach((pn, idx) => { const k = keyName(pn); if (k) slots.push({ t, idx, k, pn }); }));
+    const ok = [], dup = [], none = [], seen = new Set();
+    files.forEach(f => {
+      const base = f.name.replace(/\.[^.]+$/, '');
+      const k = keyName(base);
+      if (!k) { none.push(f.name); return; }
+      let c = slots.filter(x => x.k === k);
+      if (!c.length && k.length >= 3) c = slots.filter(x => x.k.includes(k) || (x.k.length >= 3 && k.includes(x.k)));
+      if (c.length === 1) {
+        const id = c[0].t.id + ':' + c[0].idx;
+        if (seen.has(id)) { dup.push(f.name + ' (ya hay otra foto para ' + c[0].pn + ')'); return; }
+        seen.add(id); ok.push({ f, slot: c[0] });
+      } else if (c.length > 1) {
+        dup.push(f.name + ' → coincide con: ' + c.slice(0, 4).map(x => x.pn + ' (' + (x.t.name || 'Equipo') + ')').join(', '));
+      } else none.push(f.name);
+    });
+    let msg = 'Fotos a asignar: ' + ok.length + ' de ' + files.length + '.\n\n';
+    if (ok.length) msg += ok.slice(0, 40).map(x => '• ' + x.f.name + ' → ' + x.slot.pn + ' (' + (x.slot.t.name || 'Equipo') + ')').join('\n') + (ok.length > 40 ? '\n… y ' + (ok.length - 40) + ' más' : '') + '\n\n';
+    if (dup.length) msg += 'Ambiguas (no se suben, renómbralas):\n' + dup.map(x => '• ' + x).join('\n') + '\n\n';
+    if (none.length) msg += 'Sin jugador que coincida:\n' + none.map(x => '• ' + x).join('\n') + '\n\n';
+    if (!ok.length) { await uiAlert(msg.trim()); return; }
+    if (!(await uiConfirm(msg.trim() + '¿Subir las ' + ok.length + ' fotos? Reemplaza la foto actual de esos jugadores.'))) return;
+    const byTeam = {};
+    let fail = 0;
+    for (const x of ok) {
+      try {
+        const data = await readCropped(x.f, 280, 392, 0.74);
+        (byTeam[x.slot.t.id] = byTeam[x.slot.t.id] || { t: x.slot.t, o: {}, names: [] });
+        byTeam[x.slot.t.id].o['p' + x.slot.idx] = data;
+        byTeam[x.slot.t.id].names.push(x.slot.pn);
+      } catch (e) { fail++; }
+    }
+    let done = 0;
+    for (const id of Object.keys(byTeam)) {
+      const g = byTeam[id];
+      try {
+        const batch = db.batch();
+        batch.set(db.doc('teamPhotos/' + id), g.o, { merge: true });
+        const upd = { hasPhotos: true };
+        Object.keys(g.o).forEach(k => { upd['photos.' + k.slice(1)] = FV().delete(); });
+        batch.update(db.doc('teams/' + id), upd);
+        batch.set(db.collection('log').doc(), logEntry('photo', 'Fotos en lote (' + (g.t.name || 'Equipo') + '): ' + g.names.join(', ')));
+        await batch.commit();
+        done += g.names.length;
+        if (photoCache[id]) Object.keys(g.o).forEach(k => { photoCache[id][k.slice(1)] = g.o[k]; });
+      } catch (e) { fail += g.names.length; }
+    }
+    render();
+    uiAlert('Listo: se subieron ' + done + ' fotos.' + (fail ? ' Fallaron ' + fail + ' (revisa tu conexión y vuelve a intentar con esas).' : ''));
+  });
   async function removePlayerPhoto(t, idx) {
     if (!isAdmin || !(await uiConfirm('¿Quitar la foto de ' + ((t.players || [])[idx] || 'este jugador') + '?'))) return;
     try {
@@ -2299,6 +2412,16 @@ body::after{display:none}
   mvpForm.addEventListener('submit', (e) => { e.preventDefault(); saveMvp(false); });
   document.getElementById('mvpRemove').addEventListener('click', async () => { if (await uiConfirm('¿Quitar este MVP?')) saveMvp(true); });
 
+  // Posiciones: ▲▼ frente a tu última visita y destello cuando alguien sube/baja en vivo
+  const RANK_KEY = 'mk-ranks-v1';
+  let rankBase = {};
+  try { rankBase = JSON.parse(localStorage.getItem(RANK_KEY) || '{}') || {}; } catch (e) { rankBase = {}; }
+  const rankLive = {};
+  function saveRanks() {
+    try { if (Object.keys(rankLive).length) localStorage.setItem(RANK_KEY, JSON.stringify(rankLive)); } catch (e) { /* sin almacenamiento */ }
+  }
+  window.addEventListener('pagehide', saveRanks);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveRanks(); });
   function renderStandings() {
     const el = document.getElementById('standingsContent');
     const resultsDetails = document.getElementById('resultsDetails');
@@ -2310,6 +2433,8 @@ body::after{display:none}
     resultsDetails.style.display = 'block';
     const tableNums = [1, 2];
     el.innerHTML = '';
+    const trackRanks = !isAdmin && matches.length > 0;
+    const rankNext = {};
     tableNums.forEach(tn => {
       const group = document.createElement('div'); group.className = 'table-group';
       const rowsS = computeStandings(tn);
@@ -2332,11 +2457,16 @@ body::after{display:none}
         if (i === 3) cls.push('cut');
         if (s.dq) cls.push('dq');
         tr.className = cls.join(' ');
+        const rkNow = i + 1, rkBase = trackRanks ? rankBase[s.id] : undefined, rkPrev = trackRanks ? rankLive[s.id] : undefined;
+        const mv = (rkBase !== undefined && !s.dq) ? rkBase - rkNow : 0;
+        if (rkPrev !== undefined && rkPrev !== rkNow && !s.dq) { tr.classList.add(rkPrev > rkNow ? 'rk-up' : 'rk-down'); }
+        if (trackRanks) rankNext[s.id] = rkNow;
         [String(i + 1).padStart(2, '0'), s.name + (s.dq ? ' (DESCALIFICADO)' : ''), String(s.pts), String(s.wins), String(s.losses), String(s.goleo)].forEach((val, ci) => {
           const td = document.createElement('td');
           td.className = clsByCol[ci];
           const c = document.createElement('span'); c.className = 'c'; c.textContent = val;
           if (ci === 1) c.title = val;
+          if (ci === 0 && mv) { const a = document.createElement('span'); a.className = 'mv ' + (mv > 0 ? 'up' : 'down'); a.title = (mv > 0 ? 'Subió ' : 'Bajó ') + Math.abs(mv) + (Math.abs(mv) === 1 ? ' posición' : ' posiciones') + ' desde tu última visita'; a.appendChild(document.createTextNode(mv > 0 ? '▲' : '▼')); const nn = document.createElement('b'); nn.className = 'n'; nn.textContent = String(Math.abs(mv)); a.appendChild(nn); c.appendChild(a); }
           td.appendChild(c);
           tr.appendChild(td);
         });
@@ -2354,6 +2484,7 @@ body::after{display:none}
       group.appendChild(layout);
       el.appendChild(group);
     });
+    if (trackRanks) Object.assign(rankLive, rankNext);
   }
 
   async function setPublishedMany(list, value, label) {
@@ -2700,6 +2831,68 @@ body::after{display:none}
     if (inp) inp.addEventListener('input', applyTeamFilter);
   })();
 
+  // ===== Banner de campeones (el organizador lo declara al cierre) =====
+  async function setPlacing(field, label) {
+    if (!isAdmin || !db) return;
+    const name = await uiPrompt('Nombre del equipo ' + label + ' (como aparece en la lista):', '');
+    if (name === null) return;
+    const q = normSearch(name);
+    if (!q) return;
+    let c = teams.filter(t => normSearch(t.name) === q);
+    if (c.length !== 1) c = teams.filter(t => normSearch(t.name).includes(q));
+    if (c.length !== 1) { uiAlert(c.length ? 'Hay varios equipos que coinciden; escribe el nombre completo.' : 'No encontré ese equipo.'); return; }
+    try {
+      await db.doc('meta/status').update({ [field]: c[0].id });
+      await logAction('champion', 'Declaró ' + label + ': ' + (c[0].name || 'Equipo'));
+    } catch (err) { uiAlert('No se pudo guardar: ' + (err && err.message ? err.message : err)); }
+  }
+  async function clearPlacing(field) {
+    if (!isAdmin || !db) return;
+    try { await db.doc('meta/status').update({ [field]: FV().delete() }); } catch (err) { uiAlert('No se pudo quitar: ' + (err && err.message ? err.message : err)); }
+  }
+  function renderChampions() {
+    const el = document.getElementById('championBanner');
+    if (!el) return;
+    el.innerHTML = '';
+    const ch = teams.find(t => t.id === meta.championId), ru = teams.find(t => t.id === meta.runnerUpId);
+    if (ch || ru) {
+      const wrap = document.createElement('div'); wrap.className = 'champ-wrap';
+      if (ch) {
+        if (ch.hasPhotos && !photoCache[ch.id]) loadTeamPhotos(ch.id);
+        const b = document.createElement('div'); b.className = 'champ-banner';
+        const cr = document.createElement('div'); cr.className = 'champ-crown'; cr.setAttribute('aria-hidden', 'true'); cr.textContent = '♛';
+        const k = document.createElement('div'); k.className = 'champ-kicker'; k.textContent = 'Campeones · MASTER KING';
+        const h = document.createElement('h3'); h.className = 'champ-team'; h.textContent = ch.name || 'Equipo';
+        const pl = document.createElement('div'); pl.className = 'champ-players';
+        (ch.players || []).forEach((pn, idx) => {
+          const d = document.createElement('div'); d.className = 'champ-p';
+          const src = playerPhoto(ch, idx);
+          if (src) { const im = document.createElement('img'); im.src = src; im.alt = pn; im.loading = 'lazy'; d.appendChild(im); }
+          const nm = document.createElement('b'); nm.textContent = pn; d.appendChild(nm);
+          pl.appendChild(d);
+        });
+        b.append(cr, k, h, pl); wrap.appendChild(b);
+      }
+      if (ru) {
+        const r = document.createElement('div'); r.className = 'champ-ru';
+        const k = document.createElement('div'); k.className = 'champ-kicker'; k.textContent = 'Ⅱ Subcampeones';
+        const t = document.createElement('div'); t.className = 'rt'; t.textContent = ru.name || 'Equipo';
+        const n = document.createElement('div'); n.className = 'champ-names'; n.textContent = (ru.players || []).join(' · ');
+        r.append(k, t, n); wrap.appendChild(r);
+      }
+      el.appendChild(wrap);
+    }
+    if (isAdmin) {
+      const ad = document.createElement('div'); ad.className = 'champ-admin'; ad.style.margin = '14px 0';
+      const mk = (txt, fn, cls) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls || 'btn-mini'; b.textContent = txt; b.onclick = fn; return b; };
+      const lab = document.createElement('small'); lab.textContent = 'Organizador (cierre de la liga):';
+      ad.append(lab, mk('♛ Declarar campeón', () => setPlacing('championId', 'campeón')), mk('Ⅱ Declarar subcampeón', () => setPlacing('runnerUpId', 'subcampeón')));
+      if (meta.championId) ad.appendChild(mk('Quitar campeón', () => clearPlacing('championId'), 'btn-mini danger'));
+      if (meta.runnerUpId) ad.appendChild(mk('Quitar subcampeón', () => clearPlacing('runnerUpId'), 'btn-mini danger'));
+      el.appendChild(ad);
+    }
+  }
+
   const openActGroups = new Set();
   const openTeams = new Set();
   function render() {
@@ -2711,6 +2904,7 @@ body::after{display:none}
 
     const list = document.getElementById('teamList');
     document.getElementById('captainHint').style.display = isAdmin ? 'block' : 'none';
+    { const bb = document.getElementById('batchPhotoBox'); if (bb) bb.style.display = isAdmin ? 'block' : 'none'; }
     const emptyNote = document.getElementById('emptyNote');
     if (n === 0) {
       list.innerHTML = '';
@@ -2732,6 +2926,7 @@ body::after{display:none}
         const li = document.createElement('li');
         li.className = 'team-card' + (t.disqualified ? ' dq' : '');
         li.dataset.tid = t.id; li.dataset.tn = normSearch(t.name || 'Equipo');
+        if (window.__mkRevealCard) window.__mkRevealCard(li, t.id);
         const det = document.createElement('details'); det.className = 'tc-fold';
         det.open = !closedTeams.has(t.id);
         det.addEventListener('toggle', () => { if (det.open) { closedTeams.delete(t.id); if (t.hasPhotos) loadTeamPhotos(t.id); } else closedTeams.add(t.id); });
@@ -2820,6 +3015,7 @@ body::after{display:none}
     renderDecisionPanel();
     renderRounds();
     renderStandings();
+    renderChampions();
     renderGoleo();
     const gl = document.getElementById('goleo'), gn = document.querySelector('#navLinks a[href="#goleo"]');
     if (gl && gn) gn.style.display = gl.style.display === 'none' ? 'none' : '';
@@ -3056,7 +3252,9 @@ body::after{display:none}
         expanded: true,
         scheduleStart: d.scheduleStart || null,
         fixturesGenerating: !!d.fixturesGenerating,
-        fixturesGeneratingAt: Number(d.fixturesGeneratingAt) || 0
+        fixturesGeneratingAt: Number(d.fixturesGeneratingAt) || 0,
+        championId: d.championId || '',
+        runnerUpId: d.runnerUpId || ''
       };
       render();
     }, () => {
@@ -3064,6 +3262,36 @@ body::after{display:none}
     });
 
   }
+
+  // ===== Animaciones suaves al hacer scroll =====
+  (function () {
+    if (!('IntersectionObserver' in window) || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
+    const seenCards = new Set();
+    const io = new IntersectionObserver((es) => {
+      let k = 0;
+      es.forEach(en => {
+        if (!en.isIntersecting) return;
+        const el = en.target;
+        io.unobserve(el);
+        if (el.dataset.tid) seenCards.add(el.dataset.tid);
+        el.style.animationDelay = (Math.min(k++, 5) * 70) + 'ms';
+        el.classList.add('mk-in');
+        el.addEventListener('animationend', function done() {
+          el.classList.remove('mk-rv', 'mk-in'); el.style.animationDelay = '';
+          el.removeEventListener('animationend', done);
+        });
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -6% 0px' });
+    const SEL = '.clause, .cell, .step, .prize, .stat, .activity-card, .roster-box, .goleo-box, main section > h2, main section > .kicker';
+    document.querySelectorAll(SEL).forEach(el => {
+      if (el.closest('.hero') || el.dataset.rv) return;
+      el.dataset.rv = '1'; el.classList.add('mk-rv'); io.observe(el);
+    });
+    window.__mkRevealCard = (li, id) => {
+      if (seenCards.has(id)) return;
+      li.classList.add('mk-rv'); io.observe(li);
+    };
+  })();
 
   init();
 })();
