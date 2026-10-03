@@ -820,6 +820,11 @@ body.is-admin.ap-open #adminPanel{display:flex}
 @media(min-width:1100px){body.is-admin.ap-open{padding-left:250px}body.ap-open #adminFab{display:none}}
 .ap-login{display:inline-block;margin-top:14px;color:#6f7889;font-size:.72rem;letter-spacing:.14em;text-decoration:none;border-bottom:1px dotted #4a5262}
 .ap-login:hover{color:var(--cyan)}
+.ap-start{display:flex;flex-direction:column;gap:6px;padding:12px 4px;border-top:1px solid rgba(117,217,255,.18)}
+.ap-start label{font:800 .72rem "Manrope",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#b9cdd6}
+.ap-start input{width:100%;padding:9px 10px;border-radius:8px;border:1px solid rgba(117,217,255,.3);background:#04070b;color:#fff;font:inherit;font-size:.85rem;color-scheme:dark}
+.ap-start button{padding:9px 10px;border-radius:8px;border:1px solid rgba(117,217,255,.4);background:rgba(117,217,255,.08);color:var(--cyan);font:800 .75rem "Manrope",sans-serif;letter-spacing:.06em;text-transform:uppercase}
+.ap-start small{font-size:.7rem;color:#7fb9cf;line-height:1.35}
 /* Vista pública (previsualización): el admin ve el sitio sin herramientas */
 body.admin-public :is(.team-actions,.lu-admin,.champ-admin,.publish-bar,.tablevis-bar,.admin-box,.admin-badge,#batchPhotoBox,#captainHint,.mvp-edit,.goleo-ctrl,.match-buttons,.cap-btn,#respaldo){display:none!important}
 </style>
@@ -942,7 +947,6 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
       <div class="dash-round" id="dashRound"></div>
       <div class="dash-tables" id="dashTables"></div>
       <div class="dash-card"><h3>Próximos versus</h3><div id="dashNext"></div></div>
-      <div class="dash-card" id="dashActCard"><h3>Actividad</h3><div id="dashAct"></div></div>
       <div class="dash-card"><h3>Últimos resultados</h3><div id="dashLast"></div></div>
       <div class="dash-card"><h3>MVP</h3><div id="dashMvp" class="dash-mvps"></div></div>
       <div class="dash-more"><a href="#reglamento">Reglas</a><a href="#formato">Formato</a><a href="#fechas">Calendario</a><a href="#premiacion">Premios</a></div>
@@ -972,17 +976,6 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
           <div id="goleoPodium"></div>
           <div id="goleoList"></div>
           <div class="pager" id="goleoPager"></div>
-        </div>
-        <div class="activity-control" id="activityControl" style="display:none;">
-          <div class="activity-head">
-            <div><div class="subkicker">CONTROL AUTOMÁTICO</div><h3>Actividad de los equipos</h3></div>
-            <div class="activity-day" id="activityDay">—</div>
-          </div>
-          <p class="activity-note" id="activityNote"></p>
-          <div class="activity-legend">
-            <span>🟢 ACTIVO</span><span>🟡 EN RIESGO</span><span>🔴 INCUMPLIMIENTO</span><span>⚫ REVISIÓN / ABANDONO</span>
-          </div>
-          <div id="activityList"></div>
         </div>
       </section>
 
@@ -2958,98 +2951,6 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
     }
   }
 
-  function renderActivityControl() {
-    const box = document.getElementById('activityControl');
-    const list = document.getElementById('activityList');
-    const dayEl = document.getElementById('activityDay');
-    const note = document.getElementById('activityNote');
-    if (!box || !list || !isAdmin || !meta.scheduleStart || !matches.length || !teams.length) {
-      if (box) box.style.display = 'none';
-      return;
-    }
-    box.style.display = 'block';
-
-    const DAY = 86400000;
-    const ROUND = 3 * DAY;
-    const elapsed = Math.max(0, Date.now() - Number(meta.scheduleStart));
-    const currentRound = Math.floor(elapsed / ROUND) + 1;
-    const dayInRound = Math.min(3, Math.floor((elapsed % ROUND) / DAY) + 1);
-    const totalRounds = Math.max(1, ...matches.map(m => Number(m.round) || 1));
-    dayEl.textContent = 'RONDA ' + currentRound + ' · DÍA ' + dayInRound + ' / 3';
-    note.textContent = 'El sistema revisa automáticamente el duelo de cada equipo en la ronda actual. Día 1 = actividad inicial; Día 2 = seguimiento; Día 3 = cierre. Un duelo con resultado capturado cuenta como cumplido.';
-
-    const rows = teams.map(t => {
-      const tm = matches.filter(m => !m.bye && (m.teamAId === t.id || m.teamBId === t.id));
-      const table = tm.length ? tm[0].table : 1;
-      const current = matches.find(m => !m.bye && m.round === currentRound && m.table === table && (m.teamAId === t.id || m.teamBId === t.id));
-      const onBye = matches.some(m => m.bye && m.round === currentRound && m.table === table && m.teamAId === t.id);
-      const unresolvedPast = tm.filter(m => m.round < currentRound && !m.winner).length;
-      const completedPast = tm.filter(m => m.round < currentRound && !!m.winner).length;
-      const currentDone = !!(current && current.winner);
-      let status, cls, detail;
-
-      if (t.disqualified) {
-        status = '⛔ DESCALIFICADO'; cls = 'black';
-        detail = t.disqualifiedReason || 'Descalificado por la organización';
-      } else if (unresolvedPast >= 2) {
-        status = '⚫ REVISIÓN / ABANDONO'; cls = 'black';
-        detail = unresolvedPast + ' rondas anteriores pendientes';
-      } else if (onBye) {
-        status = '😴 DESCANSA'; cls = 'green';
-        detail = 'Descansa esta ronda (sin duelo)';
-      } else if (currentDone) {
-        status = '🟢 ACTIVO'; cls = 'green';
-        detail = 'Duelo de la ronda cumplido';
-      } else if (dayInRound === 1) {
-        status = '🟡 EN RIESGO'; cls = 'yellow';
-        detail = 'Debe jugar durante el Día 1';
-      } else if (dayInRound === 2) {
-        status = '🔴 INCUMPLIMIENTO'; cls = 'red';
-        detail = 'Duelo de la ronda aún pendiente';
-      } else {
-        status = '🔴 INCUMPLIMIENTO'; cls = 'red';
-        detail = 'Cierre de ronda sin resultado';
-      }
-
-      if (!t.disqualified && !current && currentRound > totalRounds) {
-        status = '🟢 ACTIVO'; cls = 'green'; detail = 'Liga finalizada o sin ronda pendiente';
-      }
-      return { name: t.name || 'Equipo', status, cls, detail, completedPast };
-    }).sort((a,b) => {
-      const order = {black:0, red:1, yellow:2, green:3};
-      return order[a.cls]-order[b.cls] || a.name.localeCompare(b.name);
-    });
-
-    if (!rows.length) { list.innerHTML = '<div class="activity-empty">No hay equipos para evaluar.</div>'; return; }
-    const GROUPS = [
-      { cls: 'black', label: '⚫ Revisión / abandono / descalificados' },
-      { cls: 'red', label: '🔴 Incumplimiento' },
-      { cls: 'yellow', label: '🟡 En riesgo' },
-      { cls: 'green', label: '🟢 Activos / descansan' }
-    ];
-    list.innerHTML = '';
-    GROUPS.forEach(g => {
-      const items = rows.filter(r => r.cls === g.cls);
-      if (!items.length) return;
-      const det = document.createElement('details'); det.className = 'act-group';
-      if (openActGroups.has(g.cls)) det.open = true;
-      det.addEventListener('toggle', () => { if (det.open) openActGroups.add(g.cls); else openActGroups.delete(g.cls); });
-      const sm = document.createElement('summary');
-      const lb = document.createElement('span'); lb.className = 'activity-team'; lb.textContent = g.label;
-      const ct = document.createElement('span'); ct.className = 'act-count'; ct.textContent = String(items.length);
-      sm.append(lb, ct);
-      det.appendChild(sm);
-      const inner = document.createElement('div');
-      inner.innerHTML = items.map(r =>
-        '<div class="activity-row"><div><div class="activity-team">' + esc(r.name) + '</div><div class="activity-meta">' + esc(r.detail) + '</div></div>' +
-        '<div class="activity-meta">Rondas anteriores cumplidas: ' + r.completedPast + '</div>' +
-        '<span class="activity-status ' + r.cls + '">' + r.status + '</span></div>'
-      ).join('');
-      det.appendChild(inner);
-      list.appendChild(det);
-    });
-  }
-
   // ===== Buscador de jugadores / equipos (sección Equipos) =====
   function normSearch(x) { return String(x || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim(); }
   function applyTeamFilter() {
@@ -3132,28 +3033,6 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
       if (n > 6) { const a = mk('a', 'go', 'Ver los ' + n + ' en Versus →'); a.href = '#versus'; nx.push(a); }
     }
     fill('dashNext', nx);
-    // Actividad
-    const card = $('dashActCard');
-    if (!cur || !teams.length || !vis.length) { card.style.display = 'none'; }
-    else {
-      card.style.display = '';
-      const c = { green: 0, yellow: 0, red: 0, black: 0 };
-      teams.forEach(t => {
-        if (t.disqualified) { c.black++; return; }
-        const tm = vis.filter(m => !m.bye && (m.teamAId === t.id || m.teamBId === t.id));
-        const table = tm.length ? tm[0].table : 1;
-        const cm = vis.find(m => !m.bye && m.round === cur && m.table === table && (m.teamAId === t.id || m.teamBId === t.id));
-        const bye = vis.some(m => m.bye && m.round === cur && m.table === table && m.teamAId === t.id);
-        if (tm.filter(m => m.round < cur && !m.winner).length >= 2) c.black++;
-        else if (bye || (cm && cm.winner)) c.green++;
-        else if (cm) { if (day === 1) c.yellow++; else c.red++; }
-      });
-      const pills = mk('div', 'dash-pills');
-      [['green', '🟢', 'ACTIVOS'], ['yellow', '🟡', 'EN RIESGO'], ['red', '🔴', 'INCUMPLIMIENTO'], ['black', '⚫', 'REVISIÓN']].forEach(([k, e, l]) => {
-        if (c[k] || k === 'green' || k === 'yellow') pills.appendChild(mk('span', '', e + ' ' + c[k] + ' ' + l));
-      });
-      fill('dashAct', [pills]);
-    }
     // Últimos resultados
     const done = real.filter(m => m.winner).sort((a, b) => b.round - a.round).slice(0, 6);
     const ls = [];
@@ -3397,7 +3276,6 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
     const gl = document.getElementById('goleo'), gn = document.querySelector('#navLinks a[href="#goleo"]');
     if (gl && gn) gn.style.display = gl.style.display === 'none' ? 'none' : '';
     { const bg = document.querySelector('#bottomNav a[href="#goleo"]'); if (bg && gl) bg.style.display = gl.style.display === 'none' ? 'none' : ''; }
-    renderActivityControl();
     renderResults();
     updateReportCta();
     renderReports();
@@ -3704,7 +3582,7 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
     const ITEMS = [
       ['📊', 'Dashboard', '#panel'], ['👥', 'Equipos', '#inscripcion'], ['🃏', 'Jugadores', '#goleo'],
       ['📅', 'Calendario', '#fechas'], ['⚔️', 'Resultados', '#versus'], ['📥', 'Reportes', '#adminReportsBox'],
-      ['📈', 'Actividad', '#activityControl'], ['⭐', 'MVP', '#versus'], ['🚫', 'Sanciones', '#reglamento'],
+      ['⭐', 'MVP', '#versus'], ['🚫', 'Sanciones', '#reglamento'],
       ['📢', 'Publicaciones', '#tableVisBar'], ['💾', 'Respaldos', '#respaldo']
     ];
     const body = document.body;
@@ -3739,9 +3617,30 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
     const out = mk('button', 'ap-out', 'Cerrar sesión'); out.type = 'button';
     out.addEventListener('click', async () => { if (await uiConfirm('¿Cerrar sesión de organizador?')) auth.signOut(); });
     foot.append(view, out);
-    panel.append(head, nav, foot, note);
+    // Inicio real de la Ronda 1: de aquí se calcula la ronda actual (3 días por ronda)
+    const st = mk('div', 'ap-start');
+    const stIn = mk('input'); stIn.type = 'datetime-local'; stIn.setAttribute('aria-label', 'Inicio de la Ronda 1');
+    const stBtn = mk('button', '', 'Guardar inicio'); stBtn.type = 'button';
+    const stHint = mk('small');
+    st.append(mk('label', '', '📅 Inicio de la Ronda 1'), stIn, stBtn, stHint);
+    const toLocal = (ms) => new Date(ms - new Date(ms).getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    const fillStart = () => {
+      if (meta.scheduleStart) stIn.value = toLocal(Number(meta.scheduleStart));
+      stHint.textContent = meta.scheduleStart ? 'La ronda actual se calcula desde esta fecha (3 días por ronda).' : 'Aún no se generan las fechas.';
+    };
+    stBtn.addEventListener('click', async () => {
+      const ms = new Date(stIn.value).getTime();
+      if (!stIn.value || isNaN(ms)) { say('Elige fecha y hora.'); return; }
+      if (!(await uiConfirm('¿Cambiar el inicio de la Ronda 1? Se recalcula la ronda actual para todos.'))) return;
+      try {
+        await db.doc('meta/status').set({ scheduleStart: ms }, { merge: true });
+        await logAction('schedule', 'Cambió el inicio de la Ronda 1 a ' + new Date(ms).toLocaleString('es-MX'));
+        say('Inicio guardado.');
+      } catch (err) { say('No se pudo guardar el inicio.'); }
+    });
+    panel.append(head, nav, st, foot, note);
     const fab = mk('button'); fab.id = 'adminFab'; fab.type = 'button'; fab.textContent = '⚙ Admin';
-    fab.addEventListener('click', () => body.classList.add('ap-open'));
+    fab.addEventListener('click', () => { fillStart(); body.classList.add('ap-open'); });
     x.addEventListener('click', () => body.classList.remove('ap-open'));
     body.append(panel, fab);
 
@@ -3758,7 +3657,7 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
 
     auth.onAuthStateChanged((user) => {
       body.classList.toggle('is-admin', !!user);
-      if (user) { body.classList.remove('admin-public'); syncView(); if (isWide()) body.classList.add('ap-open'); }
+      if (user) { body.classList.remove('admin-public'); syncView(); if (isWide()) body.classList.add('ap-open'); setTimeout(fillStart, 1500); }
       else body.classList.remove('ap-open', 'admin-public');
     });
   })();
