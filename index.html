@@ -937,6 +937,41 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
   .standings tr.r1 td.tm>.c::before{margin-right:5px}
 }
 </style>
+<style id="mk-clarity">
+/* ===== CLARIDAD: tabla en pantalla (sin inclinados, más contraste, más grande) ===== */
+#tabla .standings{border-spacing:0 4px;font-size:1.05rem}
+#tabla .standings th{color:#d7dcea;font-size:.8rem;letter-spacing:.14em;font-weight:800;padding:0 3px 10px}
+#tabla .standings td>.c{transform:none!important;display:flex;align-items:center;justify-content:center;height:auto;min-height:46px;line-height:1.15;border:0!important;border-radius:6px;background:#161a23!important;color:#fff!important;font-weight:700;box-shadow:none!important;text-transform:none;letter-spacing:0}
+#tabla .standings tbody tr:nth-child(even) td>.c{background:#1d222e!important}
+#tabla .standings td.tm>.c{justify-content:flex-start;text-align:left;padding:6px 14px;font-size:1.2rem;font-weight:800;white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere}
+#tabla .standings td.rk>.c{color:#c3cadb!important;font-size:1.15rem}
+#tabla .standings td.pts>.c{font-size:1.5rem;font-weight:900;background:#2a3040!important;color:#fff!important}
+#tabla .standings tr.qualify td.rk>.c{color:#ffe18a!important;background:linear-gradient(90deg,rgba(255,211,92,.28),#161a23)!important;box-shadow:inset 5px 0 0 #ffd35c!important}
+#tabla .standings tr.qualify td.tm>.c{background:linear-gradient(90deg,rgba(255,211,92,.12),#161a23)!important}
+#tabla .standings tr.qualify td.pts>.c{color:#ffe18a!important}
+#tabla .standings tr.r1 td.tm>.c::before{transform:none!important}
+#tabla .standings td.rk>.c .mv{transform:none!important}
+#tabla .standings tr.cut td::after{border-bottom:2px dashed rgba(255,255,255,.4);bottom:-4px}
+#tabla .zone-legend{color:#d0d6e4;font-size:.9rem}
+/* Versus en pantalla: el perdedor se sigue leyendo */
+.vsb .lose{opacity:.8}
+.vsb-name{font-size:.98rem}
+@media(max-width:560px){
+  #tabla .standings td>.c{min-height:42px;font-size:.95rem}
+  #tabla .standings td.tm>.c{font-size:.98rem;padding:5px 9px}
+  #tabla .standings td.pts>.c{font-size:1.2rem}
+  #tabla .standings th{font-size:.64rem;letter-spacing:.06em}
+  .vsb-name{font-size:.82rem}
+}
+/* Botones de descarga */
+.dl-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;border:1px solid rgba(255,211,92,.55);background:linear-gradient(135deg,#ffe18a,#d9a928);color:#1a1405;font:800 .82rem "Manrope",system-ui,sans-serif;letter-spacing:.04em;cursor:pointer;white-space:nowrap}
+.dl-btn:hover{filter:brightness(1.08)}
+.dl-btn:disabled{opacity:.6;cursor:wait}
+.dl-btn.alt{background:rgba(255,255,255,.06);color:#ffe18a}
+.dl-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sb-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.vs-roundhead .dl-bar{margin-left:auto}
+</style>
 </head>
 
 <body>
@@ -2405,6 +2440,195 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
   }
   window.addEventListener('pagehide', saveRanks);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveRanks(); });
+
+  // ===== Exportar a imagen (para compartir en WhatsApp) =====
+  const EXP = { gold:'#ffd35c', gold2:'#ffe18a', bg:'#0b0d12', row1:'#151923', row2:'#1b202c', text:'#ffffff', muted:'#a9b1c4' };
+  let expLogo;
+  function expLoadLogo() {
+    if (expLogo !== undefined) return Promise.resolve(expLogo);
+    return new Promise(res => {
+      const im = new Image();
+      im.onload = () => { expLogo = im; res(im); };
+      im.onerror = () => { expLogo = null; res(null); };
+      im.src = 'logo.webp';
+    });
+  }
+  async function expFonts() {
+    try {
+      await Promise.all(['800 30px Manrope', '900 30px Manrope', '700 30px Manrope', '800 30px "Barlow Condensed"', '700 30px Fraunces'].map(f => document.fonts.load(f)));
+      await document.fonts.ready;
+    } catch (e) { /* se usan fuentes del sistema */ }
+  }
+  function expRR(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function expFit(ctx, text, maxW, size, weight, minSize) {
+    let sz = size;
+    for (; sz > minSize; sz -= 1) { ctx.font = weight + ' ' + sz + 'px Manrope, system-ui, sans-serif'; if (ctx.measureText(text).width <= maxW) return text; }
+    ctx.font = weight + ' ' + minSize + 'px Manrope, system-ui, sans-serif';
+    let t = text;
+    while (t.length > 1 && ctx.measureText(t + '…').width > maxW) t = t.slice(0, -1);
+    return t + '…';
+  }
+  function expBase(ctx, W, H) {
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, '#12151d'); g.addColorStop(1, '#07080b');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    const rg = ctx.createRadialGradient(W / 2, 0, 20, W / 2, 0, W * 0.8);
+    rg.addColorStop(0, 'rgba(255,211,92,.18)'); rg.addColorStop(1, 'rgba(255,211,92,0)');
+    ctx.fillStyle = rg; ctx.fillRect(0, 0, W, 420);
+    ctx.fillStyle = EXP.gold; ctx.fillRect(0, 0, W, 8);
+  }
+  function expHeader(ctx, W, logo, title, sub) {
+    let y = 48;
+    if (logo && logo.naturalWidth) {
+      const lw = 360, lh = lw * logo.naturalHeight / logo.naturalWidth;
+      ctx.drawImage(logo, (W - lw) / 2, y, lw, Math.min(lh, 150)); y += Math.min(lh, 150) + 10;
+    } else {
+      ctx.fillStyle = EXP.gold2; ctx.textAlign = 'center'; ctx.font = '900 54px Manrope, system-ui, sans-serif';
+      ctx.fillText('♛ MASTER KING', W / 2, y + 54); y += 84;
+    }
+    ctx.textAlign = 'center'; ctx.fillStyle = '#fff'; ctx.font = '800 54px Manrope, system-ui, sans-serif';
+    ctx.fillText(title, W / 2, y + 52);
+    ctx.fillStyle = EXP.muted; ctx.font = '700 26px Manrope, system-ui, sans-serif';
+    ctx.fillText(sub, W / 2, y + 96);
+    return y + 130;
+  }
+  function expFooter(ctx, W, y) {
+    ctx.textAlign = 'center'; ctx.fillStyle = EXP.muted; ctx.font = '700 22px Manrope, system-ui, sans-serif';
+    ctx.fillText('kings-master.pages.dev  ·  ' + new Date().toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' }), W / 2, y);
+  }
+  function expSave(canvas, filename) {
+    return new Promise(res => {
+      canvas.toBlob(async blob => {
+        if (!blob) { uiAlert('No se pudo crear la imagen.'); return res(); }
+        const file = new File([blob], filename, { type: 'image/png' });
+        const mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        if (mobile && navigator.canShare && navigator.canShare({ files: [file] })) {
+          try { await navigator.share({ files: [file], title: 'MASTER KING' }); return res(); }
+          catch (e) { if (e && e.name === 'AbortError') return res(); }
+        }
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 4000);
+        res();
+      }, 'image/png');
+    });
+  }
+  async function exportStandings(tn, nTables) {
+    const rows = computeStandings(tn);
+    await expFonts(); const logo = await expLoadLogo();
+    const W = 1080, PAD = 44, RH = 66, HH = 54, scale = 2;
+    const probe = document.createElement('canvas').getContext('2d');
+    const headerH = (logo && logo.naturalWidth ? Math.min(360 * logo.naturalHeight / logo.naturalWidth, 150) + 58 : 132) + 130;
+    const H = headerH + HH + rows.length * RH + 110;
+    const c = document.createElement('canvas'); c.width = W * scale; c.height = H * scale;
+    const ctx = c.getContext('2d'); ctx.scale(scale, scale);
+    expBase(ctx, W, H);
+    let y = expHeader(ctx, W, logo, nTables > 1 ? 'TABLA ' + tn : 'TABLA GENERAL', 'Tabla de posiciones · ' + rows.length + ' equipos');
+    // columnas (centros)
+    const colX = { pos: PAD + 40, pj: 640, pts: 730, g: 820, p: 905, goleo: 990 };
+    ctx.font = '800 20px Manrope, system-ui, sans-serif'; ctx.fillStyle = '#d7dcea'; ctx.textAlign = 'center';
+    ctx.fillText('POS', colX.pos, y + 34);
+    ctx.textAlign = 'left'; ctx.fillText('EQUIPO', PAD + 100, y + 34);
+    ctx.textAlign = 'center';
+    [['PJ', colX.pj], ['PTS', colX.pts], ['G', colX.g], ['P', colX.p], ['GOLEO', colX.goleo]].forEach(a => ctx.fillText(a[0], a[1], y + 34));
+    y += HH;
+    rows.forEach((r, i) => {
+      const q = i < 4 && !r.dq;
+      ctx.fillStyle = i % 2 ? EXP.row2 : EXP.row1; expRR(ctx, PAD, y + 3, W - PAD * 2, RH - 6, 10); ctx.fill();
+      if (q) {
+        const g = ctx.createLinearGradient(PAD, 0, W - PAD, 0); g.addColorStop(0, 'rgba(255,211,92,.20)'); g.addColorStop(0.7, 'rgba(255,211,92,0)');
+        ctx.fillStyle = g; expRR(ctx, PAD, y + 3, W - PAD * 2, RH - 6, 10); ctx.fill();
+        ctx.fillStyle = EXP.gold; expRR(ctx, PAD, y + 3, 8, RH - 6, 4); ctx.fill();
+      }
+      const cy = y + RH / 2 + 11;
+      ctx.globalAlpha = r.dq ? 0.5 : 1;
+      ctx.textAlign = 'center'; ctx.fillStyle = q ? EXP.gold2 : '#c3cadb'; ctx.font = '900 30px Manrope, system-ui, sans-serif';
+      ctx.fillText(String(i + 1).padStart(2, '0'), colX.pos, cy);
+      ctx.textAlign = 'left'; ctx.fillStyle = '#fff';
+      const nm = (i === 0 && q ? '♛ ' : '') + r.name + (r.dq ? ' (DQ)' : '');
+      const shown = expFit(ctx, nm, 500, 31, 800, 20);
+      ctx.fillText(shown, PAD + 100, cy);
+      ctx.textAlign = 'center'; ctx.font = '700 29px Manrope, system-ui, sans-serif'; ctx.fillStyle = '#e6e9f2';
+      ctx.fillText(String(r.wins + r.losses), colX.pj, cy);
+      ctx.fillText(String(r.wins), colX.g, cy); ctx.fillText(String(r.losses), colX.p, cy); ctx.fillText(String(r.goleo), colX.goleo, cy);
+      ctx.font = '900 36px Manrope, system-ui, sans-serif'; ctx.fillStyle = q ? EXP.gold2 : '#fff';
+      ctx.fillText(String(r.pts), colX.pts, cy + 1);
+      ctx.globalAlpha = 1;
+      if (i === 3 && rows.length > 4) {
+        ctx.save(); ctx.setLineDash([10, 8]); ctx.strokeStyle = 'rgba(255,255,255,.45)'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(PAD, y + RH); ctx.lineTo(W - PAD, y + RH); ctx.stroke(); ctx.restore();
+      }
+      y += RH;
+    });
+    ctx.textAlign = 'left'; ctx.fillStyle = EXP.gold; expRR(ctx, PAD, y + 22, 26, 14, 3); ctx.fill();
+    ctx.fillStyle = '#d0d6e4'; ctx.font = '700 22px Manrope, system-ui, sans-serif'; ctx.fillText('Clasifican a las rondas finales (4 primeros)', PAD + 38, y + 35);
+    expFooter(ctx, W, y + 82);
+    await expSave(c, 'master-king-tabla-' + tn + '.png');
+  }
+  async function exportRound(tn, round, nTables) {
+    const list = matches.filter(m => (isAdmin || m.published === true) && m.table === tn && m.round === round);
+    const duels = list.filter(m => !m.bye), byes = list.filter(m => m.bye);
+    await expFonts(); const logo = await expLoadLogo();
+    const W = 1080, PAD = 44, CH = 112, GAP = 16, scale = 2;
+    const headerH = (logo && logo.naturalWidth ? Math.min(360 * logo.naturalHeight / logo.naturalWidth, 150) + 58 : 132) + 130;
+    const H = headerH + duels.length * (CH + GAP) + byes.length * 70 + 100;
+    const c = document.createElement('canvas'); c.width = W * scale; c.height = H * scale;
+    const ctx = c.getContext('2d'); ctx.scale(scale, scale);
+    expBase(ctx, W, H);
+    let y = expHeader(ctx, W, logo, (nTables > 1 ? 'TABLA ' + tn + ' · ' : '') + 'RONDA ' + round, duels.length + ' versus · ' + duels.filter(m => m.winner).length + ' definidos');
+    duels.forEach(m => {
+      const x0 = PAD, w = W - PAD * 2, cx = W / 2, sideW = 360;
+      ctx.fillStyle = '#171a2e'; expRR(ctx, x0, y, w, CH, 18); ctx.fill();
+      ctx.strokeStyle = 'rgba(162,77,255,.45)'; ctx.lineWidth = 2; expRR(ctx, x0, y, w, CH, 18); ctx.stroke();
+      [['A', x0 + 28, 'left', '#ff2e93'], ['B', x0 + w - 28, 'right', '#a24dff']].forEach(side => {
+        const key = side[0], win = m.winner === key, lose = m.winner && !win;
+        const name = key === 'A' ? m.teamAName : m.teamBName;
+        if (win) { const g = ctx.createLinearGradient(key === 'A' ? x0 : x0 + w, 0, cx, 0); g.addColorStop(0, 'rgba(255,211,92,.30)'); g.addColorStop(1, 'rgba(255,211,92,0)'); ctx.fillStyle = g; expRR(ctx, key === 'A' ? x0 : cx, y, w / 2, CH, 18); ctx.fill(); }
+        ctx.fillStyle = win ? EXP.gold : side[3];
+        ctx.fillRect(key === 'A' ? x0 + 18 : cx + 60, y + CH - 8, w / 2 - 78, 4);
+        ctx.textAlign = side[2];
+        ctx.fillStyle = win ? EXP.gold2 : (lose ? '#a3abbf' : '#fff');
+        const t = expFit(ctx, name || 'Equipo', sideW - 20, 34, 800, 20);
+        ctx.fillText(t, side[1] + (key === 'A' ? 0 : 0), y + CH / 2 + 6);
+        if (win) { ctx.font = '900 18px Manrope, system-ui, sans-serif'; ctx.fillStyle = EXP.gold; ctx.fillText(m.forfeit ? 'GANÓ (ADMIN.)' : 'GANÓ ✓', side[1], y + CH / 2 + 36); }
+      });
+      // centro: VS o marcador
+      ctx.textAlign = 'center';
+      if (m.winner) {
+        [['A', cx - 56], ['B', cx + 56]].forEach(a => {
+          const win = m.winner === a[0];
+          ctx.beginPath(); ctx.arc(a[1], y + CH / 2, 34, 0, Math.PI * 2);
+          ctx.fillStyle = win ? EXP.gold : '#1b1650'; ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = win ? '#fff6d6' : '#fff'; ctx.stroke();
+          ctx.fillStyle = win ? '#1a1405' : '#fff'; ctx.font = '900 38px Manrope, system-ui, sans-serif'; ctx.fillText(win ? '1' : '0', a[1], y + CH / 2 + 13);
+        });
+        ctx.fillStyle = '#c79bff'; ctx.font = 'italic 900 22px Manrope, system-ui, sans-serif'; ctx.fillText('VS', cx, y + CH / 2 + 8);
+      } else {
+        ctx.beginPath(); ctx.arc(cx, y + CH / 2, 38, 0, Math.PI * 2); ctx.fillStyle = '#140f3d'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = '#a24dff'; ctx.stroke();
+        ctx.fillStyle = '#d9b8ff'; ctx.font = 'italic 900 34px Manrope, system-ui, sans-serif'; ctx.fillText('VS', cx, y + CH / 2 + 12);
+      }
+      y += CH + GAP;
+    });
+    byes.forEach(m => {
+      ctx.textAlign = 'center'; ctx.fillStyle = EXP.muted; ctx.font = '700 26px Manrope, system-ui, sans-serif';
+      ctx.fillText((m.teamAName || 'Equipo') + ' descansa esta ronda', W / 2, y + 40); y += 70;
+    });
+    expFooter(ctx, W, y + 50);
+    await expSave(c, 'master-king-' + (nTables > 1 ? 'tabla' + tn + '-' : '') + 'ronda-' + round + '.png');
+  }
+  function mkDlBtn(label, fn) {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'dl-btn'; b.textContent = label;
+    b.onclick = async () => {
+      const old = b.textContent; b.disabled = true; b.textContent = '⏳ Creando imagen…';
+      try { await fn(); } catch (e) { uiAlert('No se pudo crear la imagen: ' + (e && e.message ? e.message : e)); }
+      b.disabled = false; b.textContent = old;
+    };
+    return b;
+  }
+
   function renderStandings() {
     const el = document.getElementById('standingsContent');
     const resultsDetails = document.getElementById('resultsDetails');
@@ -2431,6 +2655,7 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
       const ttl = document.createElement('h3'); ttl.className = 'sb-title'; ttl.textContent = tableNums.length > 1 ? 'Tabla ' + tn : 'Tabla general';
       const cnt = document.createElement('span'); cnt.className = 'tg-count'; cnt.textContent = rowsS.length + ' equipos';
       head.append(ttl, cnt);
+      { const bar = document.createElement('div'); bar.className = 'dl-bar'; bar.appendChild(mkDlBtn('📷 Descargar imagen', () => exportStandings(tn, tableNums.length))); head.appendChild(bar); }
       board.appendChild(head);
       const scroll = document.createElement('div'); scroll.className = 'st-scroll';
       const table = document.createElement('table'); table.className = 'standings';
@@ -2557,6 +2782,7 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
     const real = roundMatches.filter(m => !m.bye);
     sub.textContent = real.length + ' duelos · ' + real.filter(m => m.winner).length + ' definidos';
     hl.append(h4, sub); head.appendChild(hl);
+    { const dl = document.createElement('div'); dl.className = 'dl-bar'; dl.appendChild(mkDlBtn('📷 Descargar ronda ' + sel, () => exportRound(vsTable, sel, tablesAvail.length))); head.appendChild(dl); }
     if (isAdmin) {
       const rb = document.createElement('div'); rb.className = 'match-buttons';
       const lbl = 'la ronda ' + sel + (tablesAvail.length > 1 ? ' de la Tabla ' + vsTable : '');
