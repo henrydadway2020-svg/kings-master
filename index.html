@@ -972,6 +972,69 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
 .sb-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .vs-roundhead .dl-bar{margin-left:auto}
 </style>
+<style id="mk-pro-tables">
+/* ===== TABLAS PROFESIONALES (posiciones + goleo) =====
+   Capa final: filas continuas con líneas finas, números tabulares,
+   dorado solo para quienes clasifican, plata/bronce en 2.º y 3.º. */
+#tabla .sb-board{padding:0;border-radius:14px;border:1px solid rgba(255,220,130,.16);background:#0b0e14;box-shadow:0 24px 60px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.05);overflow:hidden}
+#tabla .sb-board::after{display:none}
+#tabla .sb-head{margin:0;padding:20px 26px;border-bottom:1px solid rgba(255,220,130,.14);background:linear-gradient(180deg,rgba(255,211,92,.07),rgba(255,211,92,0));gap:14px}
+#tabla .table-group h3.sb-title{transform:none;border:0;background:none;padding:0;margin:0;font:600 1.9rem/1.1 "Fraunces",Georgia,serif;text-transform:none;letter-spacing:0;color:#fff7dc}
+#tabla .tg-count{margin-right:auto;padding:4px 12px;border:1px solid rgba(255,255,255,.14);border-radius:999px;font:600 .78rem "Manrope",system-ui,sans-serif;letter-spacing:0;text-transform:none;color:#aeb6c7}
+#tabla .st-scroll{padding:4px 14px 6px}
+#tabla .standings{border-collapse:separate;border-spacing:0;font-size:1rem}
+#tabla .standings thead th{padding:14px 6px 12px;border-bottom:1px solid rgba(255,255,255,.12);font:700 .78rem/1 "Manrope",system-ui,sans-serif;letter-spacing:.02em;text-transform:none;color:#8f98aa}
+#tabla .standings thead th.tm{padding-left:14px}
+#tabla .standings thead th.num:nth-child(4){color:#ffe18a}
+#tabla .standings tbody td{padding:0;border:0;border-bottom:1px solid rgba(255,255,255,.06);background:transparent;transition:background .15s}
+#tabla .standings tbody tr:nth-child(even) td{background:rgba(255,255,255,.022)}
+#tabla .standings tbody tr.qualify td{background:rgba(255,211,92,.04)}
+#tabla .standings tbody tr:hover td{background:rgba(255,211,92,.09)}
+#tabla .standings tbody tr:last-child td{border-bottom:0}
+#tabla .standings tbody tr.qualify td.rk{box-shadow:inset 3px 0 0 #ffd35c}
+#tabla .standings tbody tr.cut td{border-bottom:2px solid rgba(255,211,92,.5)}
+#tabla .standings tbody tr.cut td::after{display:none}
+#tabla .sb-board .standings.standings td>.c.c{display:flex;align-items:center;justify-content:center;height:auto;min-height:54px;padding:0 6px;border:0!important;border-radius:0;background:transparent!important;box-shadow:none!important;transform:none!important;color:#c9d0de!important;font:600 1.05rem/1.2 "Manrope",system-ui,sans-serif;font-variant-numeric:tabular-nums;letter-spacing:0;text-transform:none}
+#tabla .sb-board .standings.standings td.tm>.c.c{justify-content:flex-start;text-align:left;padding:8px 14px;color:#fff!important;font-weight:700;font-size:1.1rem;white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere}
+#tabla .sb-board .standings.standings td.rk>.c.c{color:#8f98aa!important;font-weight:700}
+#tabla .sb-board .standings.standings tr.qualify td.rk>.c.c{color:#ffd35c!important;font-weight:800}
+#tabla .sb-board .standings.standings tr.r2 td.rk>.c.c{color:#dfe4ef!important}
+#tabla .sb-board .standings.standings tr.r3 td.rk>.c.c{color:#e3a66b!important}
+#tabla .sb-board .standings.standings td.pts>.c.c{background:rgba(255,255,255,.05)!important;color:#fff!important;font-weight:800;font-size:1.3rem}
+#tabla .sb-board .standings.standings tr.qualify td.pts>.c.c{background:rgba(255,211,92,.1)!important;color:#ffe18a!important}
+#tabla .sb-board .standings.standings tr.r1 td.tm>.c.c::before{content:"♛";margin-right:10px;color:#ffd35c;text-shadow:none;transform:none}
+#tabla .sb-board .standings.standings tr.qualify td.rk>.c.c .mv.up,#tabla .sb-board .standings.standings td.rk>.c.c .mv.up{color:#7ee59b}
+#tabla .sb-board .standings.standings tr.qualify td.rk>.c.c .mv.down,#tabla .sb-board .standings.standings td.rk>.c.c .mv.down{color:#ff9aa5}
+#tabla .sb-board .standings.standings tr.dq td>.c.c{opacity:.5}
+#tabla .sb-board .standings.standings tr.dq td.tm>.c.c{text-decoration:line-through}
+#tabla .zone-legend{margin:0;padding:14px 26px 18px;border-top:1px solid rgba(255,255,255,.08);font:600 .84rem "Manrope",system-ui,sans-serif;color:#aab2c3}
+#tabla .zone-legend .up{width:12px;height:12px;border-radius:3px;transform:none;background:#ffd35c;vertical-align:-1px}
+
+/* Goleo: misma lógica de lista continua */
+#goleo #goleoList{margin-top:16px;padding:4px 0;border:1px solid rgba(255,220,130,.16);border-radius:14px;background:#0b0e14;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+#goleo .goleo-row{grid-template-columns:64px 1fr auto;gap:12px;min-height:60px;padding:8px 22px 8px 0;border:0;border-bottom:1px solid rgba(255,255,255,.06);background:none}
+#goleo .goleo-row:nth-child(even){background:rgba(255,255,255,.022)}
+#goleo .goleo-row:hover{background:rgba(255,211,92,.08)}
+#goleo .goleo-row:last-child{border-bottom:0}
+#goleo .goleo-rank{display:block;width:auto;height:auto;transform:none;background:none;box-shadow:none;text-align:center;color:#8f98aa;font:700 1rem "Manrope",system-ui,sans-serif}
+#goleo .goleo-name{padding:0;color:#fff;font:700 1.02rem/1.25 "Manrope",system-ui,sans-serif;text-transform:none;letter-spacing:0}
+#goleo .goleo-name::before{display:none}
+#goleo .goleo-team{display:block;margin-top:2px;font:500 .8rem "Manrope",system-ui,sans-serif;color:#8f98aa}
+#goleo .goleo-row>.goleo-score{min-width:58px;height:34px;transform:none;border:1px solid rgba(255,211,92,.35);border-radius:999px;background:rgba(255,211,92,.08);color:#ffe18a;font:800 1.1rem "Manrope",system-ui,sans-serif}
+@media(max-width:560px){
+  #tabla .sb-head{padding:16px 14px}
+  #tabla .table-group h3.sb-title{font-size:1.45rem;padding:0}
+  #tabla .st-scroll{padding:2px 4px 4px}
+  #tabla .standings thead th{font-size:.68rem;padding:12px 2px 10px}
+  #tabla .standings thead th.tm{padding-left:8px}
+  #tabla .sb-board .standings.standings td>.c.c{min-height:46px;padding:0 2px;font-size:.92rem}
+  #tabla .sb-board .standings.standings td.tm>.c.c{padding:6px 8px;font-size:.95rem}
+  #tabla .sb-board .standings.standings td.pts>.c.c{font-size:1.1rem}
+  #tabla .zone-legend{padding:12px 14px 16px}
+  #goleo .goleo-row{grid-template-columns:44px 1fr auto;padding-right:14px}
+  #goleo .goleo-row>.goleo-score{min-width:48px}
+}
+</style>
 </head>
 
 <body>
