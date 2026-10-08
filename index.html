@@ -1040,6 +1040,14 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
 .vsb-txt{display:flex;flex-direction:column;gap:2px;min-width:0;max-width:100%}
 .vsb-side.a .vsb-txt{align-items:flex-end}
 .vsb-side.b .vsb-txt{align-items:flex-start}
+.vs-contacts{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 4px}
+.vs-contact{min-width:0;padding:5px 9px;border-radius:9px;border:1px dashed rgba(162,77,255,.45);background:rgba(162,77,255,.08);color:#e9dcff;font-size:.72rem;font-weight:700;line-height:1.25;overflow-wrap:anywhere;cursor:pointer}
+.vs-contact.a{text-align:right}.vs-contact.b{text-align:left}
+.vs-contact.none{color:#ff9aa6;border-color:rgba(255,154,166,.4);cursor:default}
+.vs-contact.ok{border-style:solid;border-color:#6ff0a3;color:#6ff0a3}
+.vs-contact small{display:block;font-weight:600;opacity:.9;font-variant-numeric:tabular-nums}
+.vs-adminbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.vs-adminbar .vs-seg{margin:0}.vs-adminbar .vs-seg button{padding:6px 12px;font-size:.7rem}
 .vsb-lead{font-family:"Manrope",sans-serif;font-weight:700;font-size:.66rem;letter-spacing:.04em;color:#ffd35c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .vsb .win .vsb-lead{color:#fff6d6}
 .dash-vs em.dash-cap{display:block;font-style:normal;font-size:.7rem;font-weight:600;color:#ffd35c;letter-spacing:.03em}
@@ -2823,6 +2831,34 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
     return (Number.isInteger(i) && ps[i]) ? String(ps[i]) : '';
   }
 
+  // ===== Contacto del líder dentro de los versus (solo organizador) =====
+  let vsContactMode = 'below';   // 'below' = debajo del cruce, 'side' = junto al nombre, 'off' = oculto
+  try { const sv = localStorage.getItem('vsContactMode'); if (sv === 'below' || sv === 'side' || sv === 'off') vsContactMode = sv; } catch (e) {}
+  function leaderInfo(teamId) {
+    const d = leaderDocs[teamId] || {};
+    return { name: d.name || leaderOf(teamId) || '', phone: d.phone ? String(d.phone) : '' };
+  }
+  function mentionOf(teamId) {
+    const i = leaderInfo(teamId), dg = i.phone.replace(/\D/g, '');
+    return [i.name ? '♛ ' + i.name : '', dg ? 'wa.me/' + dg : ''].filter(Boolean).join(' ');
+  }
+  function matchLine(m) {
+    const a = mentionOf(m.teamAId), b = mentionOf(m.teamBId);
+    return m.teamAName + (a ? ' (' + a + ')' : '') + ' 🆚 ' + m.teamBName + (b ? ' (' + b + ')' : '');
+  }
+  function copyText(txt, done) {
+    const ok = () => { if (done) done(); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(ok, () => fallbackCopy(txt, ok)); }
+    else fallbackCopy(txt, ok);
+  }
+  function fallbackCopy(txt, ok) {
+    const ta = document.createElement('textarea'); ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); ok(); } catch (e) { window.prompt('Copia este texto:', txt); }
+    ta.remove();
+  }
+  function flash(btn, msg) { const o = btn.textContent; btn.textContent = msg; setTimeout(() => { btn.textContent = o; }, 1400); }
+
   function renderResults() {
     const el = document.getElementById('resultsContent');
     el.innerHTML = '';
@@ -2900,6 +2936,18 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
     if (isAdmin) {
       const rb = document.createElement('div'); rb.className = 'match-buttons';
       const lbl = 'la ronda ' + sel + (tablesAvail.length > 1 ? ' de la Tabla ' + vsTable : '');
+      { const bar = document.createElement('div'); bar.className = 'vs-adminbar';
+        const seg = document.createElement('div'); seg.className = 'vs-seg'; seg.title = 'Dónde mostrar líder y teléfono (solo tú lo ves)';
+        [['below', 'Contacto abajo'], ['side', 'Al lado'], ['off', 'Ocultar']].forEach(([v, t]) => {
+          const b = document.createElement('button'); b.type = 'button'; b.textContent = t; b.className = vsContactMode === v ? 'on' : '';
+          b.onclick = () => { vsContactMode = v; try { localStorage.setItem('vsContactMode', v); } catch (e) {} renderResults(); };
+          seg.appendChild(b);
+        });
+        bar.appendChild(seg);
+        const cr = document.createElement('button'); cr.type = 'button'; cr.className = 'btn-pick'; cr.textContent = '📋 Copiar ronda ' + sel;
+        cr.onclick = () => { const txt = 'RONDA ' + sel + '\n' + roundMatches.filter(x => !x.bye).map(matchLine).join('\n'); copyText(txt, () => flash(cr, '✔ Copiada')); };
+        bar.appendChild(cr);
+        head.appendChild(bar); }
       rb.appendChild(mkBtn('Publicar ronda', () => setPublishedMany(roundMatches, true, lbl)));
       rb.appendChild(mkBtn('Ocultar ronda', () => setPublishedMany(roundMatches, false, lbl)));
       head.appendChild(rb);
@@ -2935,8 +2983,15 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
         const d = document.createElement('div'); d.className = 'vsb-side ' + side + cls(key);
         const wrap = document.createElement('div'); wrap.className = 'vsb-txt';
         const n = document.createElement('span'); n.className = 'vsb-name'; n.textContent = name; wrap.appendChild(n);
-        const ld = leaderOf(key === 'A' ? m.teamAId : m.teamBId);
-        if (ld) { const l = document.createElement('span'); l.className = 'vsb-lead'; l.textContent = '♛ ' + ld; l.title = 'Líder de ' + name; wrap.appendChild(l); }
+        const tid = key === 'A' ? m.teamAId : m.teamBId;
+        const inf = leaderInfo(tid), ld = isAdmin ? inf.name : leaderOf(tid);
+        const showPh = isAdmin && vsContactMode === 'side' && inf.phone;
+        if (ld || showPh) {
+          const l = document.createElement('span'); l.className = 'vsb-lead';
+          l.textContent = [ld ? '♛ ' + ld : '', showPh ? inf.phone : ''].filter(Boolean).join(' · ');
+          if (showPh) l.style.whiteSpace = 'normal';
+          l.title = 'Líder de ' + name; wrap.appendChild(l);
+        }
         d.appendChild(wrap); return d;
       };
       const vs = document.createElement('div'); vs.className = 'vsb-vs'; const vsT = document.createElement('span'); vsT.textContent = 'VS'; vs.appendChild(vsT);
@@ -2944,6 +2999,20 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
       ban.setAttribute('role', 'group');
       ban.setAttribute('aria-label', m.teamAName + ' contra ' + m.teamBName + (m.winner ? '. Ganó ' + (m.winner === 'A' ? m.teamAName : m.teamBName) : '. Pendiente'));
       item.appendChild(ban);
+      if (isAdmin && vsContactMode === 'below') {
+        const cs = document.createElement('div'); cs.className = 'vs-contacts';
+        [['A', m.teamAId, m.teamAName], ['B', m.teamBId, m.teamBName]].forEach(([k, tid, tn]) => {
+          const inf = leaderInfo(tid);
+          const c = document.createElement('button'); c.type = 'button';
+          c.className = 'vs-contact ' + k.toLowerCase() + (inf.phone ? '' : ' none');
+          const l1 = document.createElement('span'); l1.textContent = inf.name ? '♛ ' + inf.name : 'Sin líder';
+          const l2 = document.createElement('small'); l2.textContent = inf.phone || 'sin teléfono';
+          c.append(l1, l2); c.title = inf.phone ? 'Toca para copiar: ' + mentionOf(tid) : 'Falta el teléfono de ' + tn;
+          if (inf.phone) c.onclick = () => copyText(mentionOf(tid), () => { c.classList.add('ok'); setTimeout(() => c.classList.remove('ok'), 1200); });
+          cs.appendChild(c);
+        });
+        item.appendChild(cs);
+      }
 
       const meta2 = document.createElement('div'); meta2.className = 'vs-meta';
       const st = document.createElement('span'); st.className = 'vs-status' + (m.winner ? ' done' : '');
@@ -2958,6 +3027,8 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
         btnB.className = 'btn-pick' + (m.winner === 'B' ? ' active' : ''); btnB.textContent = 'Ganó ' + m.teamBName;
         btnB.onclick = () => setWinner(m.id, 'B');
         meta2.append(btnA, btnB);
+        { const cb = document.createElement('button'); cb.type = 'button'; cb.className = 'btn-pick secondary'; cb.textContent = '📋 Copiar cruce';
+          cb.onclick = () => copyText(matchLine(m), () => flash(cb, '✔ Copiado')); meta2.appendChild(cb); }
         { const wa1 = mkWa(m.teamAId, m.teamAName), wa2 = mkWa(m.teamBId, m.teamBName); if (wa1) meta2.appendChild(wa1); if (wa2) meta2.appendChild(wa2); }
         if (m.winner) {
           const btnClear = document.createElement('button'); btnClear.type = 'button';
