@@ -1034,6 +1034,26 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
   #goleo .goleo-row{grid-template-columns:44px 1fr auto;padding-right:14px}
   #goleo .goleo-row>.goleo-score{min-width:48px}
 }
+/* ---- Líderes etiquetados en los versus ---- */
+.vsb-side{height:auto;min-height:44px}
+.vsb-side.a,.vsb-side.b{padding-top:5px;padding-bottom:7px}
+.vsb-txt{display:flex;flex-direction:column;gap:2px;min-width:0;max-width:100%}
+.vsb-side.a .vsb-txt{align-items:flex-end}
+.vsb-side.b .vsb-txt{align-items:flex-start}
+.vsb-lead{font-family:"Manrope",sans-serif;font-weight:700;font-size:.66rem;letter-spacing:.04em;color:#ffd35c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.vsb .win .vsb-lead{color:#fff6d6}
+.dash-vs em.dash-cap{display:block;font-style:normal;font-size:.7rem;font-weight:600;color:#ffd35c;letter-spacing:.03em}
+.my-lead{color:#ffd35c;font-weight:600}
+/* Líderes y teléfonos (solo organizador) */
+.ld-box{padding:4px 2px 10px}
+.ld-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:9px 0;border-top:1px solid rgba(255,220,130,.1);font-size:.88rem}
+.ld-row .ld-team{font-weight:800;flex:1 1 170px;min-width:0;overflow-wrap:anywhere}
+.ld-row .ld-who{color:#ffd35c;flex:1 1 120px}
+.ld-row .ld-tel{color:#c9cfdd;flex:1 1 150px;font-variant-numeric:tabular-nums}
+.ld-row.none .ld-tel{color:#ff9aa6}
+.wa-btn{display:inline-block;padding:4px 10px;border-radius:999px;border:1px solid rgba(80,220,130,.55);background:rgba(37,211,102,.12);color:#6ff0a3;font-weight:800;font-size:.74rem;text-decoration:none;white-space:nowrap}
+.wa-btn:hover{background:rgba(37,211,102,.24)}
+.tc-contact{margin-top:12px;padding:8px 12px;border:1px dashed rgba(255,220,130,.3);border-radius:10px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;font-size:.85rem;color:#c9cfdd}
 </style>
 </head>
 
@@ -1272,6 +1292,15 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
         <details class="results-toggle admin-box" id="adminLogBox" style="display:none;">
           <summary>Historial de cambios (solo organizador)</summary>
           <div id="logList"></div>
+        </details>
+        <details class="results-toggle admin-box" id="adminLeadersBox" style="display:none;">
+          <summary>Líderes y teléfonos (solo organizador)</summary>
+          <div class="ld-box">
+            <p class="table-note">Los teléfonos se guardan en Firebase en la colección <strong>leaders</strong>, que solo puede leer el organizador. El público no los ve.</p>
+            <div class="decision-buttons"><button class="btn-outline" id="leadersImportBtn" type="button">Importar los 32 líderes</button></div>
+            <div id="leadersMsg" class="table-note"></div>
+            <div id="leadersList"></div>
+          </div>
         </details>
       </section>
     </div>
@@ -2296,6 +2325,7 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
     const head = el('div', 'my-head');
     head.append(el('h4', '', t.name || 'Equipo'), el('span', 'my-chip', 'Tabla ' + tn));
     if (t.disqualified) head.appendChild(el('span', 'my-chip dq', 'Descalificado'));
+    { const myLd = leaderOf(t.id); if (myLd) head.appendChild(el('span', 'my-chip', '♛ ' + myLd)); }
     card.appendChild(head);
     const stats = el('div', 'my-stats');
     const stat = (v, l) => { const d = el('div', 'my-stat'); d.append(el('b', '', v), el('span', '', l)); return d; };
@@ -2309,9 +2339,11 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
     const pend = mine.filter(m => !m.winner), done = mine.filter(m => m.winner);
     const mkRow = (m) => {
       const isA = m.teamAId === t.id, rival = isA ? m.teamBName : m.teamAName;
+      const rivalLd = leaderOf(isA ? m.teamBId : m.teamAId);
       const won = m.winner && ((m.winner === 'A') === isA);
       const r = el('div', 'my-row' + (m.winner ? (won ? ' win' : ' lose') : ''));
       const main = el('div', 'mr-main', 'Ronda ' + m.round + ' · vs ' + rival);
+      if (rivalLd) main.appendChild(el('small', 'my-lead', '♛ Líder rival: ' + rivalLd));
       if (m.forfeit) main.appendChild(el('small', '', 'Victoria administrativa'));
       if (isAdmin && m.published !== true) main.appendChild(el('small', '', 'Aún sin publicar'));
       r.appendChild(main);
@@ -2659,6 +2691,8 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
         ctx.fillStyle = win ? EXP.gold2 : (lose ? '#a3abbf' : '#fff');
         const t = expFit(ctx, name || 'Equipo', sideW - 20, 34, 800, 20);
         ctx.fillText(t, side[1] + (key === 'A' ? 0 : 0), y + CH / 2 + 6);
+        const ld = leaderOf(key === 'A' ? m.teamAId : m.teamBId);
+        if (ld) { const lt = expFit(ctx, '♛ ' + ld, sideW - 20, 18, 800, 11); ctx.fillStyle = win ? EXP.gold2 : '#ffd35c'; ctx.fillText(lt, side[1], y + 30); }
         if (win) { ctx.font = '900 18px Manrope, system-ui, sans-serif'; ctx.fillStyle = EXP.gold; ctx.fillText(m.forfeit ? 'GANÓ (ADMIN.)' : 'GANÓ ✓', side[1], y + CH / 2 + 36); }
       });
       // centro: VS o marcador
@@ -2781,6 +2815,14 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
   }
 
   let vsTable = 1, vsRound = null;
+  // Líder (capitán) de un equipo: se busca siempre en vivo, así que si cambias el capitán se actualiza solo en todos los versus
+  function leaderOf(teamId) {
+    const t = teams.find(x => x.id === teamId);
+    if (!t) return '';
+    const ps = t.players || [], i = t.captain;
+    return (Number.isInteger(i) && ps[i]) ? String(ps[i]) : '';
+  }
+
   function renderResults() {
     const el = document.getElementById('resultsContent');
     el.innerHTML = '';
@@ -2800,6 +2842,13 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
       const info = document.createElement('span'); info.className = 'empty-note';
       info.textContent = 'Publicados: ' + pub + ' de ' + shown.length + '. El público solo ve los publicados.';
       bar.appendChild(info);
+      const ids = new Set(); shown.forEach(m => { if (m.teamAId) ids.add(m.teamAId); if (!m.bye && m.teamBId) ids.add(m.teamBId); });
+      const sinLider = teams.filter(t => ids.has(t.id) && !leaderOf(t.id)).map(t => t.name || 'Equipo');
+      if (sinLider.length) {
+        const w = document.createElement('span'); w.className = 'empty-note';
+        w.textContent = '⚠ Sin líder: ' + sinLider.join(', ') + '. Asígnalo en Equipos con «♛ Capitán».';
+        bar.appendChild(w);
+      }
       bar.appendChild(mkBtn('Publicar todos', () => setPublishedMany(shown, true, 'todos los cruces')));
       bar.appendChild(mkBtn('Ocultar todos', () => setPublishedMany(shown, false, 'todos los cruces')));
       el.appendChild(bar);
@@ -2884,7 +2933,11 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
       };
       const sideEl = (name, key, side) => {
         const d = document.createElement('div'); d.className = 'vsb-side ' + side + cls(key);
-        const n = document.createElement('span'); n.className = 'vsb-name'; n.textContent = name; d.appendChild(n); return d;
+        const wrap = document.createElement('div'); wrap.className = 'vsb-txt';
+        const n = document.createElement('span'); n.className = 'vsb-name'; n.textContent = name; wrap.appendChild(n);
+        const ld = leaderOf(key === 'A' ? m.teamAId : m.teamBId);
+        if (ld) { const l = document.createElement('span'); l.className = 'vsb-lead'; l.textContent = '♛ ' + ld; l.title = 'Líder de ' + name; wrap.appendChild(l); }
+        d.appendChild(wrap); return d;
       };
       const vs = document.createElement('div'); vs.className = 'vsb-vs'; const vsT = document.createElement('span'); vsT.textContent = 'VS'; vs.appendChild(vsT);
       ban.append(scoreEl('A', 'l'), sideEl(m.teamAName, 'A', 'a'), vs, sideEl(m.teamBName, 'B', 'b'), scoreEl('B', 'r'));
@@ -2905,6 +2958,7 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
         btnB.className = 'btn-pick' + (m.winner === 'B' ? ' active' : ''); btnB.textContent = 'Ganó ' + m.teamBName;
         btnB.onclick = () => setWinner(m.id, 'B');
         meta2.append(btnA, btnB);
+        { const wa1 = mkWa(m.teamAId, m.teamAName), wa2 = mkWa(m.teamBId, m.teamBName); if (wa1) meta2.appendChild(wa1); if (wa2) meta2.appendChild(wa2); }
         if (m.winner) {
           const btnClear = document.createElement('button'); btnClear.type = 'button';
           btnClear.className = 'btn-pick secondary'; btnClear.textContent = 'Sin definir';
@@ -3048,13 +3102,14 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
       tNodes.push(box);
     });
     fill('dashTables', tNodes);
+    const nm = (name, id, cls) => { const sp = mk('span', cls || '', name); const ld = leaderOf(id); if (ld) sp.appendChild(mk('em', 'dash-cap', '♛ ' + ld)); return sp; };
     // Próximos versus
     const pend = real.filter(m => !m.winner).sort((a, b) => a.round - b.round);
     const nx = [];
     if (!pend.length) nx.push(mk('p', 'dash-empty', meta.scheduleStart ? 'No hay versus pendientes.' : 'Aparecerán cuando se publiquen los cruces.'));
     else {
       pend.filter(m => m.round === pend[0].round).slice(0, 6).forEach(m => {
-        const r = mk('div', 'dash-vs'); r.append(mk('span', '', m.teamAName), mk('u', '', 'VS'), mk('span', '', m.teamBName), mk('small', '', 'Ronda ' + m.round + ' · Tabla ' + m.table)); nx.push(r);
+        const r = mk('div', 'dash-vs'); r.append(nm(m.teamAName, m.teamAId, ''), mk('u', '', 'VS'), nm(m.teamBName, m.teamBId, ''), mk('small', '', 'Ronda ' + m.round + ' · Tabla ' + m.table)); nx.push(r);
       });
       const n = pend.filter(m => m.round === pend[0].round).length;
       if (n > 6) { const a = mk('a', 'go', 'Ver los ' + n + ' en Versus →'); a.href = '#versus'; nx.push(a); }
@@ -3066,7 +3121,7 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
     if (!done.length) ls.push(mk('p', 'dash-empty', 'Aún no hay resultados.'));
     done.forEach(m => {
       const r = mk('div', 'dash-vs'); const win = m.winner === 'A' ? m.teamAName : m.teamBName;
-      r.append(mk('span', m.winner === 'A' ? 'w' : '', m.teamAName), mk('u', '', 'VS'), mk('span', m.winner === 'B' ? 'w' : '', m.teamBName),
+      r.append(nm(m.teamAName, m.teamAId, m.winner === 'A' ? 'w' : ''), mk('u', '', 'VS'), nm(m.teamBName, m.teamBId, m.winner === 'B' ? 'w' : ''),
         mk('small', '', '🏆 Ganó ' + win + (m.forfeit ? ' (victoria administrativa)' : '') + ' · Ronda ' + m.round));
       ls.push(r);
     });
@@ -3267,6 +3322,14 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
         });
         body.appendChild(row);
         if (isAdmin) {
+          const ph = leaderPhone(t.id);
+          const ct = document.createElement('div'); ct.className = 'tc-contact';
+          const lt = document.createElement('span'); lt.textContent = ph ? ('♛ Líder: ' + ((leaderDocs[t.id] || {}).name || leaderOf(t.id) || '—') + ' · ' + ph) : '♛ Líder: sin teléfono guardado';
+          ct.appendChild(lt);
+          const w = mkWa(t.id, 'Escribirle'); if (w) ct.appendChild(w);
+          body.appendChild(ct);
+        }
+        if (isAdmin) {
           const acts = document.createElement('span'); acts.className = 'team-actions';
           const bEdit = document.createElement('button'); bEdit.type = 'button'; bEdit.className = 'btn-mini'; bEdit.textContent = 'Editar';
           bEdit.onclick = () => openEdit(t);
@@ -3293,6 +3356,7 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
     if (ab) ab.style.display = isAdmin ? 'flex' : 'none';
     if (lb) lb.style.display = isAdmin ? 'block' : 'none';
     const rs = document.getElementById('respaldo'); if (rs) rs.style.display = isAdmin ? '' : 'none';
+    renderLeadersAdmin();
     renderDecisionPanel();
     renderRounds();
     renderStandings();
@@ -3489,6 +3553,141 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
     });
   }
 
+  // ===== Líderes (capitanes) y teléfonos: solo el organizador los lee (colección "leaders") =====
+  const LEADERS_SEED = [
+    ['SQUIRTLE SQUAD','ALLEN','+593 97 958 1412'],
+    ['AURA SPORT','LOVI','+56 9 7717 8221'],
+    ['EEVENGERS','ANIBAL','+51 978 039 278'],
+    ['LOS 4 JINETES','BREXXAR','+52 1 729 393 5498'],
+    ['PIKABLINDERS','VIKTOR','+52 1 56 3665 9305'],
+    ['PIKATSUKIS','CORCHO','+54 9 362 411-7513'],
+    ['TOTODILE SQUAD','SAMMAEL','+1 (829) 628-0719'],
+    ['BRS','SCARPRICE','+52 1 56 1068 4341'],
+    ['DARK RAIDES','YAS','+56 9 4670 4579'],
+    ['DR NIGHT','THUNDER','+1 (787) 224-8172'],
+    ['PIRATA CREW','FEMTO','+1 (903) 724-5011'],
+    ['DARK ROCKET SPORT','LILPANDA','+57 301 3460830'],
+    ['EUFORICOS WORD','PATO','+56 9 3646 3502'],
+    ['DARK MASTER','MISAEL','+52 1 228 170 8458'],
+    ['RACCONS','LUFFY','+52 1 81 3132 0535'],
+    ['DARKRAI SPORT','LILPANDA','+57 301 3460830'],
+    ['LEGION ESMERALDA 2','JESUSMORAO','+58 424-8265396'],
+    ['LOS PRIMATES','LP ISMA','+52 1 669 929 1647'],
+    ['TEAM FUCSIA 1','FELLOGOD','+56 9 8634 9949'],
+    ['LOS EMISORES VERDES','LELOUCH','+52 1 773 182 1594'],
+    ['DARK WEEZING','BICHEJITO','+34 620 33 11 27'],
+    ['GST','GST CHIANE','+51 956 677 392'],
+    ['LEGACY PRO','HIKOSA','+51 966 476 582'],
+    ['DORAGON CRO','YUZMEG','+51 994 339 631'],
+    ['LIGH EUPHORICS ROCKET','PATO','+56 9 3646 3502'],
+    ['LA JEFA Y SUS 3 BIDOOFS','PAU','+56 9 8610 9002'],
+    ['FUCSIA STAR','FELLOGOD','+56 9 8634 9949'],
+    ['LOS JINETES DEL POCKET','THE DARWIN','+593 98 976 4576'],
+    ['CHARIZARD SQUAD','YIGO','+56 9 7869 4955'],
+    ['PALOMOS TEAM','PALOMOS','+51 946 303 072'],
+    ['RED LEGACY 1','WORNZ','+58 424-8226408'],
+    ['AMBU','WHITEDRAGON','+54 9 11 3095-4738']
+  ];
+  let leaderDocs = {};   // teamId -> { name, phone, team }
+  let unsubLeaders = null;
+  function leaderPhone(teamId) { const d = leaderDocs[teamId]; return d && d.phone ? String(d.phone) : ''; }
+  function waLink(phone) { const n = String(phone || '').replace(/\D/g, ''); return n ? 'https://wa.me/' + n : ''; }
+  function mkWa(teamId, label) {
+    const ph = leaderPhone(teamId), href = waLink(ph);
+    if (!href) return null;
+    const a = document.createElement('a'); a.className = 'wa-btn'; a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    a.textContent = '💬 ' + label; a.title = ph; return a;
+  }
+  function watchLeaders() {
+    if (isAdmin && !unsubLeaders) {
+      unsubLeaders = db.collection('leaders').onSnapshot(snap => {
+        leaderDocs = {}; snap.docs.forEach(d => { leaderDocs[d.id] = d.data(); });
+        render();
+      }, () => { document.getElementById('leadersMsg').textContent = 'No se pudo leer la colección «leaders». Revisa que ya publicaste las reglas de Firestore.'; });
+    } else if (!isAdmin && unsubLeaders) {
+      unsubLeaders(); unsubLeaders = null; leaderDocs = {};
+    }
+  }
+  function lev(a, b) {
+    const m = a.length, n = b.length; if (!m) return n; if (!n) return m;
+    let prev = Array.from({ length: n + 1 }, (_, j) => j);
+    for (let i = 1; i <= m; i++) {
+      const cur = [i];
+      for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      prev = cur;
+    }
+    return prev[n];
+  }
+  async function importLeaders() {
+    if (!isAdmin) return;
+    const msg = document.getElementById('leadersMsg');
+    if (!teams.length) { uiAlert('Todavía no hay equipos cargados.'); return; }
+    const key = x => normSearch(x).replace(/[^a-z0-9]/g, '');
+    const used = new Set(), plan = [], approx = [], missing = [];
+    const pending = LEADERS_SEED.slice();
+    // 1) coincidencias exactas (ignora mayúsculas, acentos y espacios)
+    const rest = [];
+    pending.forEach(row => {
+      const t = teams.find(x => !used.has(x.id) && key(x.name) === key(row[0]));
+      if (t) { used.add(t.id); plan.push({ t, row }); } else rest.push(row);
+    });
+    // 2) casi iguales (hasta 2 letras de diferencia): se avisan para que las revises
+    rest.forEach(row => {
+      let best = null, bd = 99;
+      teams.forEach(t => { if (used.has(t.id)) return; const d = lev(key(t.name), key(row[0])); if (d < bd) { bd = d; best = t; } });
+      if (best && bd <= 2) { used.add(best.id); plan.push({ t: best, row }); approx.push(row[0] + ' → ' + best.name); } else missing.push(row[0]);
+    });
+    let txt = 'Se guardarán ' + plan.length + ' líderes con su teléfono.';
+    if (approx.length) txt += '\n\nCoincidencia aproximada (revísala):\n' + approx.join('\n');
+    if (missing.length) txt += '\n\nNo encontré estos equipos en la página:\n' + missing.join('\n');
+    txt += '\n\n¿Continuar?';
+    if (!await uiConfirm(txt)) return;
+    try {
+      const batch = db.batch();
+      plan.forEach(({ t, row }) => batch.set(db.doc('leaders/' + t.id), { teamId: t.id, team: t.name || row[0], name: row[1], phone: row[2], updatedAt: Date.now() }, { merge: true }));
+      batch.set(db.collection('log').doc(), logEntry('leaders', 'Importó ' + plan.length + ' líderes con teléfono'));
+      await batch.commit();
+      msg.textContent = 'Listo: ' + plan.length + ' líderes guardados.' + (missing.length ? ' Sin equipo: ' + missing.join(', ') + '.' : '');
+    } catch (err) { uiAlert('No se pudo guardar: ' + err.message + '\n\n¿Publicaste la regla de Firestore para «leaders»?'); }
+  }
+  async function editLeaderPhone(t) {
+    const cur = leaderDocs[t.id] || {};
+    const ph = window.prompt('Teléfono del líder de «' + (t.name || 'Equipo') + '» (con lada del país, ej. +52 1 55 1234 5678):', cur.phone || '');
+    if (ph === null) return;
+    const nm = window.prompt('Nombre del líder:', cur.name || '');
+    if (nm === null) return;
+    try {
+      const batch = db.batch();
+      batch.set(db.doc('leaders/' + t.id), { teamId: t.id, team: t.name || '', name: nm.trim(), phone: ph.trim(), updatedAt: Date.now() }, { merge: true });
+      batch.set(db.collection('log').doc(), logEntry('leaders', 'Actualizó el contacto del líder de "' + (t.name || 'Equipo') + '"'));
+      await batch.commit();
+    } catch (err) { uiAlert('No se pudo guardar: ' + err.message); }
+  }
+  function renderLeadersAdmin() {
+    const box = document.getElementById('adminLeadersBox'); if (!box) return;
+    box.style.display = isAdmin ? 'block' : 'none';
+    const list = document.getElementById('leadersList'); if (!list) return;
+    list.innerHTML = '';
+    if (!isAdmin) return;
+    const withPhone = teams.filter(t => leaderPhone(t.id)).length;
+    const sum = document.createElement('p'); sum.className = 'table-note';
+    sum.textContent = 'Con teléfono: ' + withPhone + ' de ' + teams.length + ' equipos.';
+    list.appendChild(sum);
+    teams.forEach(t => {
+      const d = leaderDocs[t.id] || {}, ph = d.phone || '';
+      const r = document.createElement('div'); r.className = 'ld-row' + (ph ? '' : ' none');
+      const a = document.createElement('span'); a.className = 'ld-team'; a.textContent = t.name || 'Equipo';
+      const b = document.createElement('span'); b.className = 'ld-who'; b.textContent = d.name ? '♛ ' + d.name : (leaderOf(t.id) ? '♛ ' + leaderOf(t.id) : '—');
+      const c = document.createElement('span'); c.className = 'ld-tel'; c.textContent = ph || 'sin teléfono';
+      r.append(a, b, c);
+      const wa = mkWa(t.id, 'WhatsApp'); if (wa) r.appendChild(wa);
+      const eb = document.createElement('button'); eb.type = 'button'; eb.className = 'btn-mini'; eb.textContent = '✎ Editar'; eb.onclick = () => editLeaderPhone(t);
+      r.appendChild(eb);
+      list.appendChild(r);
+    });
+  }
+  { const ib = document.getElementById('leadersImportBtn'); if (ib) ib.onclick = importLeaders; }
+
   // El organizador recibe todos los cruces; el público solo los publicados.
   let unsubMatches = null;
   function watchMatches() {
@@ -3511,6 +3710,7 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
     auth.onAuthStateChanged((user) => {
       isAdmin = !!user;
       watchLog();
+      watchLeaders();
       watchMatches();
       render();
     });
