@@ -204,27 +204,6 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
 #versus .table-note{max-width:68ch}
 #versus .vs-hub{margin-top:22px}
 
-/* ===== Legibilidad de las tablas de posiciones ===== */
-.standings{border-spacing:0 7px}
-.standings th{color:#fff;font-size:.8rem;font-weight:800;letter-spacing:.18em;text-shadow:0 1px 2px #000}
-.standings td>.c{height:40px;font-style:normal;font-weight:800;font-size:1.45rem;line-height:38px;letter-spacing:.02em;
- background:rgba(0,0,0,.88);border:1.5px solid #fff;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.9)}
-.standings td.pts>.c{font-size:1.65rem;font-weight:900;color:#ffe27a;border-color:#ffe27a}
-.standings td.rk>.c{font-size:1.4rem;font-weight:900;color:#fff}
-.standings td.tm>.c{font-size:1.15rem;font-weight:800;letter-spacing:.03em;color:#fff}
-.standings tbody tr:not(.qualify) td.rk>.c{background:linear-gradient(90deg,#6b1018,#2a080c);color:#fff}
-.standings tbody tr:not(.qualify) td.tm>.c{background:linear-gradient(90deg,#7a1019,#2a080c);color:#fff}
-.standings th.rk,.standings td.rk{width:66px}
-.standings th.num,.standings td.num{width:76px}
-@media(max-width:560px){
- .standings th{font-size:.68rem;letter-spacing:.08em}
- .standings td>.c{height:36px;font-size:1.2rem;line-height:34px}
- .standings td.pts>.c{font-size:1.35rem}
- .standings td.rk>.c{font-size:1.15rem}
- .standings td.tm>.c{font-size:clamp(.78rem,3.6vw,.98rem)}
- .standings th.rk,.standings td.rk{width:48px}
- .standings th.num,.standings td.num{width:50px}
-}
 </style>
 
 <style id="mk-activity-rules">
@@ -702,6 +681,17 @@ body::after{display:none}
  .match-teams,.vs-meta{overflow-wrap:anywhere}
  .tc-toolbar #teamSearch{flex-basis:100%}
 }
+
+/* ===== Números de la tabla más legibles (sin cambiar el diseño) ===== */
+.standings td>.c{font-weight:800;text-shadow:0 1px 2px rgba(0,0,0,.9)}
+.standings td.num>.c{font-size:1.3rem}
+.standings td.pts>.c{font-size:1.45rem}
+@media(max-width:560px){
+ .standings td.num>.c{font-size:1.05rem}
+ .standings td.pts>.c{font-size:1.15rem}
+}
+
+.st-img-btn{display:block;margin:14px auto 0}
 </style>
 </head>
 
@@ -2506,11 +2496,92 @@ body::after{display:none}
         lg.innerHTML = '<span class="zl up">■</span> Clasifican a las rondas finales (4 primeros)';
         board.appendChild(lg);
       }
+      {
+        const ib = document.createElement('button'); ib.type = 'button'; ib.className = 'btn-outline st-img-btn';
+        ib.textContent = '📷 Descargar tabla como imagen';
+        ib.addEventListener('click', () => downloadStandingsImage(tn, tableNums.length > 1 ? 'TABLA ' + tn : 'TABLA GENERAL', ib));
+        board.appendChild(ib);
+      }
       layout.append(board, buildMvpPanel(tn));
       group.appendChild(layout);
       el.appendChild(group);
     });
     if (trackRanks) Object.assign(rankLive, rankNext);
+  }
+
+
+  // --- Descargar tabla de posiciones como imagen (PNG) ---
+  async function downloadStandingsImage(tn, title, btn) {
+    const old = btn ? btn.textContent : '';
+    if (btn) { btn.disabled = true; btn.textContent = 'Generando imagen…'; }
+    try {
+      const rows = computeStandings(tn);
+      const FONT = '"Manrope","Segoe UI",Arial,sans-serif';
+      try { await Promise.all([document.fonts.load('800 30px Manrope'), document.fonts.load('600 18px Manrope')]); } catch (e) {}
+      const logo = await new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = 'logo.webp'; });
+      const S = 2, W = 800, PAD = 32, ROW = 44, GAP = 5, TOP = 300;
+      const H = TOP + rows.length * (ROW + GAP) + 110;
+      const c = document.createElement('canvas'); c.width = W * S; c.height = H * S;
+      const x = c.getContext('2d'); x.scale(S, S);
+      const rr = (X, Y, w, h, r) => { x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath(); };
+      // fondo
+      x.fillStyle = '#0a0c13'; x.fillRect(0, 0, W, H);
+      const glow = x.createLinearGradient(0, 0, 0, 330); glow.addColorStop(0, '#3a3224'); glow.addColorStop(1, '#0a0c13');
+      x.fillStyle = glow; x.fillRect(0, 0, W, 330);
+      x.fillStyle = '#ffd35c'; x.fillRect(0, 0, W, 6);
+      // logo + títulos
+      if (logo) { const lh = 130, lw = lh * (logo.naturalWidth / logo.naturalHeight || 1.2); try { x.drawImage(logo, (W - lw) / 2, 28, lw, lh); } catch (e) {} }
+      x.textAlign = 'center'; x.textBaseline = 'alphabetic';
+      x.fillStyle = '#fff'; x.font = '800 46px ' + FONT; x.fillText(title, W / 2, 205);
+      x.fillStyle = '#9aa0b4'; x.font = '600 18px ' + FONT; x.fillText('Tabla de posiciones · ' + rows.length + ' equipos', W / 2, 236);
+      // encabezados
+      const col = { pos: 62, team: 107, pj: 473, pts: 540, g: 606, p: 669, goleo: 732 };
+      x.fillStyle = '#b9bdd0'; x.font = '700 14px ' + FONT;
+      x.textAlign = 'center';
+      [['POS', col.pos], ['PJ', col.pj], ['PTS', col.pts], ['G', col.g], ['P', col.p], ['GOLEO', col.goleo]].forEach(a => x.fillText(a[0], a[1], 278));
+      x.textAlign = 'left'; x.fillText('EQUIPO', col.team, 278);
+      // filas
+      rows.forEach((r, i) => {
+        const y = TOP + i * (ROW + GAP), top4 = i < 4 && !r.dq;
+        x.save(); if (r.dq) x.globalAlpha = .45;
+        if (top4) { const g = x.createLinearGradient(PAD, 0, W - PAD, 0); g.addColorStop(0, '#3b3322'); g.addColorStop(1, '#1b2030'); x.fillStyle = g; }
+        else x.fillStyle = i % 2 ? '#1b2030' : '#151927';
+        rr(PAD, y, W - 2 * PAD, ROW, 7); x.fill();
+        if (top4) { x.fillStyle = '#ffd35c'; rr(PAD, y, 5, ROW, 2); x.fill(); }
+        const cy = y + ROW / 2 + 8;
+        x.textAlign = 'center';
+        x.fillStyle = top4 ? '#ffd35c' : '#c4c8da'; x.font = '800 22px ' + FONT; x.fillText(String(i + 1).padStart(2, '0'), col.pos, cy);
+        // equipo (se reduce si es muy largo)
+        let name = (i === 0 && !r.dq ? '♛ ' : '') + r.name, fs = 22; const maxW = 340;
+        x.textAlign = 'left'; x.fillStyle = '#fff';
+        x.font = '800 ' + fs + 'px ' + FONT;
+        while (x.measureText(name).width > maxW && fs > 13) { fs -= 1; x.font = '800 ' + fs + 'px ' + FONT; }
+        x.fillText(name, col.team, cy);
+        x.textAlign = 'center';
+        x.fillStyle = '#c4c8da'; x.font = '700 22px ' + FONT; x.fillText(String(r.wins + r.losses), col.pj, cy);
+        x.fillStyle = top4 ? '#ffd35c' : '#fff'; x.font = '800 27px ' + FONT; x.fillText(String(r.pts), col.pts, cy + 1);
+        x.fillStyle = '#e4e6f0'; x.font = '700 22px ' + FONT;
+        x.fillText(String(r.wins), col.g, cy); x.fillText(String(r.losses), col.p, cy); x.fillText(String(r.goleo), col.goleo, cy);
+        x.restore();
+        if (i === 3) { x.save(); x.setLineDash([6, 5]); x.strokeStyle = 'rgba(255,255,255,.4)'; x.lineWidth = 1.5; x.beginPath(); x.moveTo(PAD, y + ROW + GAP / 2); x.lineTo(W - PAD, y + ROW + GAP / 2); x.stroke(); x.restore(); }
+      });
+      // leyenda y pie
+      const ly = TOP + rows.length * (ROW + GAP) + 22;
+      x.fillStyle = '#ffd35c'; rr(PAD, ly - 12, 24, 12, 4); x.fill();
+      x.textAlign = 'left'; x.fillStyle = '#d6d9e6'; x.font = '600 16px ' + FONT; x.fillText('Clasifican a las rondas finales (4 primeros)', PAD + 34, ly);
+      const fecha = new Date().toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' });
+      x.textAlign = 'center'; x.fillStyle = '#8a90a6'; x.font = '600 15px ' + FONT;
+      x.fillText((location.hostname || 'kings-master.pages.dev') + '  ·  ' + fecha, W / 2, H - 30);
+      const blob = await new Promise((res, rej) => c.toBlob(b => b ? res(b) : rej(new Error('toBlob')), 'image/png'));
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'master-king-tabla-' + tn + '.png';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 3000);
+    } catch (err) {
+      uiAlert('No se pudo generar la imagen. Si abriste el archivo desde tu computadora, súbelo al sitio y prueba de nuevo.');
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = old; }
+    }
   }
 
   async function setPublishedMany(list, value, label) {
