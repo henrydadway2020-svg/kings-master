@@ -286,8 +286,30 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
 .my-row.win{border-color:rgba(159,232,178,.35)}
 .my-row.lose{border-color:rgba(214,76,94,.3)}
 .my-tag{font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
-.my-tag.win{color:#9fe8b2}.my-tag.lose{color:#ff8b9a}.my-tag.pend{color:#8992a5}
+.my-tag.win{color:#9fe8b2}.my-tag.lose{color:#ff8b9a}.my-tag.review{color:#ffd35c}.my-tag.pend{color:#8992a5}
+.vs-meta .vs-status.review{color:#ffd35c}
 @media (max-width:480px){.my-stats{grid-template-columns:repeat(2,1fr)}}
+/* --- Reportes de capitanes --- */
+.field textarea{width:100%;background:#07090d;border:1px solid rgba(255,220,130,.13);color:#f2eee3;padding:12px 13px;font-size:.95rem;border-radius:9px;font-family:inherit;resize:vertical;min-height:70px}
+.field textarea:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.field .hint{font-size:.78rem;color:#8992a5;margin-top:6px}
+.report-cta{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:0 0 18px;padding:16px 18px;border:1px solid rgba(255,220,130,.28);background:rgba(255,210,75,.05);border-radius:13px}
+.report-cta strong{color:var(--gold2)}
+.report-cta p{margin:2px 0 0;font-size:.88rem}
+.report-prev{margin-top:10px}
+.report-prev img{display:block;max-width:100%;max-height:200px;border-radius:9px;border:1px solid rgba(255,220,130,.2)}
+.rep-list{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+.rep-card{display:flex;gap:14px;flex-wrap:wrap;padding:12px;border:1px solid rgba(255,220,130,.16);border-radius:12px;background:rgba(255,255,255,.02)}
+.rep-card.pending{border-color:rgba(255,220,130,.4)}
+.rep-card.conflict{border-color:rgba(214,76,94,.6)}
+.rep-thumb{width:120px;height:120px;object-fit:cover;border-radius:9px;border:1px solid rgba(255,220,130,.25);cursor:zoom-in;background:#07090d}
+.rep-body{flex:1 1 220px;min-width:0;font-size:.88rem;display:flex;flex-direction:column;gap:5px}
+.rep-body .rep-title{font-weight:800;color:#fff6df}
+.rep-body .rep-meta{color:#8992a5;font-size:.78rem}
+.rep-flag{color:#ff8b9a;font-weight:700;font-size:.8rem}
+.rep-ok{color:#9fe8b2;font-weight:700;font-size:.8rem}
+.rep-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.img-backdrop img{max-width:100%;max-height:88vh;border-radius:12px;box-shadow:0 30px 100px rgba(0,0,0,.65)}
 
 .bye-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 @media(max-width:820px){
@@ -631,14 +653,6 @@ body::after{display:none}
 @keyframes crownFloat{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-5px)}}
 @media(prefers-reduced-motion:reduce){.pod.p1::before{animation:none}}
 
-/* ===== Barra de visibilidad de la tabla (organizador) ===== */
-.tablevis-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:16px 0 4px;padding:12px 16px;border-radius:12px;border:1px solid rgba(255,139,139,.4);background:rgba(255,90,90,.07);font-size:.92rem}
-.tablevis-bar.on{border-color:rgba(159,232,178,.45);background:rgba(120,220,150,.07)}
-
-/* ===== Reglas: botones abrir/cerrar todas y bloque general ===== */
-.rules-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 4px}
-#reglas-generales{margin-top:18px;padding-top:0;border-top:0}
-
 /* ===== Banner de campeones ===== */
 .champ-wrap{margin:26px 0 10px;display:grid;gap:14px}
 .champ-banner{position:relative;text-align:center;padding:62px 20px 30px;border-radius:18px;border:1px solid rgba(244,212,119,.55);background:radial-gradient(ellipse 70% 90% at 50% 0%,rgba(244,212,119,.24),transparent 70%),linear-gradient(180deg,#0e0a03,#020202);box-shadow:0 0 64px rgba(217,169,40,.24),inset 0 0 0 1px rgba(255,235,160,.08);overflow:hidden}
@@ -659,11 +673,6 @@ body::after{display:none}
 /* ===== Celular: nombres largos sin cortarse ===== */
 .lu-name>span,.pod-name,.goleo-name,.goleo-team,.champ-team{overflow-wrap:anywhere;word-break:break-word;hyphens:auto}
 @media(max-width:560px){
- .standings th.rk,.standings td.rk{width:38px}
- .standings th.num,.standings td.num{width:35px}
- .standings td>.c{font-size:.85rem}
- .standings td.pts>.c{font-size:1rem}
- .standings th{letter-spacing:.04em}
  .standings td.tm>.c{font-size:clamp(.62rem,3.2vw,.86rem);letter-spacing:.01em}
  .team-card .tname{font-size:clamp(1.15rem,6.2vw,1.55rem)!important;line-height:1.08}
  .lu-name>span{font-size:clamp(.78rem,3.7vw,.98rem)!important;line-height:1.08;padding:6px 5px!important}
@@ -671,397 +680,6 @@ body::after{display:none}
  .match-teams,.vs-meta{overflow-wrap:anywhere}
  .tc-toolbar #teamSearch{flex-basis:100%}
 }
-</style>
-<style id="mk-dashboard">
-.hero{min-height:0!important;padding:30px 0 16px!important}
-.hero .lede,.hero .facts,.hero-actions{display:none!important}
-.hero .crest{max-width:120px!important;height:auto!important;margin:0 auto 6px!important}
-.hero h1{font-size:clamp(2.2rem,8vw,3.6rem)!important;margin:2px 0!important}
-.hero-eyebrow{letter-spacing:.34em!important;order:2}
-.dash{display:grid;gap:16px;margin:22px 0 34px}
-.dash-round{text-align:center;padding:20px 16px;border:1px solid rgba(244,212,119,.5);border-radius:16px;background:radial-gradient(ellipse 70% 120% at 50% 0%,rgba(244,212,119,.16),transparent 70%),#050505;box-shadow:0 0 36px rgba(217,169,40,.14)}
-.dash-round b{display:block;font:italic 900 clamp(2rem,8vw,3.2rem)/1 "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:.04em;color:var(--mk-gold2,#f4d477)}
-.dash-round span{font:700 .78rem "Cinzel",Georgia,serif;letter-spacing:.34em;color:#c9cfdb}
-.dash-round small{display:block;margin-top:6px;color:#8992a5}
-.dash-tables{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-.dash-card,.dash-t{padding:16px 18px;border:1px solid rgba(244,212,119,.2);border-radius:14px;background:linear-gradient(170deg,rgba(21,25,35,.7),rgba(6,7,9,.95));min-width:0}
-.dash-card h3,.dash-t h3{font:700 .8rem "Cinzel",Georgia,serif;letter-spacing:.28em;text-transform:uppercase;color:var(--mk-gold2,#f4d477);margin:0 0 10px;text-align:center}
-.dash-t .r{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:8px;padding:7px 0;border-top:1px solid rgba(255,220,130,.09);font-size:.92rem;align-items:center}
-.dash-t .r:first-of-type{border-top:0}
-.dash-t .r i{font-style:normal;font-weight:800;color:var(--mk-gold2,#f4d477)}
-.dash-t .r span{overflow-wrap:anywhere;text-transform:uppercase;letter-spacing:.02em}
-.dash-t .r em{font-style:normal;font-weight:800}
-.dash-t a,.dash-card a.go{display:block;margin-top:8px;text-align:center;font-size:.8rem;color:var(--mk-gold2,#f4d477)}
-.dash-lock{grid-column:1/-1;text-align:center;color:#8992a5;padding:18px}
-.dash-vs{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;padding:9px 0;border-top:1px solid rgba(255,220,130,.09);text-align:center;font-weight:700;overflow-wrap:anywhere}
-.dash-vs:first-child{border-top:0}
-.dash-vs u{text-decoration:none;color:var(--mk-gold2,#f4d477);font-size:.78rem;letter-spacing:.18em}
-.dash-vs small{flex-basis:100%;color:#8992a5;font-weight:500}
-.dash-vs .w{color:var(--mk-gold2,#f4d477)}
-.dash-empty{text-align:center;color:#8992a5;padding:8px}
-.dash-pills{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
-.dash-pills span{padding:8px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.14);font-weight:700;font-size:.92rem}
-.dash-mvps{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
-.dash-mvp{display:flex;gap:12px;align-items:center;min-width:0}
-.dash-mvp img,.dash-mvp .ph{width:54px;height:76px;object-fit:cover;border-radius:8px;border:1px solid rgba(244,212,119,.5);flex:none;display:grid;place-items:center;background:#111;color:var(--mk-gold2,#f4d477);font-weight:800}
-.dash-mvp div{min-width:0;overflow-wrap:anywhere;font-size:.9rem}
-.dash-mvp small{display:block;color:#8992a5}
-.dash-more{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.dash-more a{padding:8px 16px;border-radius:999px;border:1px solid rgba(244,212,119,.28);color:var(--mk-gold2,#f4d477);text-decoration:none;font-size:.85rem}
-@media(max-width:640px){.dash-tables{grid-template-columns:1fr}}
-</style>
-<style id="mk-bottomnav">
-.bottomnav{display:none}
-@media(max-width:820px){
- .navlinks,.nav-toggle{display:none!important}
- .nav{height:58px!important;min-height:0!important;padding:0!important}
- body{padding-bottom:calc(68px + env(safe-area-inset-bottom,0px))}
- html{scroll-padding-top:70px}
- .bottomnav{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:45;padding:0 4px env(safe-area-inset-bottom,0px);background:linear-gradient(180deg,rgba(8,8,10,.92),#000);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-top:1px solid rgba(244,212,119,.28);box-shadow:0 -10px 30px rgba(0,0,0,.5)}
- .bottomnav a{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:8px 2px 7px;text-decoration:none;color:#8992a5;position:relative;-webkit-tap-highlight-color:transparent;transition:color .2s}
- .bottomnav .bn-i{font-size:1.35rem;line-height:1;filter:grayscale(.85) opacity(.75);transition:filter .2s,transform .2s}
- .bottomnav .bn-l{font:700 .64rem "Manrope",system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase}
- .bottomnav a.on{color:var(--mk-gold2,#f4d477)}
- .bottomnav a.on .bn-i{filter:none;transform:translateY(-2px) scale(1.12)}
- .bottomnav a.on::before{content:"";position:absolute;top:0;left:22%;right:22%;height:2px;border-radius:0 0 3px 3px;background:linear-gradient(90deg,transparent,#ffd35c,transparent);box-shadow:0 0 12px rgba(255,211,92,.8)}
- .bottomnav a:active .bn-i{transform:scale(.9)}
- body.modal-open .bottomnav,body:has(input:focus,textarea:focus,select:focus) .bottomnav{display:none}
-}
-</style>
-<style id="mk-color-system">
-/* ===== SISTEMA DE COLOR FUNCIONAL =====
-   Dorado  → campeón / puntos / ranking
-   Morado  → versus / competición
-   Rojo    → problemas / sanciones                */
-:root{
-  --vs:#a24dff; --vs-hi:#c79bff; --vs-pink:#ff2e93; --vs-ink:#1b1650;
-  --vs-line:rgba(162,77,255,.34); --vs-bg:rgba(162,77,255,.08);
-  --danger:#d64c5e; --danger-hi:#ff8b9a;
-  --danger-line:rgba(214,76,94,.45); --danger-bg:rgba(214,76,94,.10);
-}
-
-/* ---- MORADO: Versus / competición ---- */
-#versus .kicker,#versus .subkicker{color:var(--vs-hi)}
-#versus h2{text-shadow:0 0 38px rgba(162,77,255,.22)}
-#versus::after{background:linear-gradient(90deg,transparent,var(--vs),transparent)}
-.vs-seg{border-color:var(--vs-line);background:var(--vs-bg)}
-.vs-seg button:hover:not(.on){color:var(--vs-hi)}
-.vs-seg button.on{background:linear-gradient(135deg,var(--vs-pink),var(--vs));color:#fff;box-shadow:0 0 18px rgba(162,77,255,.45)}
-.vs-chip{border-color:var(--vs-line)}
-.vs-chip:hover{border-color:var(--vs);color:var(--vs-hi)}
-.vs-chip.on{background:rgba(162,77,255,.18);border-color:var(--vs);color:#fff;box-shadow:0 0 14px rgba(162,77,255,.3)}
-.vs-roundhead h4{color:var(--vs-hi)}
-.my-vs{border-color:var(--vs-line);background:var(--vs-bg)}
-.my-vs .field input:focus-visible{outline:2px solid var(--vs);outline-offset:1px}
-/* Panel de inicio: tarjeta "Próximos versus" y etiquetas VS */
-.dash-card:has(#dashNext){border-color:var(--vs-line);background:linear-gradient(170deg,rgba(162,77,255,.10),rgba(6,7,9,.95))}
-.dash-card:has(#dashNext) h3{color:var(--vs-hi)}
-.dash-vs u{color:var(--vs-hi)}
-/* Barra inferior móvil: pestaña Versus en morado */
-.bottomnav a.on[data-t="versus"]{color:var(--vs-hi)}
-.bottomnav a.on[data-t="versus"]::before{background:linear-gradient(90deg,transparent,var(--vs),transparent);box-shadow:0 0 12px rgba(162,77,255,.8)}
-
-/* ---- ROJO: problemas / sanciones (un solo tono en todo el sitio) ---- */
-.clause.ban,.clause.activity.severe,.clause.behavior.severe{border-color:var(--danger-line);box-shadow:inset 3px 0 0 var(--danger)}
-.clause.ban .num,.clause.activity.severe .num,.clause.behavior.severe .num{color:var(--danger-hi)}
-.activity-rules{border-top-color:var(--danger-line)}
-.activity-rules .subkicker,.behavior-rules .subkicker{color:var(--danger-hi)}
-.behavior-rules{border-top-color:var(--danger-line)}
-.dq-tag,.my-chip.dq,.my-tag.lose,.btn-mini.danger,.cap-btn.on{color:var(--danger-hi);border-color:var(--danger-line)}
-.activity-status.red{color:var(--danger-hi);border-color:var(--danger-line);background:var(--danger-bg)}
-</style>
-<style id="mk-admin-panel">
-/* Panel de administración: solo existe con sesión iniciada. Acento cian = admin/sistema */
-#adminPanel,#adminFab{display:none}
-body.is-admin #adminFab{display:flex}
-body.is-admin.ap-open #adminPanel{display:flex}
-#adminPanel{position:fixed;z-index:60;top:0;left:0;bottom:0;width:min(250px,86vw);flex-direction:column;gap:6px;background:linear-gradient(180deg,#07111b,#04070b);border-right:1px solid rgba(117,217,255,.3);box-shadow:20px 0 60px rgba(0,0,0,.55);padding:calc(14px + env(safe-area-inset-top,0px)) 12px calc(14px + env(safe-area-inset-bottom,0px));overflow-y:auto}
-.ap-head{display:flex;align-items:center;gap:10px;padding:4px 4px 12px;border-bottom:1px solid rgba(117,217,255,.18);margin-bottom:6px}
-.ap-head .ap-crown{font-size:1.5rem;color:var(--cyan)}
-.ap-head div{flex:1;line-height:1.15}.ap-head b{display:block;font:800 .95rem "Cinzel",serif;letter-spacing:.16em;color:#e8f8ff}.ap-head small{font-size:.68rem;letter-spacing:.2em;color:#7fb9cf}
-.ap-x{background:transparent;border:1px solid rgba(117,217,255,.3);color:var(--cyan);width:32px;height:32px;border-radius:8px}
-.ap-nav{display:flex;flex-direction:column;gap:2px;flex:1}
-.ap-nav button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 12px;border:1px solid transparent;border-radius:9px;background:transparent;color:#b9cdd6;font:700 .86rem "Manrope",sans-serif;letter-spacing:.04em}
-.ap-nav button:hover,.ap-nav button:focus-visible{background:rgba(117,217,255,.09);border-color:rgba(117,217,255,.3);color:#fff;outline:0}
-.ap-nav .ap-i{width:22px;text-align:center}
-.ap-foot{display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid rgba(117,217,255,.18)}
-.ap-foot button{padding:10px 12px;border-radius:9px;font:800 .8rem "Manrope",sans-serif;letter-spacing:.06em;text-transform:uppercase;border:1px solid rgba(117,217,255,.4);background:rgba(117,217,255,.08);color:var(--cyan)}
-.ap-foot button:hover{background:rgba(117,217,255,.18)}
-.ap-foot .ap-out{border-color:var(--danger-line,rgba(214,76,94,.45));background:transparent;color:var(--danger-hi,#ff8b9a)}
-.ap-note{margin:0;min-height:1.2em;font-size:.76rem;color:#7fb9cf}
-#adminFab{position:fixed;z-index:55;left:14px;bottom:calc(88px + env(safe-area-inset-bottom,0px));align-items:center;gap:8px;padding:11px 16px;border-radius:999px;border:1px solid rgba(117,217,255,.5);background:#07111b;color:var(--cyan);font:800 .8rem "Manrope",sans-serif;letter-spacing:.1em;text-transform:uppercase;box-shadow:0 8px 28px rgba(0,0,0,.6),0 0 18px rgba(117,217,255,.18)}
-@media(min-width:721px){#adminFab{bottom:18px}}
-@media(min-width:1100px){body.is-admin.ap-open{padding-left:250px}body.ap-open #adminFab{display:none}}
-.ap-login{display:inline-block;margin-top:14px;color:#6f7889;font-size:.72rem;letter-spacing:.14em;text-decoration:none;border-bottom:1px dotted #4a5262}
-.ap-login:hover{color:var(--cyan)}
-.ap-start{display:flex;flex-direction:column;gap:6px;padding:12px 4px;border-top:1px solid rgba(117,217,255,.18)}
-.ap-start label{font:800 .72rem "Manrope",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#b9cdd6}
-.ap-start input{width:100%;padding:9px 10px;border-radius:8px;border:1px solid rgba(117,217,255,.3);background:#04070b;color:#fff;font:inherit;font-size:.85rem;color-scheme:dark}
-.ap-start button{padding:9px 10px;border-radius:8px;border:1px solid rgba(117,217,255,.4);background:rgba(117,217,255,.08);color:var(--cyan);font:800 .75rem "Manrope",sans-serif;letter-spacing:.06em;text-transform:uppercase}
-.ap-start small{font-size:.7rem;color:#7fb9cf;line-height:1.35}
-/* Vista pública (previsualización): el admin ve el sitio sin herramientas */
-body.admin-public :is(.team-actions,.lu-admin,.champ-admin,.publish-bar,.tablevis-bar,.admin-box,.admin-badge,#batchPhotoBox,#captainHint,.mvp-edit,.goleo-ctrl,.match-buttons,.cap-btn,#respaldo){display:none!important}
-</style>
-<style id="mk-color-roles">
-/* ===== IDENTIDAD VISUAL: el color comunica información =====
-   GOLD   → posición · puntos · campeón · MVP · destacados
-   PURPLE → VS · partidos · competición · ronda actual
-   RED    → sanciones · incumplimientos · descalificados
-   WHITE  → información principal: nombres y números
-   (el cian queda solo para el panel de administración)            */
-:root{
-  --c-gold:#ffd35c; --c-gold-d:#d9a928;
-  --c-vs:#a24dff; --c-vs-hi:#c79bff;
-  --c-red:#d64c5e; --c-red-hi:#ff8b9a;
-  --c-white:#f8f5eb; --c-white2:#cfd6e4;
-  --edge:rgba(255,255,255,.12); --line:rgba(255,255,255,.14);
-  --tb-a:#d9a928; --tb-a2:#ffe18a; --tb-a3:#5c4308;
-}
-/* ---- Lo decorativo pasa a blanco/neutro ---- */
-a{color:var(--c-white2)}
-.kicker,.subkicker{color:var(--c-white2)}
-.navlinks a:hover{color:#fff;background:rgba(255,255,255,.06);border-color:var(--edge)}
-.nav-toggle{color:#fff;border-color:rgba(255,255,255,.25)}
-.topbar,section{border-bottom-color:var(--edge)}
-section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent)}
-.fact{border-color:var(--edge)}.fact strong,.stat .n,.progress-row .count{color:#fff}
-.clause .num{color:var(--c-white2)}
-.clause:hover{background:rgba(255,255,255,.03)}
-.grid-2 .cell,.dash-card,.dash-t,.backup-box,.results-toggle,.activity-card,.activity-control,.stats{border-color:var(--edge)}
-.roster-box{border-color:var(--edge)!important}
-.modal{border-color:rgba(255,255,255,.2)}
-.grid-2 .cell h3,.table-group h3{color:#fff}
-.steps{border-left-color:var(--edge)}
-.step::before{background:var(--c-white2);box-shadow:0 0 0 5px rgba(255,255,255,.06)}
-.pill{border-color:var(--edge)!important;background:rgba(255,255,255,.04)!important;color:var(--c-white2)!important}
-.progress-fill{background:linear-gradient(90deg,#8a93a6,#e8ecf5);box-shadow:0 0 14px rgba(255,255,255,.18)}
-.btn-outline{border-color:rgba(255,255,255,.3);color:var(--c-white2)}.btn-outline:hover{background:rgba(255,255,255,.07)}
-.decision-panel{border-color:var(--edge);background:rgba(255,255,255,.03)}
-.pager button{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.05);color:var(--c-white2)}
-.btn-mini,.admin-badge{color:var(--cyan);border-color:rgba(117,217,255,.4)}.btn-mini:hover{background:rgba(117,217,255,.1)}
-.cap-btn.on{background:rgba(255,211,92,.2);border-color:var(--c-gold);color:var(--c-gold)}
-.activity-card .day,.activity-day{color:var(--c-white2)}
-.activity-card.final{border-color:rgba(255,255,255,.3);box-shadow:inset 0 2px 0 rgba(255,255,255,.4)}
-.clause.activity.final-rule{border-color:var(--edge)}
-.clause.behavior.final-rule{border-color:var(--danger-line,rgba(214,76,94,.45))}
-/* ---- PURPLE: ronda actual, rondas, partidos, estados de partido ---- */
-.dash-round{border-color:var(--c-vs);background:radial-gradient(ellipse 70% 120% at 50% 0%,rgba(162,77,255,.22),transparent 70%),#07050d;box-shadow:0 0 36px rgba(162,77,255,.22)}
-.dash-round b{color:var(--c-vs-hi)}
-.round-group h4,.rounds-list .rlabel{color:var(--c-vs-hi)}
-.rounds-list li{border-top-color:var(--edge)}
-.dash-card:has(#dashLast){border-color:var(--vs-line,rgba(162,77,255,.34))}
-.dash-card:has(#dashLast) h3{color:var(--c-vs-hi)}
-.vs-meta .vs-status.done{color:var(--c-white2)}
-/* ---- GOLD: puntos, MVP y destacados ---- */
-.dash-card h3,.dash-t h3{color:#fff}
-.dash-card:has(#dashMvp){border-color:rgba(255,211,92,.3)}
-.dash-card:has(#dashMvp) h3{color:var(--c-gold)}
-.dash-t .r em{color:var(--c-gold)}
-.dash-t a,.dash-card a.go,.dash-more a{color:var(--c-white2)}.dash-more a{border-color:var(--edge)}
-/* ---- WHITE: nombres y números ---- */
-.my-chip{color:var(--c-white2);border-color:var(--edge)}
-.my-stat,.my-row{border-color:var(--edge)}.my-stat b{color:#fff}
-.lu-frame{background:linear-gradient(135deg,#f1f4fa,#5d6576 45%,#f1f4fa 72%,#5d6576)}
-.lu-name{background:linear-gradient(135deg,#f1f4fa,#4b5262 50%,#f1f4fa)}
-.lu-name>span{color:#fff}
-.team-card .tname .tn-b{background:none;-webkit-text-fill-color:#fff;color:#fff}
-/* ---- Tabla de posiciones: dorado = clasificación; rojo solo descalificados ---- */
-.sb-board{background:radial-gradient(ellipse at 50% -25%,rgba(217,169,40,.28),transparent 62%),linear-gradient(180deg,#0e0b05 0,#080809 42%,#050506 100%)}
-.st-scroll{scrollbar-color:rgba(217,169,40,.5) transparent}
-.standings td.rk>.c{color:#140f04}
-.standings td.tm>.c{background:linear-gradient(90deg,#222733,#0f1218);color:#fff}
-.standings td.pts>.c{color:var(--c-gold)}
-.standings tr.qualify td.tm>.c{box-shadow:inset 4px 0 0 var(--c-gold-d)}
-.standings tr.r1 td.tm>.c{box-shadow:0 0 24px rgba(255,211,92,.45),inset 4px 0 0 var(--c-gold)}
-.standings tr.qualify td.rk>.c .mv.up{color:#0b5d22}.standings tr.qualify td.rk>.c .mv.down{color:#7a0e1a}
-.standings tbody tr:not(.qualify) td.rk>.c{background:linear-gradient(90deg,#3a4050,#1a1e27);color:#d3d9e6}
-.standings tbody tr:not(.qualify) td.tm>.c{background:linear-gradient(90deg,#1c202a,#0d0f14);color:#e4e8f0}
-.standings tbody tr.dq:not(.qualify) td.rk>.c{background:linear-gradient(90deg,#5a0a12,#1d0507);color:#ffc9d0}
-.standings tbody tr.dq:not(.qualify) td.tm>.c{background:linear-gradient(90deg,#5a0a12,#1a0406);color:#ffd2d8}
-/* ---- Barra inferior móvil: cada pestaña con el color de su significado ---- */
-.bottomnav a.on::before{background:linear-gradient(90deg,transparent,#fff,transparent);box-shadow:0 0 12px rgba(255,255,255,.5)}
-.bottomnav a.on[data-t="tabla"]::before,.bottomnav a.on[data-t="goleo"]::before{background:linear-gradient(90deg,transparent,#ffd35c,transparent);box-shadow:0 0 12px rgba(255,211,92,.8)}
-</style>
-<style id="mk-table-hero">
-/* ===== TABLA PROTAGONISTA: misma lógica, otra percepción =====
-   Todas las filas iguales y neutras. Dorado = solo una señal pequeña
-   (barra + número) en los 4 que clasifican, y la corona del líder.   */
-#tabla h2{font-size:clamp(2.4rem,5.4vw,4rem);margin-bottom:26px}
-.table-group{margin-bottom:56px}
-.sb-board{padding:30px 30px 26px;border-radius:10px;border:1px solid rgba(255,255,255,.14);
-  background:radial-gradient(ellipse at 50% -20%,rgba(255,255,255,.08),transparent 60%),linear-gradient(180deg,#0e1015 0,#07080b 55%,#050506 100%);
-  box-shadow:0 34px 90px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.06)}
-.sb-head{margin-bottom:24px}
-.table-group h3.sb-title{font-size:2.7rem;padding:9px 58px 9px 28px}
-.tg-count{font-size:.86rem;letter-spacing:.24em;color:var(--c-white2)}
-.standings{border-spacing:0 8px;font-size:1.1rem}
-.standings th{color:#8f98aa;font-size:.74rem;letter-spacing:.26em;padding:0 3px 12px}
-.standings th.num:nth-child(4){color:#fff}
-.standings th.rk,.standings td.rk{width:78px}
-.standings th.num,.standings td.num{width:78px}
-.standings th.num:nth-child(4),.standings td.num.pts{width:100px}
-.standings td>.c{height:46px;line-height:44px;font-size:1.35rem;border-color:rgba(255,255,255,.14);background:rgba(255,255,255,.035);color:#fff}
-.standings td.rk>.c{border-color:transparent;background:rgba(255,255,255,.05);color:#8f98aa;font-size:1.3rem}
-.standings td.tm>.c{border-color:transparent;background:linear-gradient(90deg,rgba(255,255,255,.1),rgba(255,255,255,.03));color:#fff;font-size:1.45rem;box-shadow:none}
-.standings td.pts>.c{color:#fff;font-size:1.85rem;font-weight:900;background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.3)}
-/* Los 4 que clasifican: señal dorada pequeña */
-.standings tr.qualify td.rk>.c{color:var(--c-gold);background:linear-gradient(90deg,rgba(255,211,92,.18),rgba(255,255,255,.04));box-shadow:inset 4px 0 0 var(--c-gold)}
-.standings tr.qualify td.tm>.c,.standings tr.r1 td.tm>.c{box-shadow:none}
-.standings tr.r1 td.tm>.c::before{content:"♛";display:inline-block;margin-right:10px;color:var(--c-gold);transform:skewX(18deg);text-shadow:0 0 12px rgba(255,211,92,.55)}
-.standings tr.qualify td.rk>.c .mv.up,.standings td.rk>.c .mv.up{color:#9fffb8}
-.standings tr.qualify td.rk>.c .mv.down,.standings td.rk>.c .mv.down{color:#ffd0d0}
-/* No clasificados: neutros (el rojo queda solo para descalificados) */
-.standings tbody tr:not(.qualify) td.rk>.c{background:rgba(255,255,255,.04);color:#8f98aa}
-.standings tbody tr:not(.qualify) td.tm>.c{background:linear-gradient(90deg,rgba(255,255,255,.07),rgba(255,255,255,.02));color:#e4e8f0}
-.standings tr.cut td::after{bottom:-6px;border-bottom:2px dashed rgba(255,255,255,.28)}
-.zone-legend{margin-top:18px}
-/* Goleo: mismo lenguaje (sin rojo; dorado solo en el top) */
-#goleoList{background:radial-gradient(ellipse at 50% -30%,rgba(255,255,255,.07),transparent 62%),linear-gradient(180deg,#0e1015 0,#07080b 45%,#050506 100%)}
-.goleo-rank{background:rgba(255,255,255,.06);color:#9aa3b5}
-.goleo-row.top .goleo-rank{background:linear-gradient(90deg,rgba(255,211,92,.18),rgba(255,255,255,.04));color:var(--c-gold);box-shadow:inset 4px 0 0 var(--c-gold)}
-.goleo-name::before{background:linear-gradient(90deg,rgba(255,255,255,.09),rgba(255,255,255,.02) 85%)}
-.goleo-row.top>.goleo-score{color:var(--c-gold)}
-@media(max-width:980px){.table-group h3.sb-title{font-size:2.2rem}}
-@media(max-width:560px){
-  .sb-board{padding:18px 10px 16px}
-  .table-group h3.sb-title{font-size:1.6rem;padding:6px 32px 6px 18px}
-  .standings{border-spacing:0 6px}
-  .standings th{font-size:.58rem;letter-spacing:.1em}
-  .standings th.rk,.standings td.rk{width:46px}
-  .standings th.num,.standings td.num{width:42px}
-  .standings th.num:nth-child(4),.standings td.num.pts{width:54px}
-  .standings td>.c{height:36px;line-height:34px;font-size:1rem}
-  .standings td.rk>.c{font-size:1rem}
-  .standings td.tm>.c{font-size:clamp(.7rem,3.4vw,.95rem);padding:0 9px}
-  .standings td.pts>.c{font-size:1.2rem}
-  .standings tr.r1 td.tm>.c::before{margin-right:5px}
-}
-</style>
-<style id="mk-clarity">
-/* ===== CLARIDAD: tabla en pantalla (sin inclinados, más contraste, más grande) ===== */
-#tabla .standings{border-spacing:0 4px;font-size:1.05rem}
-#tabla .standings th{color:#d7dcea;font-size:.8rem;letter-spacing:.14em;font-weight:800;padding:0 3px 10px}
-#tabla .standings td>.c{transform:none!important;display:flex;align-items:center;justify-content:center;height:auto;min-height:46px;line-height:1.15;border:0!important;border-radius:6px;background:#161a23!important;color:#fff!important;font-weight:700;box-shadow:none!important;text-transform:none;letter-spacing:0}
-#tabla .standings tbody tr:nth-child(even) td>.c{background:#1d222e!important}
-#tabla .standings td.tm>.c{justify-content:flex-start;text-align:left;padding:6px 14px;font-size:1.2rem;font-weight:800;white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere}
-#tabla .standings td.rk>.c{color:#c3cadb!important;font-size:1.15rem}
-#tabla .standings td.pts>.c{font-size:1.5rem;font-weight:900;background:#2a3040!important;color:#fff!important}
-#tabla .standings tr.qualify td.rk>.c{color:#ffe18a!important;background:linear-gradient(90deg,rgba(255,211,92,.28),#161a23)!important;box-shadow:inset 5px 0 0 #ffd35c!important}
-#tabla .standings tr.qualify td.tm>.c{background:linear-gradient(90deg,rgba(255,211,92,.12),#161a23)!important}
-#tabla .standings tr.qualify td.pts>.c{color:#ffe18a!important}
-#tabla .standings tr.r1 td.tm>.c::before{transform:none!important}
-#tabla .standings td.rk>.c .mv{transform:none!important}
-#tabla .standings tr.cut td::after{border-bottom:2px dashed rgba(255,255,255,.4);bottom:-4px}
-#tabla .zone-legend{color:#d0d6e4;font-size:.9rem}
-/* Versus en pantalla: el perdedor se sigue leyendo */
-.vsb .lose{opacity:.8}
-.vsb-name{font-size:.98rem}
-@media(max-width:560px){
-  #tabla .standings td>.c{min-height:42px;font-size:.95rem}
-  #tabla .standings td.tm>.c{font-size:.98rem;padding:5px 9px}
-  #tabla .standings td.pts>.c{font-size:1.2rem}
-  #tabla .standings th{font-size:.64rem;letter-spacing:.06em}
-  .vsb-name{font-size:.82rem}
-}
-/* Botones de descarga */
-.dl-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;border:1px solid rgba(255,211,92,.55);background:linear-gradient(135deg,#ffe18a,#d9a928);color:#1a1405;font:800 .82rem "Manrope",system-ui,sans-serif;letter-spacing:.04em;cursor:pointer;white-space:nowrap}
-.dl-btn:hover{filter:brightness(1.08)}
-.dl-btn:disabled{opacity:.6;cursor:wait}
-.dl-btn.alt{background:rgba(255,255,255,.06);color:#ffe18a}
-.dl-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.sb-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.vs-roundhead .dl-bar{margin-left:auto}
-</style>
-<style id="mk-pro-tables">
-/* ===== TABLAS PROFESIONALES (posiciones + goleo) =====
-   Capa final: filas continuas con líneas finas, números tabulares,
-   dorado solo para quienes clasifican, plata/bronce en 2.º y 3.º. */
-#tabla .sb-board{padding:0;border-radius:14px;border:1px solid rgba(255,220,130,.16);background:#0b0e14;box-shadow:0 24px 60px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.05);overflow:hidden}
-#tabla .sb-board::after{display:none}
-#tabla .sb-head{margin:0;padding:20px 26px;border-bottom:1px solid rgba(255,220,130,.14);background:linear-gradient(180deg,rgba(255,211,92,.07),rgba(255,211,92,0));gap:14px}
-#tabla .table-group h3.sb-title{transform:none;border:0;background:none;padding:0;margin:0;font:600 1.9rem/1.1 "Fraunces",Georgia,serif;text-transform:none;letter-spacing:0;color:#fff7dc}
-#tabla .tg-count{margin-right:auto;padding:4px 12px;border:1px solid rgba(255,255,255,.14);border-radius:999px;font:600 .78rem "Manrope",system-ui,sans-serif;letter-spacing:0;text-transform:none;color:#aeb6c7}
-#tabla .st-scroll{padding:4px 14px 6px}
-#tabla .standings{border-collapse:separate;border-spacing:0;font-size:1rem}
-#tabla .standings thead th{padding:14px 6px 12px;border-bottom:1px solid rgba(255,255,255,.12);font:700 .78rem/1 "Manrope",system-ui,sans-serif;letter-spacing:.02em;text-transform:none;color:#8f98aa}
-#tabla .standings thead th.tm{padding-left:14px}
-#tabla .standings thead th.num:nth-child(4){color:#ffe18a}
-#tabla .standings tbody td{padding:0;border:0;border-bottom:1px solid rgba(255,255,255,.06);background:transparent;transition:background .15s}
-#tabla .standings tbody tr:nth-child(even) td{background:rgba(255,255,255,.022)}
-#tabla .standings tbody tr.qualify td{background:rgba(255,211,92,.04)}
-#tabla .standings tbody tr:hover td{background:rgba(255,211,92,.09)}
-#tabla .standings tbody tr:last-child td{border-bottom:0}
-#tabla .standings tbody tr.qualify td.rk{box-shadow:inset 3px 0 0 #ffd35c}
-#tabla .standings tbody tr.cut td{border-bottom:2px solid rgba(255,211,92,.5)}
-#tabla .standings tbody tr.cut td::after{display:none}
-#tabla .sb-board .standings.standings td>.c.c{display:flex;align-items:center;justify-content:center;height:auto;min-height:54px;padding:0 6px;border:0!important;border-radius:0;background:transparent!important;box-shadow:none!important;transform:none!important;color:#c9d0de!important;font:600 1.05rem/1.2 "Manrope",system-ui,sans-serif;font-variant-numeric:tabular-nums;letter-spacing:0;text-transform:none}
-#tabla .sb-board .standings.standings td.tm>.c.c{justify-content:flex-start;text-align:left;padding:8px 14px;color:#fff!important;font-weight:700;font-size:1.1rem;white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere}
-#tabla .sb-board .standings.standings td.rk>.c.c{color:#8f98aa!important;font-weight:700}
-#tabla .sb-board .standings.standings tr.qualify td.rk>.c.c{color:#ffd35c!important;font-weight:800}
-#tabla .sb-board .standings.standings tr.r2 td.rk>.c.c{color:#dfe4ef!important}
-#tabla .sb-board .standings.standings tr.r3 td.rk>.c.c{color:#e3a66b!important}
-#tabla .sb-board .standings.standings td.pts>.c.c{background:rgba(255,255,255,.05)!important;color:#fff!important;font-weight:800;font-size:1.3rem}
-#tabla .sb-board .standings.standings tr.qualify td.pts>.c.c{background:rgba(255,211,92,.1)!important;color:#ffe18a!important}
-#tabla .sb-board .standings.standings tr.r1 td.tm>.c.c::before{content:"♛";margin-right:10px;color:#ffd35c;text-shadow:none;transform:none}
-#tabla .sb-board .standings.standings tr.qualify td.rk>.c.c .mv.up,#tabla .sb-board .standings.standings td.rk>.c.c .mv.up{color:#7ee59b}
-#tabla .sb-board .standings.standings tr.qualify td.rk>.c.c .mv.down,#tabla .sb-board .standings.standings td.rk>.c.c .mv.down{color:#ff9aa5}
-#tabla .sb-board .standings.standings tr.dq td>.c.c{opacity:.5}
-#tabla .sb-board .standings.standings tr.dq td.tm>.c.c{text-decoration:line-through}
-#tabla .zone-legend{margin:0;padding:14px 26px 18px;border-top:1px solid rgba(255,255,255,.08);font:600 .84rem "Manrope",system-ui,sans-serif;color:#aab2c3}
-#tabla .zone-legend .up{width:12px;height:12px;border-radius:3px;transform:none;background:#ffd35c;vertical-align:-1px}
-
-/* Goleo: misma lógica de lista continua */
-#goleo #goleoList{margin-top:16px;padding:4px 0;border:1px solid rgba(255,220,130,.16);border-radius:14px;background:#0b0e14;box-shadow:0 24px 60px rgba(0,0,0,.5)}
-#goleo .goleo-row{grid-template-columns:64px 1fr auto;gap:12px;min-height:60px;padding:8px 22px 8px 0;border:0;border-bottom:1px solid rgba(255,255,255,.06);background:none}
-#goleo .goleo-row:nth-child(even){background:rgba(255,255,255,.022)}
-#goleo .goleo-row:hover{background:rgba(255,211,92,.08)}
-#goleo .goleo-row:last-child{border-bottom:0}
-#goleo .goleo-rank{display:block;width:auto;height:auto;transform:none;background:none;box-shadow:none;text-align:center;color:#8f98aa;font:700 1rem "Manrope",system-ui,sans-serif}
-#goleo .goleo-name{padding:0;color:#fff;font:700 1.02rem/1.25 "Manrope",system-ui,sans-serif;text-transform:none;letter-spacing:0}
-#goleo .goleo-name::before{display:none}
-#goleo .goleo-team{display:block;margin-top:2px;font:500 .8rem "Manrope",system-ui,sans-serif;color:#8f98aa}
-#goleo .goleo-row>.goleo-score{min-width:58px;height:34px;transform:none;border:1px solid rgba(255,211,92,.35);border-radius:999px;background:rgba(255,211,92,.08);color:#ffe18a;font:800 1.1rem "Manrope",system-ui,sans-serif}
-@media(max-width:560px){
-  #tabla .sb-head{padding:16px 14px}
-  #tabla .table-group h3.sb-title{font-size:1.45rem;padding:0}
-  #tabla .st-scroll{padding:2px 4px 4px}
-  #tabla .standings thead th{font-size:.68rem;padding:12px 2px 10px}
-  #tabla .standings thead th.tm{padding-left:8px}
-  #tabla .sb-board .standings.standings td>.c.c{min-height:46px;padding:0 2px;font-size:.92rem}
-  #tabla .sb-board .standings.standings td.tm>.c.c{padding:6px 8px;font-size:.95rem}
-  #tabla .sb-board .standings.standings td.pts>.c.c{font-size:1.1rem}
-  #tabla .zone-legend{padding:12px 14px 16px}
-  #goleo .goleo-row{grid-template-columns:44px 1fr auto;padding-right:14px}
-  #goleo .goleo-row>.goleo-score{min-width:48px}
-}
-/* ---- Líderes etiquetados en los versus ---- */
-.vsb-side{height:auto;min-height:44px}
-.vsb-side.a,.vsb-side.b{padding-top:5px;padding-bottom:7px}
-.vsb-txt{display:flex;flex-direction:column;gap:2px;min-width:0;max-width:100%}
-.vsb-side.a .vsb-txt{align-items:flex-end}
-.vsb-side.b .vsb-txt{align-items:flex-start}
-.vs-contacts{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 4px}
-.vs-contact{min-width:0;padding:5px 9px;border-radius:9px;border:1px dashed rgba(162,77,255,.45);background:rgba(162,77,255,.08);color:#e9dcff;font-size:.72rem;font-weight:700;line-height:1.25;overflow-wrap:anywhere;cursor:pointer}
-.vs-contact.a{text-align:right}.vs-contact.b{text-align:left}
-.vs-contact.none{color:#ff9aa6;border-color:rgba(255,154,166,.4);cursor:default}
-.vs-contact.ok{border-style:solid;border-color:#6ff0a3;color:#6ff0a3}
-.vs-contact small{display:block;font-weight:600;opacity:.9;font-variant-numeric:tabular-nums}
-.vs-adminbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.vs-adminbar .vs-seg{margin:0}.vs-adminbar .vs-seg button{padding:6px 12px;font-size:.7rem}
-.vsb-lead{font-family:"Manrope",sans-serif;font-weight:700;font-size:.66rem;letter-spacing:.04em;color:#ffd35c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-.vsb .win .vsb-lead{color:#fff6d6}
-.dash-vs em.dash-cap{display:block;font-style:normal;font-size:.7rem;font-weight:600;color:#ffd35c;letter-spacing:.03em}
-.my-lead{color:#ffd35c;font-weight:600}
-/* Líderes y teléfonos (solo organizador) */
-.ld-box{padding:4px 2px 10px}
-.ld-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:9px 0;border-top:1px solid rgba(255,220,130,.1);font-size:.88rem}
-.ld-row .ld-team{font-weight:800;flex:1 1 170px;min-width:0;overflow-wrap:anywhere}
-.ld-row .ld-who{color:#ffd35c;flex:1 1 120px}
-.ld-row .ld-tel{color:#c9cfdd;flex:1 1 150px;font-variant-numeric:tabular-nums}
-.ld-row.none .ld-tel{color:#ff9aa6}
-.wa-btn{display:inline-block;padding:4px 10px;border-radius:999px;border:1px solid rgba(80,220,130,.55);background:rgba(37,211,102,.12);color:#6ff0a3;font-weight:800;font-size:.74rem;text-decoration:none;white-space:nowrap}
-.wa-btn:hover{background:rgba(37,211,102,.24)}
-.tc-contact{margin-top:12px;padding:8px 12px;border:1px dashed rgba(255,220,130,.3);border-radius:10px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;font-size:.85rem;color:#c9cfdd}
 </style>
 </head>
 
@@ -1072,7 +690,8 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
       <a class="brand" href="#inicio"><img class="brand-logo" src="logo.webp" alt="MASTER KING" width="52" height="42"><span>MASTER KING</span></a>
       <button class="nav-toggle" id="navToggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="navLinks">☰</button>
       <nav class="navlinks" id="navLinks" aria-label="Navegación principal">
-        <a href="#inicio">Inicio</a><a href="#tabla">Tabla</a><a href="#versus">Versus</a><a href="#inscripcion">Equipos</a><a href="#goleo">Goleo</a><a href="#reglamento">Reglas</a><a href="#premiacion">Premiación</a>
+        <a href="#reglamento">Reglas</a><a href="#formato">Formato</a><a href="#inscripcion">Equipos</a>
+        <a href="#fechas">Calendario</a><a href="#tabla">Tabla</a><a href="#goleo">Goleo</a><a href="#versus">Versus</a><a href="#premiacion">Premios</a>
       </nav>
     </div>
   </header>
@@ -1080,9 +699,9 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
   <main id="contenido">
     <section class="hero" id="inicio">
       <div class="wrap hero-inner">
-        <div class="hero-eyebrow">LIGA COMPETITIVA OFICIAL</div>
+        <div class="hero-eyebrow">Liga competitiva · Pokémon TCG · Temporada oficial</div>
         <img class="crest" src="logo.webp" alt="Escudo de MASTER KING" width="900" height="600" fetchpriority="high">
-        <h1><span class="accent">MASTER KING</span></h1>
+        <h1>La batalla por el <span class="accent">trono</span> comienza aquí.</h1>
         <p class="lede">Cuatro jugadores. Un mismo estandarte. Una liga donde cada victoria acerca a tu equipo a la corona de MASTER KING.</p>
         <div class="facts">
           <span class="fact"><strong>4</strong> jugadores por equipo</span>
@@ -1097,78 +716,16 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
     </section>
 
     <div class="wrap">
-      <section id="panel" class="dash" aria-label="Panel de la liga">
-      <div class="dash-round" id="dashRound"></div>
-      <div class="dash-tables" id="dashTables"></div>
-      <div class="dash-card"><h3>Próximos versus</h3><div id="dashNext"></div></div>
-      <div class="dash-card"><h3>Últimos resultados</h3><div id="dashLast"></div></div>
-      <div class="dash-card"><h3>MVP</h3><div id="dashMvp" class="dash-mvps"></div></div>
-      <div class="dash-more"><a href="#reglamento">Reglas</a><a href="#formato">Formato</a><a href="#fechas">Calendario</a><a href="#premiacion">Premios</a></div>
-    </section>
-
-<div class="stats" aria-label="Datos principales" hidden>
+      <div class="stats" aria-label="Datos principales">
         <div class="stat"><div class="n">4</div><div class="l">Jugadores / equipo</div></div>
         <div class="stat"><div class="n">BO3</div><div class="l">Formato de duelo</div></div>
         <div class="stat"><div class="n">TOP 4</div><div class="l">Clasificación</div></div>
         <div class="stat"><div class="n">♛</div><div class="l">Una sola corona</div></div>
       </div>
 
-      <section id="tabla">
-        <div class="kicker">01 · TABLA DE POSICIONES</div>
-        <h2>Tabla de posiciones</h2>
-        <div id="tableVisBar"></div>
-        <div id="championBanner"></div>
-        <div id="standingsContent"><p class="pending-note">La tabla aparece en cuanto se generan las fechas.</p></div>
-        <div class="goleo-box" id="goleo" style="display:none;">
-          <div class="subkicker">GOLEO INDIVIDUAL</div>
-          <h3>Tabla de goleo</h3>
-          <p class="table-note">Cada jugador acumula su propio goleo, que registra la administración durante la liga. Cada partida ganada suma 1 punto (2-0: 2 puntos al ganador; 2-1: 2 al ganador y 1 al perdedor). La muerte súbita no suma goleo individual. Quien tenga más puntos gana el goleo.</p>
-          <div class="goleo-filter">
-            <input type="search" id="goleoSearch" placeholder="🔍 Buscar jugador o equipo…" autocomplete="off" aria-label="Buscar jugador o equipo">
-            <select id="goleoTeam" aria-label="Filtrar por equipo"><option value="">Todos los equipos</option></select>
-          </div>
-          <div id="goleoPodium"></div>
-          <div id="goleoList"></div>
-          <div class="pager" id="goleoPager"></div>
-        </div>
-      </section>
-
-      <section id="versus">
-        <div class="kicker">02 · VERSUS</div>
-        <h2>Versus de la liga</h2>
-        <p class="table-note">Elige la tabla y la ronda para ver cada enfrentamiento. El ganador de cada duelo se ilumina en dorado y alimenta la tabla de posiciones.</p>
-        <div class="my-vs" id="myVs" style="display:none;">
-          <div class="field"><label for="myTeamIn">Buscar mi equipo o mi nick</label><input type="search" id="myTeamIn" list="myTeamList" placeholder="Escribe tu equipo o tu nick…" autocomplete="off" autocapitalize="off" spellcheck="false"><datalist id="myTeamList"></datalist></div>
-          <div id="myVsPanel" aria-live="polite"></div>
-        </div>
-        <div class="vs-hub" id="resultsDetails" style="display:none;">
-          <div id="resultsContent"></div>
-        </div>
-      </section>
-
-      <section id="inscripcion">
-        <div class="kicker">03 · EQUIPOS</div>
-        <h2>Equipos inscritos</h2>
-        <div class="roster-box">
-          <p>Las inscripciones están cerradas. Estos son los equipos que compiten en la liga.</p>
-          <div class="progress-row"><span id="progressLabel">Cargando inscritos…</span><span class="count" id="progressCount">—</span></div>
-          <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-          <div id="batchPhotoBox" style="display:none;margin-top:14px"><button type="button" class="btn-mini" id="batchPhotoBtn">📷 Subir fotos en lote</button> <span class="table-note" style="display:inline">Nombra cada archivo como el nick del jugador (ej. <em>AshKetchum.jpg</em>) y se asigna solo.</span><input type="file" id="batchPhotoFile" accept="image/*" multiple hidden></div>
-          <p class="table-note" id="captainHint" style="display:none">Organizador: debajo de cada jugador tienes «📷 Foto» para subir su imagen y «♛ Capitán» para nombrarlo.</p>
-          <div class="tc-toolbar" id="tcToolbar"><input type="search" id="teamSearch" placeholder="🔍 Buscar jugador o equipo…" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Buscar jugador o equipo"><button type="button" class="btn-mini" id="tcCollapse">Contraer todos</button><button type="button" class="btn-mini" id="tcExpand">Expandir todos</button><div class="team-search-info" id="teamSearchInfo" aria-live="polite"></div></div>
-          <ul class="team-grid" id="teamList"></ul>
-          <p class="empty-note" id="emptyNote" style="display:none;">Aún no hay equipos registrados.</p>
-          <div class="decision-panel" id="decisionPanel" style="display:none;"></div>
-        </div>
-      </section>
-
       <section id="reglamento">
-        <div class="kicker">04 · El código del rey</div>
+        <div class="kicker">01 · El código del rey</div>
         <h2>Reglas del duelo</h2>
-        <div class="rules-toolbar"><button type="button" class="btn-mini" id="rulesOpenAll">Abrir todas</button><button type="button" class="btn-mini" id="rulesCloseAll">Cerrar todas</button></div>
-        <div class="rules-subsection activity-rules-none" id="reglas-generales">
-          <div class="subkicker">REGLAMENTO GENERAL</div>
-          <h2>Definiciones y reglas generales</h2>
         <div class="grid-2" id="definiciones">
           <div class="cell"><h3>Versus</h3><p>Duelo individual de un jugador contra un jugador rival. Se juega al mejor de tres partidas (Bo3).</p></div>
           <div class="cell"><h3>Encuentro</h3><p>Enfrentamiento de un equipo contra otro en una ronda: son 4 versus. Gana el equipo que gane más versus. La victoria vale <strong>3 puntos</strong> y la derrota <strong>0</strong>.</p></div>
@@ -1183,8 +740,6 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
         <div class="clause"><div class="num">VI</div><div class="body">Cada equipo tiene <strong>3 días</strong> para completar su encuentro de la ronda.</div></div>
         <div class="clause"><div class="num">VII</div><div class="body"><strong>Sustituciones:</strong> los cambios de jugadores solo los realiza la <strong>administración</strong>, a solicitud del capitán y con causa justificada. El jugador sustituto ocupa el lugar del anterior y los resultados ya registrados se conservan.</div></div>
         <div class="clause"><div class="num">VIII</div><div class="body"><strong>Apelaciones:</strong> toda decisión administrativa puede apelarse <strong>una sola vez</strong>, por el canal oficial (<a href="https://chat.whatsapp.com/EfHegAr4nby2Zs7yp4FtEs" target="_blank" rel="noopener noreferrer">grupo de WhatsApp</a>), dentro de las <strong>24 horas</strong> siguientes y aportando pruebas nuevas. La resolución de la administración es final.</div></div>
-        <div class="clause ban"><div class="num">IX</div><div class="body"><strong>Exclusividad de jugador:</strong> cada jugador solo puede pertenecer y disputar versus por <strong>un único equipo</strong> de la liga. Jugar un versus por un equipo al que no se pertenece está prohibido y se sanciona según el Código de conducta (regla X).</div></div>
-        </div>
         <div class="rules-subsection activity-rules" id="actividad">
           <div class="subkicker">ACTIVIDAD OBLIGATORIA</div>
           <h2>Control de actividad y cumplimiento de rondas</h2>
@@ -1204,11 +759,12 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
           <div class="clause activity severe"><div class="num">H</div><div class="body"><strong>Consecuencias por incumplimiento:</strong> 1) primer incumplimiento: advertencia oficial y requerimiento de regularización; 2) reincidencia: pérdida administrativa de los versus afectados y registro disciplinario; 3) reincidencia grave o abandono de rondas: <strong>descalificación o expulsión de la liga</strong>. Un equipo descalificado pierde su lugar en la clasificación: sus versus pendientes se adjudican al rival, los ya jugados se conservan y el equipo aparece al final de la tabla.</div></div>
           <div class="clause activity"><div class="num">I</div><div class="body"><strong>Abandono:</strong> un equipo que no juegue, no responda o no muestre actividad durante una ronda completa podrá ser declarado <strong>equipo inactivo</strong>. La administración podrá descalificarlo para no bloquear el calendario.</div></div>
           <div class="clause activity final-rule"><div class="num">J</div><div class="body"><strong>Causa justificada:</strong> problemas técnicos, personales o de fuerza mayor deberán comunicarse <strong>antes de que venza el plazo</strong> y, cuando sea posible, acompañarse de evidencia. La administración determinará si procede una extensión excepcional.</div></div>
+          <div class="clause activity severe"><div class="num">K</div><div class="body"><strong>Punto por inactividad y goleo:</strong> el <strong>punto de inactividad</strong> (la victoria administrativa que se adjudica al equipo activo) es <strong>independiente de a quién se le coloque el goleo</strong> por esa inactividad. La administración decide a qué jugador del equipo se le acredita el goleo, y esa asignación <strong>no modifica ni condiciona</strong> los puntos que el equipo recibe en la tabla de posiciones.</div></div>
         </div>
         <div class="rules-subsection" id="reconocimientos">
           <div class="subkicker">RECONOCIMIENTOS</div>
           <h2>Goleo, premios y reconocimientos</h2>
-          <div class="clause reward"><div class="num">I</div><div class="body"><strong>Goleo individual:</strong> cada jugador tiene su propio goleo, que la <strong>administración registra manualmente</strong> durante la liga. Cada <strong>partida ganada suma 1 punto</strong> de goleo: un versus ganado 2-0 suma 2 puntos al ganador; en un 2-1, el ganador suma 2 y el perdedor suma 1. Los puntos de la <strong>muerte súbita no suman</strong> al goleo individual. La tabla de goleo es pública y se actualiza con cada cambio. El goleo de un equipo es la <strong>suma del goleo de sus 4 jugadores</strong>, aparece en la tabla de posiciones y sirve como criterio de desempate.</div></div>
+          <div class="clause reward"><div class="num">I</div><div class="body"><strong>Goleo individual:</strong> cada jugador tiene su propio goleo, que la <strong>administración registra manualmente</strong> durante la liga. Cada <strong>partida ganada suma 1 punto</strong> de goleo: un versus ganado 2-0 suma 2 puntos al ganador; en un 2-1, el ganador suma 2 y el perdedor suma 1. Los puntos de la <strong>muerte súbita no suman</strong> al goleo individual. La tabla de goleo es pública y se actualiza con cada cambio. El goleo de un equipo es la <strong>suma del goleo de sus 4 jugadores</strong>, aparece en la tabla de posiciones y sirve como criterio de desempate. El <strong>punto de inactividad es independiente de a quién se le coloque el goleo</strong> por la inactividad (ver regla K de Actividad obligatoria).</div></div>
           <div class="clause reward grand"><div class="num">II</div><div class="body"><strong>Campeón de goleo:</strong> al finalizar la temporada, el jugador con <strong>mayor goleo individual</strong> será el Campeón de goleo y recibirá <strong>1 sticker de Campeón de goleo</strong> más <strong>1 cuenta con 6200 relojes</strong>. Si hay empate, decide la administración.</div></div>
           <div class="clause reward"><div class="num">III</div><div class="body"><strong>Carta por victoria 2-0:</strong> cada <strong>3 fechas</strong> (rondas 1 a 3, 4 a 6, y así sucesivamente), al cierre del bloque, cada jugador que haya ganado un versus por <strong>2-0</strong> recibe <strong>1 carta de 2 estrellas</strong>. Solo cuentan versus jugados; las victorias administrativas no cuentan.</div></div>
           <div class="clause reward"><div class="num">IV</div><div class="body"><strong>Premio MVP:</strong> si un jugador consigue <strong>3 versus consecutivos ganados</strong>, será nombrado <strong>MVP</strong> y recibirá <strong>1 carta de premio de 2 estrellas</strong> más <strong>1 sticker oficial de MVP</strong>. Solo cuentan versus jugados; las victorias administrativas no suman.</div></div>
@@ -1227,8 +783,7 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
           <div class="clause behavior"><div class="num">VII</div><div class="body"><strong>Suplantación:</strong> hacerse pasar por otro jugador, administrador o integrante de un equipo para engañar, perjudicar o manipular una competencia será motivo de <strong>sanción severa o expulsión definitiva</strong>.</div></div>
           <div class="clause behavior"><div class="num">VIII</div><div class="body"><strong>Pruebas falsas:</strong> fabricar, editar o manipular capturas, conversaciones, resultados o cualquier evidencia para perjudicar a otra persona será considerado una falta grave.</div></div>
           <div class="clause behavior"><div class="num">IX</div><div class="body"><strong>Respeto a la administración:</strong> las decisiones administrativas deberán discutirse por los canales establecidos. Las faltas de respeto, campañas de hostigamiento o ataques coordinados contra administradores podrán generar sanciones.</div></div>
-          <div class="clause behavior severe"><div class="num">X</div><div class="body"><strong>Jugador en más de un equipo:</strong> si un jugador disputa un versus por un equipo al que no pertenece, ese versus se <strong>anula</strong> y se adjudica como <strong>victoria administrativa al rival</strong>, sin goleo para nadie. Además, el jugador <strong>pierde su versus de la siguiente fecha</strong> por suspensión, que también se adjudica como victoria administrativa al rival, <strong>sin posibilidad de sustitución</strong>. Si quien comete la falta es el <strong>capitán</strong>, se considera <strong>agravada</strong>: el equipo deberá designar un capitán interino durante la fecha de suspensión y la reincidencia podrá sancionarse con suspensión mayor, pérdida de la capitanía o expulsión. Si hubo engaño u ocultamiento, aplica además la regla de Suplantación (VII).</div></div>
-          <div class="clause behavior final-rule"><div class="num">XI</div><div class="body"><strong>Principio de sanción:</strong> las sanciones se aplicarán con base en <strong>evidencia verificable</strong>. Las faltas graves pueden acumularse y una conducta reincidente puede elevar la sanción hasta la <strong>expulsión definitiva de MASTER KING</strong>. La escala habitual es: advertencia, pérdida de versus, suspensión y expulsión; las faltas graves (I a IV) pueden ir directo a expulsión.</div></div>
+          <div class="clause behavior final-rule"><div class="num">X</div><div class="body"><strong>Principio de sanción:</strong> las sanciones se aplicarán con base en <strong>evidencia verificable</strong>. Las faltas graves pueden acumularse y una conducta reincidente puede elevar la sanción hasta la <strong>expulsión definitiva de MASTER KING</strong>. La escala habitual es: advertencia, pérdida de versus, suspensión y expulsión; las faltas graves (I a IV) pueden ir directo a expulsión.</div></div>
         </div>
 
 <div class="rules-subsection" id="clasificacion">
@@ -1250,7 +805,7 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
       </section>
 
       <section id="formato">
-        <div class="kicker">05 · FORMATO DE LA LIGA</div>
+        <div class="kicker">02 · FORMATO DE LA LIGA</div>
         <h2>Formato de liga</h2>
         <p class="table-note">La liga es de 32 equipos, divididos en dos tablas de 16. Dentro de cada tabla todos juegan contra todos y cada ronda dura 3 días, en total 15 rondas por tabla.</p>
         <div class="grid-2">
@@ -1260,10 +815,77 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
         <div class="pill-row"><span class="pill">2 tablas de 16</span><span class="pill">15 rondas</span><span class="pill">Top 4 por tabla</span><span class="pill">Rondas finales</span></div>
       </section>
 
+      <section id="inscripcion">
+        <div class="kicker">03 · EQUIPOS</div>
+        <h2>Equipos inscritos</h2>
+        <div class="roster-box">
+          <p>Las inscripciones están cerradas. Estos son los equipos que compiten en la liga.</p>
+          <div class="progress-row"><span id="progressLabel">Cargando inscritos…</span><span class="count" id="progressCount">—</span></div>
+          <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+          <div id="batchPhotoBox" style="display:none;margin-top:14px"><button type="button" class="btn-mini" id="batchPhotoBtn">📷 Subir fotos en lote</button> <span class="table-note" style="display:inline">Nombra cada archivo como el nick del jugador (ej. <em>AshKetchum.jpg</em>) y se asigna solo.</span><input type="file" id="batchPhotoFile" accept="image/*" multiple hidden></div>
+          <p class="table-note" id="captainHint" style="display:none">Organizador: debajo de cada jugador tienes «📷 Foto» para subir su imagen y «♛ Capitán» para nombrarlo.</p>
+          <div class="tc-toolbar" id="tcToolbar"><input type="search" id="teamSearch" placeholder="🔍 Buscar jugador o equipo…" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Buscar jugador o equipo"><button type="button" class="btn-mini" id="tcCollapse">Contraer todos</button><button type="button" class="btn-mini" id="tcExpand">Expandir todos</button><div class="team-search-info" id="teamSearchInfo" aria-live="polite"></div></div>
+          <ul class="team-grid" id="teamList"></ul>
+          <p class="empty-note" id="emptyNote" style="display:none;">Aún no hay equipos registrados.</p>
+          <div class="decision-panel" id="decisionPanel" style="display:none;"></div>
+        </div>
+      </section>
+
       <section id="fechas">
-        <div class="kicker">06 · CALENDARIO DE LA LIGA</div>
+        <div class="kicker">04 · CALENDARIO DE LA LIGA</div>
         <h2>Fechas de la liga</h2>
         <div id="fechasContent"><p class="pending-note">Las fechas se publican en cuanto se cierra la inscripción de la tabla.</p></div>
+      </section>
+
+      <section id="tabla">
+        <div class="kicker">05 · TABLA DE POSICIONES</div>
+        <h2>Tabla de posiciones</h2>
+        <div id="championBanner"></div>
+        <div id="standingsContent"><p class="pending-note">La tabla aparece en cuanto se generan las fechas.</p></div>
+        <div class="goleo-box" id="goleo" style="display:none;">
+          <div class="subkicker">GOLEO INDIVIDUAL</div>
+          <h3>Tabla de goleo</h3>
+          <p class="table-note">Cada jugador acumula su propio goleo, que registra la administración durante la liga. Cada partida ganada suma 1 punto (2-0: 2 puntos al ganador; 2-1: 2 al ganador y 1 al perdedor). La muerte súbita no suma goleo individual. Quien tenga más puntos gana el goleo.</p>
+          <div class="goleo-filter">
+            <input type="search" id="goleoSearch" placeholder="🔍 Buscar jugador o equipo…" autocomplete="off" aria-label="Buscar jugador o equipo">
+            <select id="goleoTeam" aria-label="Filtrar por equipo"><option value="">Todos los equipos</option></select>
+          </div>
+          <div id="goleoPodium"></div>
+          <div id="goleoList"></div>
+          <div class="pager" id="goleoPager"></div>
+        </div>
+        <div class="activity-control" id="activityControl" style="display:none;">
+          <div class="activity-head">
+            <div><div class="subkicker">CONTROL AUTOMÁTICO</div><h3>Actividad de los equipos</h3></div>
+            <div class="activity-day" id="activityDay">—</div>
+          </div>
+          <p class="activity-note" id="activityNote"></p>
+          <div class="activity-legend">
+            <span>🟢 ACTIVO</span><span>🟡 EN RIESGO</span><span>🔴 INCUMPLIMIENTO</span><span>⚫ REVISIÓN / ABANDONO</span>
+          </div>
+          <div id="activityList"></div>
+        </div>
+      </section>
+
+      <section id="versus">
+        <div class="kicker">06 · VERSUS</div>
+        <h2>Versus de la liga</h2>
+        <p class="table-note">Elige la tabla y la ronda para ver cada enfrentamiento. El ganador de cada duelo se ilumina en dorado y alimenta la tabla de posiciones.</p>
+        <div class="my-vs" id="myVs" style="display:none;">
+          <div class="field"><label for="myTeamIn">Buscar mi equipo o mi nick</label><input type="search" id="myTeamIn" list="myTeamList" placeholder="Escribe tu equipo o tu nick…" autocomplete="off" autocapitalize="off" spellcheck="false"><datalist id="myTeamList"></datalist></div>
+          <div id="myVsPanel" aria-live="polite"></div>
+        </div>
+        <div class="report-cta" id="reportCta" style="display:none;">
+          <div><div class="subkicker">CAPITANES</div><strong>¿Ya jugaste tu versus?</strong><p class="table-note">Reporta el resultado y sube una captura como evidencia. La administración lo revisa y lo registra.</p></div>
+          <button type="button" class="btn-outline" id="reportOpenBtn">Reportar resultado</button>
+        </div>
+        <details class="results-toggle admin-box" id="adminReportsBox" style="display:none;" open>
+          <summary id="adminReportsSummary">Reportes de capitanes (solo organizador)</summary>
+          <div id="reportsList"></div>
+        </details>
+        <div class="vs-hub" id="resultsDetails" style="display:none;">
+          <div id="resultsContent"></div>
+        </div>
       </section>
 
       <section id="premiacion">
@@ -1301,28 +923,11 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
           <summary>Historial de cambios (solo organizador)</summary>
           <div id="logList"></div>
         </details>
-        <details class="results-toggle admin-box" id="adminLeadersBox" style="display:none;">
-          <summary>Líderes y teléfonos (solo organizador)</summary>
-          <div class="ld-box">
-            <p class="table-note">Los teléfonos se guardan en Firebase en la colección <strong>leaders</strong>, que solo puede leer el organizador. El público no los ve.</p>
-            <div class="decision-buttons"><button class="btn-outline" id="leadersImportBtn" type="button">Importar los 32 líderes</button></div>
-            <div id="leadersMsg" class="table-note"></div>
-            <div id="leadersList"></div>
-          </div>
-        </details>
       </section>
     </div>
   </main>
 
   <footer><span class="footer-crown">♛</span>MASTER KING · Liga de Pokémon TCG por equipos<br><a href="https://chat.whatsapp.com/EfHegAr4nby2Zs7yp4FtEs" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:10px">Grupo oficial de WhatsApp</a></footer>
-
-  <nav class="bottomnav" id="bottomNav" aria-label="Navegación móvil">
-    <a href="#inicio" data-t="inicio"><span class="bn-i" aria-hidden="true">🏠</span><span class="bn-l">Inicio</span></a>
-    <a href="#tabla" data-t="tabla"><span class="bn-i" aria-hidden="true">🏆</span><span class="bn-l">Tabla</span></a>
-    <a href="#versus" data-t="versus"><span class="bn-i" aria-hidden="true">⚔️</span><span class="bn-l">Versus</span></a>
-    <a href="#inscripcion" data-t="inscripcion"><span class="bn-i" aria-hidden="true">👥</span><span class="bn-l">Equipos</span></a>
-    <a href="#goleo" data-t="goleo"><span class="bn-i" aria-hidden="true">👤</span><span class="bn-l">Goleo</span></a>
-  </nav>
 
   <div class="modal-backdrop" id="editBackdrop">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
@@ -1358,6 +963,26 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
       </form>
     </div>
   </div>
+
+  <div class="modal-backdrop" id="reportBackdrop">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
+      <h3 id="reportTitle">Reportar resultado</h3>
+      <p class="sub">Solo capitanes. Sube una captura donde se vea el resultado; la administración lo confirma antes de registrarlo.</p>
+      <form id="reportForm">
+        <div class="field"><label for="rTeam">Tu equipo</label><select id="rTeam" required><option value="">— Elige tu equipo —</option></select><div class="hint" id="rCapHint"></div></div>
+        <div class="field"><label for="rMatch">Versus</label><select id="rMatch" required disabled><option value="">— Primero elige tu equipo —</option></select></div>
+        <div class="field"><label for="rNick">Tu nick (capitán)</label><input type="text" id="rNick" required maxlength="40" autocomplete="off"></div>
+        <div class="field"><label for="rResult">Resultado</label><select id="rResult" required><option value="">— Elige —</option><option value="won">Mi equipo ganó</option><option value="lost">Mi equipo perdió</option></select></div>
+        <div class="field"><label for="rScore">Marcador</label><select id="rScore" required><option value="">— Elige —</option><option value="2-0">2-0</option><option value="2-1">2-1</option><option value="2-2">2-2 (muerte súbita)</option></select></div>
+        <div class="field"><label for="rFile">Captura del resultado</label><input type="file" id="rFile" accept="image/*" required><div class="report-prev" id="rPrev"></div></div>
+        <div class="field"><label for="rNote">Comentario (opcional)</label><textarea id="rNote" maxlength="300"></textarea></div>
+        <div class="modal-actions"><button type="button" class="cancel" id="reportCancel">Cancelar</button><button type="submit" id="reportSubmit">Enviar reporte</button></div>
+        <div class="form-msg" id="reportMsg"></div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop img-backdrop" id="imgBackdrop"><img id="imgFull" alt="Evidencia del resultado"></div>
 
   <div class="modal-backdrop" id="loginBackdrop">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
@@ -1451,12 +1076,6 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
     while (el.firstChild) d.appendChild(el.firstChild);
     el.appendChild(d);
   });
-  (function () {
-    const set = (v) => document.querySelectorAll('details.rules-fold').forEach(d => { d.open = v; });
-    const o = document.getElementById('rulesOpenAll'), c = document.getElementById('rulesCloseAll');
-    if (o) o.onclick = () => set(true);
-    if (c) c.onclick = () => set(false);
-  })();
   function openFoldFromHash() {
     const target = location.hash && document.querySelector(location.hash);
     const d = target && target.closest && target.closest('details.rules-fold');
@@ -1478,7 +1097,7 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
 
   let teams = [];
   let matches = [];
-  let meta = { expansionDecided: true, expanded: true, scheduleStart: null, fixturesGenerating: false, fixturesGeneratingAt: 0, tableVisible: false };
+  let meta = { expansionDecided: true, expanded: true, scheduleStart: null, fixturesGenerating: false, fixturesGeneratingAt: 0 };
   const GEN_TIMEOUT = 2 * 60 * 1000; // si la generación lleva más de 2 min se considera abandonada
   let genTimer = null;
   function isGenerating() {
@@ -1508,9 +1127,9 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
     if (matches.length) {
       tableNums.forEach(tn => {
         standingsHtml += '<h3>' + (tableNums.length > 1 ? 'Tabla ' + tn : 'Tabla general') + '</h3>';
-        standingsHtml += '<table><thead><tr><th>#</th><th>Equipo</th><th>PJ</th><th>Pts</th><th>G</th><th>P</th><th>Goleo</th></tr></thead><tbody>';
+        standingsHtml += '<table><thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>G</th><th>P</th><th>Goleo</th></tr></thead><tbody>';
         computeStandings(tn).forEach((s, i) => {
-          standingsHtml += '<tr' + (i < 4 && !s.dq ? ' class="q"' : '') + '><td>' + (i + 1) + '</td><td>' + esc(s.name) + (s.dq ? ' (DESCALIFICADO)' : '') + '</td><td>' + (s.wins + s.losses) + '</td><td>' + s.pts + '</td><td>' + s.wins + '</td><td>' + s.losses + '</td><td>' + s.goleo + '</td></tr>';
+          standingsHtml += '<tr' + (i < 4 && !s.dq ? ' class="q"' : '') + '><td>' + (i + 1) + '</td><td>' + esc(s.name) + (s.dq ? ' (DESCALIFICADO)' : '') + '</td><td>' + s.pts + '</td><td>' + s.wins + '</td><td>' + s.losses + '</td><td>' + s.goleo + '</td></tr>';
         });
         standingsHtml += '</tbody></table>';
       });
@@ -1949,7 +1568,7 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
     await writeDocs('teams', cleanTeams);
     await writeDocs('matches', cleanMatches);
     const m = data.meta || {};
-    await setMetaStatus({
+    await db.doc('meta/status').set({
       expansionDecided: true, expanded: true,
       scheduleStart: m.scheduleStart ? Number(m.scheduleStart) : null, fixturesGenerating: false
     });
@@ -1996,7 +1615,7 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
     try {
       downloadText('king-masters-antes-de-borrar-cruces-' + stamp() + '.json', buildJsonBackup(), 'application/json');
       await clearAllMatches();
-      await setMetaStatus({ expansionDecided: true, expanded: true, scheduleStart: null, fixturesGenerating: false });
+      await db.doc('meta/status').set({ expansionDecided: true, expanded: true, scheduleStart: null, fixturesGenerating: false });
       await logAction('clear', 'Borró todos los cruces y resultados (' + total + ') para volver a generar el calendario');
       say('ok', 'Cruces borrados. Los equipos siguen inscritos.');
     } catch (err) {
@@ -2111,7 +1730,7 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
   }
 
   // --- Fotos de jugadores (se guardan reducidas en teams/{id}.photos.{n}) ---
-  const openedTeams = new Set(); // los equipos arrancan cerrados: solo se cargan las fotos de los que se abren
+  const closedTeams = new Set();
   // Las fotos viven en teamPhotos/{teamId} (campos p0..p3), aparte del equipo, y se piden solo cuando
   // la tarjeta del equipo está a la vista. Así la tabla y los cruces no arrastran las fotos de los 32 equipos.
   // Lo antiguo (teams/{id}.photos) se sigue mostrando hasta que se use "Optimizar fotos".
@@ -2274,13 +1893,267 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
   document.getElementById('migratePhotosBtn').addEventListener('click', migratePhotos);
   (function () {
     const tb = document.getElementById('tcToolbar');
-    document.getElementById('tcCollapse').onclick = () => { openedTeams.clear(); render(); };
-    document.getElementById('tcExpand').onclick = () => { teams.forEach(t => openedTeams.add(t.id)); render(); };
+    document.getElementById('tcCollapse').onclick = () => { teams.forEach(t => closedTeams.add(t.id)); render(); };
+    document.getElementById('tcExpand').onclick = () => { closedTeams.clear(); render(); };
     window.__tcToolbar = tb;
   })();
 
 
+  // --- Reportes de resultado por los capitanes (colección "reports") ---
+  // Un reporte por equipo y por versus: el id del documento es matchId_teamId.
+  const reportBackdrop = document.getElementById('reportBackdrop');
+  const imgBackdrop = document.getElementById('imgBackdrop');
+  const reportForm = document.getElementById('reportForm');
+  const rTeam = document.getElementById('rTeam'), rMatch = document.getElementById('rMatch');
+  const rFile = document.getElementById('rFile'), rPrev = document.getElementById('rPrev');
+  const reportMsg = document.getElementById('reportMsg'), reportSubmit = document.getElementById('reportSubmit');
+  // Etiquetas públicas "reportado": reportFlags/{matchId_teamId} (sin imagen ni resultado, solo avisa que hay un reporte)
+  let reportFlags = {};   // matchId -> { teamId: true }
+  function flagged(matchId, teamId) {
+    const f = reportFlags[matchId];
+    return !!(f && (teamId ? f[teamId] : Object.keys(f).length));
+  }
+  function watchFlags() {
+    db.collection('reportFlags').onSnapshot(snap => {
+      const o = {};
+      snap.docs.forEach(d => { const x = d.data(); if (x && x.matchId && x.teamId) (o[x.matchId] = o[x.matchId] || {})[x.teamId] = true; });
+      reportFlags = o; render();
+    }, () => {});
+  }
+  let reportImage = '';
+  let reportsData = [];
+  let unsubReports = null;
+
+  function pendingMatchesOf(teamId) {
+    return matches.filter(m => m.published === true && !m.bye && !m.winner && (m.teamAId === teamId || m.teamBId === teamId))
+      .sort((a, b) => (a.round - b.round));
+  }
+  function reportableTeams() {
+    const ids = new Set();
+    matches.forEach(m => { if (m.published === true && !m.bye && !m.winner) { ids.add(m.teamAId); ids.add(m.teamBId); } });
+    return teams.filter(t => ids.has(t.id) && !t.disqualified);
+  }
+  function updateReportCta() {
+    const cta = document.getElementById('reportCta');
+    if (cta) cta.style.display = (!isAdmin && reportableTeams().length) ? 'flex' : 'none';
+  }
+  function fillReportTeams() {
+    const cur = rTeam.value;
+    rTeam.innerHTML = '<option value="">— Elige tu equipo —</option>';
+    reportableTeams().slice().sort((a, b) => (a.name || '').localeCompare(b.name || '', 'es')).forEach(t => {
+      const o = document.createElement('option'); o.value = t.id; o.textContent = t.name || 'Equipo'; rTeam.appendChild(o);
+    });
+    if (cur && [...rTeam.options].some(o => o.value === cur)) rTeam.value = cur;
+  }
+  function fillReportMatches() {
+    rMatch.innerHTML = '';
+    const tid = rTeam.value, hint = document.getElementById('rCapHint');
+    hint.textContent = '';
+    if (!tid) { rMatch.disabled = true; rMatch.innerHTML = '<option value="">— Primero elige tu equipo —</option>'; return; }
+    const t = teams.find(x => x.id === tid);
+    if (t && Number.isInteger(t.captain) && (t.players || [])[t.captain]) hint.textContent = 'Capitán registrado: ' + t.players[t.captain];
+    const list = pendingMatchesOf(tid);
+    if (!list.length) { rMatch.disabled = true; rMatch.innerHTML = '<option value="">No hay versus pendientes</option>'; return; }
+    rMatch.disabled = false;
+    rMatch.innerHTML = '<option value="">— Elige el versus —</option>';
+    list.forEach(m => {
+      const rival = m.teamAId === tid ? m.teamBName : m.teamAName;
+      const o = document.createElement('option'); o.value = m.id;
+      o.textContent = 'Ronda ' + m.round + ' · vs ' + rival;
+      if (flagged(m.id, tid)) { o.disabled = true; o.textContent += ' — ya reportado, en revisión'; }
+      rMatch.appendChild(o);
+    });
+  }
+  function resetReportForm() {
+    reportForm.reset(); reportImage = ''; rPrev.innerHTML = '';
+    reportMsg.className = 'form-msg'; reportMsg.textContent = ''; reportSubmit.disabled = false;
+    fillReportMatches();
+  }
+  function openReport(teamId, matchId) {
+    resetReportForm(); fillReportTeams();
+    if (teamId && [...rTeam.options].some(o => o.value === teamId)) rTeam.value = teamId;
+    fillReportMatches();
+    if (matchId && [...rMatch.options].some(o => o.value === matchId && !o.disabled)) rMatch.value = matchId;
+    reportBackdrop.classList.add('open');
+  }
+  function closeReport() { reportBackdrop.classList.remove('open'); }
+  function openImg(src) { document.getElementById('imgFull').src = src; imgBackdrop.classList.add('open'); }
+  function closeImg() { imgBackdrop.classList.remove('open'); document.getElementById('imgFull').removeAttribute('src'); }
+
+  // Reduce la captura (sin recortarla) para que quepa en un documento de Firestore (< 1 MB)
+  function readScaled(file, maxSide, q) {
+    return new Promise((resolve, reject) => {
+      const fr = new FileReader();
+      fr.onerror = () => reject(new Error('No se pudo leer la imagen.'));
+      fr.onload = () => {
+        const img = new Image();
+        img.onerror = () => reject(new Error('Ese archivo no es una imagen válida (prueba con JPG o PNG).'));
+        img.onload = () => {
+          const k = Math.min(1, maxSide / Math.max(img.width, img.height));
+          const c = document.createElement('canvas');
+          c.width = Math.max(1, Math.round(img.width * k)); c.height = Math.max(1, Math.round(img.height * k));
+          const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+          ctx.drawImage(img, 0, 0, c.width, c.height);
+          let quality = q, out = c.toDataURL('image/jpeg', quality);
+          while (out.length > 700000 && quality > 0.35) { quality -= 0.1; out = c.toDataURL('image/jpeg', quality); }
+          if (out.length > 700000) return reject(new Error('La imagen es demasiado pesada. Prueba con una captura más pequeña.'));
+          resolve(out);
+        };
+        img.src = fr.result;
+      };
+      fr.readAsDataURL(file);
+    });
+  }
+
+  document.getElementById('reportOpenBtn').addEventListener('click', () => openReport(myTeamId));
+  document.getElementById('reportCancel').addEventListener('click', closeReport);
+  reportBackdrop.addEventListener('click', (e) => { if (e.target === reportBackdrop) closeReport(); });
+  imgBackdrop.addEventListener('click', closeImg);
+  rTeam.addEventListener('change', fillReportMatches);
+  rFile.addEventListener('change', async () => {
+    reportImage = ''; rPrev.innerHTML = '';
+    const f = rFile.files && rFile.files[0];
+    if (!f) return;
+    reportMsg.className = 'form-msg'; reportMsg.textContent = 'Procesando imagen…';
+    try {
+      reportImage = await readScaled(f, 1100, 0.78);
+      const im = document.createElement('img'); im.src = reportImage; im.alt = 'Vista previa de la captura'; rPrev.appendChild(im);
+      reportMsg.textContent = '';
+    } catch (err) {
+      rFile.value = '';
+      reportMsg.className = 'form-msg error'; reportMsg.textContent = err.message || 'No se pudo procesar la imagen.';
+    }
+  });
+
+  reportForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const tid = rTeam.value, mid = rMatch.value;
+    const t = teams.find(x => x.id === tid), m = matches.find(x => x.id === mid);
+    const nick = document.getElementById('rNick').value.trim();
+    const result = document.getElementById('rResult').value, score = document.getElementById('rScore').value;
+    const fail = (txt) => { reportMsg.className = 'form-msg error'; reportMsg.textContent = txt; };
+    if (!t || !m || !nick || !result || !score) return fail('Completa todos los campos.');
+    if (!reportImage) return fail('Sube la captura del resultado.');
+    if (m.winner) return fail('Ese versus ya tiene resultado registrado.');
+    if (flagged(m.id, tid)) return fail('Tu equipo ya reportó este versus. La administración lo está revisando.');
+    const mine = m.teamAId === tid ? 'A' : 'B';
+    const claimed = result === 'won' ? mine : (mine === 'A' ? 'B' : 'A');
+    const doc = {
+      at: Date.now(), matchId: m.id, round: m.round || 0, table: m.table || 1,
+      teamId: tid, teamName: t.name || 'Equipo',
+      rivalName: mine === 'A' ? (m.teamBName || '') : (m.teamAName || ''),
+      claimedWinner: claimed, claimedWinnerName: claimed === 'A' ? (m.teamAName || '') : (m.teamBName || ''),
+      score, reporter: nick, note: document.getElementById('rNote').value.trim().slice(0, 300),
+      image: reportImage, status: 'pending'
+    };
+    reportSubmit.disabled = true; reportMsg.className = 'form-msg'; reportMsg.textContent = 'Enviando…';
+    try {
+      const rid = m.id + '_' + tid;
+      const batch = db.batch();
+      batch.set(db.doc('reports/' + rid), doc);
+      batch.set(db.doc('reportFlags/' + rid), { matchId: m.id, teamId: tid, at: doc.at });
+      await batch.commit();
+      reportMsg.className = 'form-msg ok';
+      reportMsg.textContent = '¡Reporte enviado! La administración lo revisará.';
+      setTimeout(() => { closeReport(); resetReportForm(); }, 1600);
+    } catch (err) {
+      reportSubmit.disabled = false;
+      const denied = err && (err.code === 'permission-denied');
+      fail(denied ? 'No se pudo enviar. Si ya reportaste este versus, escribe a la administración para corregirlo.' : 'No se pudo enviar: ' + (err && err.message ? err.message : err));
+    }
+  });
+
+  // --- Vista del organizador ---
   function norm(x) { return String(x || '').trim().toLowerCase(); }
+  function renderReports() {
+    const box = document.getElementById('adminReportsBox'), el = document.getElementById('reportsList');
+    if (!box || !el) return;
+    box.style.display = isAdmin ? 'block' : 'none';
+    el.innerHTML = '';
+    if (!isAdmin) return;
+    const pend = reportsData.filter(r => r.status === 'pending');
+    document.getElementById('adminReportsSummary').textContent = 'Reportes de capitanes (' + pend.length + ' pendientes · solo organizador)';
+    if (!reportsData.length) {
+      const p = document.createElement('p'); p.className = 'empty-note'; p.textContent = 'Todavía no hay reportes.'; el.appendChild(p); return;
+    }
+    const byMatch = {};
+    pend.forEach(r => { (byMatch[r.matchId] = byMatch[r.matchId] || []).push(r); });
+    const wrap = document.createElement('div'); wrap.className = 'rep-list';
+    reportsData.slice().sort((a, b) => (a.status === 'pending' ? 0 : 1) - (b.status === 'pending' ? 0 : 1) || b.at - a.at).forEach(r => {
+      const m = matches.find(x => x.id === r.matchId);
+      const t = teams.find(x => x.id === r.teamId);
+      const same = byMatch[r.matchId] || [];
+      const conflict = r.status === 'pending' && same.some(o => o.claimedWinner !== r.claimedWinner);
+      const card = document.createElement('div'); card.className = 'rep-card ' + (r.status === 'pending' ? 'pending' : '') + (conflict ? ' conflict' : '');
+      const th = document.createElement('img'); th.className = 'rep-thumb'; th.alt = 'Evidencia'; th.src = r.image || ''; th.onclick = () => openImg(r.image);
+      const body = document.createElement('div'); body.className = 'rep-body';
+      const title = document.createElement('div'); title.className = 'rep-title';
+      title.textContent = (r.teamName || '') + ' vs ' + (r.rivalName || '') + ' · Ronda ' + r.round + (r.table ? ' · Tabla ' + r.table : '');
+      const res = document.createElement('div');
+      res.textContent = 'Reporta que ganó ' + (r.claimedWinnerName || '') + ' (' + r.score + ')';
+      const who = document.createElement('div'); who.className = 'rep-meta';
+      who.textContent = 'Por ' + (r.reporter || '?') + ' · ' + new Date(r.at).toLocaleString('es-MX');
+      body.append(title, res, who);
+      if (t && Number.isInteger(t.captain) && (t.players || [])[t.captain]) {
+        const ok = norm(t.players[t.captain]) === norm(r.reporter);
+        const c = document.createElement('div'); c.className = ok ? 'rep-ok' : 'rep-flag';
+        c.textContent = ok ? '✓ Coincide con el capitán registrado' : '⚠ No coincide con el capitán (' + t.players[t.captain] + ')';
+        body.appendChild(c);
+      }
+      if (conflict) { const c = document.createElement('div'); c.className = 'rep-flag'; c.textContent = '⚠ Hay reportes contradictorios para este versus'; body.appendChild(c); }
+      if (m && m.winner && r.status === 'pending') { const c = document.createElement('div'); c.className = 'rep-flag'; c.textContent = '⚠ Este versus ya tiene un resultado registrado'; body.appendChild(c); }
+      if (r.note) { const n = document.createElement('div'); n.className = 'rep-meta'; n.textContent = 'Comentario: ' + r.note; body.appendChild(n); }
+      const acts = document.createElement('div'); acts.className = 'rep-actions';
+      const mk = (txt, fn, cls) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls || 'btn-mini'; b.textContent = txt; b.onclick = fn; return b; };
+      if (r.status === 'pending') {
+        acts.appendChild(mk('Aprobar y registrar', () => approveReport(r)));
+        acts.appendChild(mk('Rechazar', () => deleteReport(r, true), 'btn-mini danger'));
+      } else {
+        const tag = document.createElement('span'); tag.className = 'pub-tag on'; tag.textContent = 'APROBADO'; acts.appendChild(tag);
+        acts.appendChild(mk('Eliminar', () => deleteReport(r, false), 'btn-mini danger'));
+      }
+      body.appendChild(acts);
+      card.append(th, body); wrap.appendChild(card);
+    });
+    el.appendChild(wrap);
+  }
+  async function approveReport(r) {
+    if (!isAdmin) return;
+    const m = matches.find(x => x.id === r.matchId);
+    if (!m) return uiAlert('No se encontró el versus de este reporte.');
+    if (m.winner && m.winner !== r.claimedWinner) {
+      if (!await uiConfirm('Este versus ya tiene otro ganador registrado. ¿Reemplazarlo con lo que dice este reporte?')) return;
+    }
+    try {
+      const batch = db.batch();
+      batch.update(db.doc('matches/' + r.matchId), { winner: r.claimedWinner, forfeit: FV().delete(), forfeitBy: FV().delete() });
+      batch.update(db.doc('reports/' + r.id), { status: 'approved' });
+      batch.delete(db.doc('reportFlags/' + r.id));
+      batch.set(db.collection('log').doc(), logEntry('result', 'Aprobó reporte de ' + r.reporter + ': ' + r.teamName + ' vs ' + r.rivalName + ' (ronda ' + r.round + ') — ganó ' + r.claimedWinnerName + ' (' + r.score + ')'));
+      await batch.commit();
+    } catch (err) { uiAlert('No se pudo aprobar: ' + (err && err.message ? err.message : err)); }
+  }
+  async function deleteReport(r, reject) {
+    if (!isAdmin) return;
+    if (!await uiConfirm(reject ? '¿Rechazar este reporte? Se borra y el capitán podrá enviar otro.' : '¿Eliminar este reporte aprobado y su imagen?')) return;
+    try {
+      const batch = db.batch();
+      batch.delete(db.doc('reports/' + r.id));
+      batch.delete(db.doc('reportFlags/' + r.id));
+      batch.set(db.collection('log').doc(), logEntry('result', (reject ? 'Rechazó' : 'Eliminó') + ' reporte de ' + r.reporter + ': ' + r.teamName + ' vs ' + r.rivalName + ' (ronda ' + r.round + ')'));
+      await batch.commit();
+    } catch (err) { uiAlert('No se pudo completar: ' + (err && err.message ? err.message : err)); }
+  }
+  function watchReports() {
+    if (isAdmin && !unsubReports) {
+      unsubReports = db.collection('reports').orderBy('at', 'desc').limit(100).onSnapshot(snap => {
+        reportsData = snap.docs.map(d => Object.assign({ id: d.id }, d.data()));
+        renderReports();
+      }, () => {});
+    } else if (!isAdmin && unsubReports) {
+      unsubReports(); unsubReports = null; reportsData = []; renderReports();
+    }
+  }
 
 
   // --- Mis versus: buscador por equipo o nick, con posición, pendientes y jugados ---
@@ -2333,7 +2206,6 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
     const head = el('div', 'my-head');
     head.append(el('h4', '', t.name || 'Equipo'), el('span', 'my-chip', 'Tabla ' + tn));
     if (t.disqualified) head.appendChild(el('span', 'my-chip dq', 'Descalificado'));
-    { const myLd = leaderOf(t.id); if (myLd) head.appendChild(el('span', 'my-chip', '♛ ' + myLd)); }
     card.appendChild(head);
     const stats = el('div', 'my-stats');
     const stat = (v, l) => { const d = el('div', 'my-stat'); d.append(el('b', '', v), el('span', '', l)); return d; };
@@ -2347,18 +2219,24 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
     const pend = mine.filter(m => !m.winner), done = mine.filter(m => m.winner);
     const mkRow = (m) => {
       const isA = m.teamAId === t.id, rival = isA ? m.teamBName : m.teamAName;
-      const rivalLd = leaderOf(isA ? m.teamBId : m.teamAId);
       const won = m.winner && ((m.winner === 'A') === isA);
       const r = el('div', 'my-row' + (m.winner ? (won ? ' win' : ' lose') : ''));
       const main = el('div', 'mr-main', 'Ronda ' + m.round + ' · vs ' + rival);
-      if (rivalLd) main.appendChild(el('small', 'my-lead', '♛ Líder rival: ' + rivalLd));
       if (m.forfeit) main.appendChild(el('small', '', 'Victoria administrativa'));
       if (isAdmin && m.published !== true) main.appendChild(el('small', '', 'Aún sin publicar'));
       r.appendChild(main);
       if (m.winner) {
         r.appendChild(el('span', 'my-tag ' + (won ? 'win' : 'lose'), won ? 'Ganaste' : 'Perdiste'));
+      } else if (flagged(m.id)) {
+        r.appendChild(el('span', 'my-tag review', 'Reportado · en revisión'));
       } else {
-        r.appendChild(el('span', 'my-tag pend', 'Pendiente'));
+        const right = el('span', 'my-tag pend', 'Pendiente');
+        r.appendChild(right);
+        if (!isAdmin && !t.disqualified && m.published === true) {
+          const b = el('button', 'btn-mini', 'Reportar'); b.type = 'button';
+          b.onclick = () => openReport(t.id, m.id);
+          r.appendChild(b);
+        }
       }
       return r;
     };
@@ -2545,204 +2423,9 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
   }
   window.addEventListener('pagehide', saveRanks);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveRanks(); });
-
-  // ===== Exportar a imagen (para compartir en WhatsApp) =====
-  const EXP = { gold:'#ffd35c', gold2:'#ffe18a', bg:'#0b0d12', row1:'#151923', row2:'#1b202c', text:'#ffffff', muted:'#a9b1c4' };
-  let expLogo;
-  function expLoadLogo() {
-    if (expLogo !== undefined) return Promise.resolve(expLogo);
-    return new Promise(res => {
-      const im = new Image();
-      im.onload = () => { expLogo = im; res(im); };
-      im.onerror = () => { expLogo = null; res(null); };
-      im.src = 'logo.webp';
-    });
-  }
-  async function expFonts() {
-    try {
-      await Promise.all(['800 30px Manrope', '900 30px Manrope', '700 30px Manrope', '800 30px "Barlow Condensed"', '700 30px Fraunces'].map(f => document.fonts.load(f)));
-      await document.fonts.ready;
-    } catch (e) { /* se usan fuentes del sistema */ }
-  }
-  function expRR(ctx, x, y, w, h, r) {
-    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
-    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
-  }
-  function expFit(ctx, text, maxW, size, weight, minSize) {
-    let sz = size;
-    for (; sz > minSize; sz -= 1) { ctx.font = weight + ' ' + sz + 'px Manrope, system-ui, sans-serif'; if (ctx.measureText(text).width <= maxW) return text; }
-    ctx.font = weight + ' ' + minSize + 'px Manrope, system-ui, sans-serif';
-    let t = text;
-    while (t.length > 1 && ctx.measureText(t + '…').width > maxW) t = t.slice(0, -1);
-    return t + '…';
-  }
-  function expBase(ctx, W, H) {
-    const g = ctx.createLinearGradient(0, 0, 0, H);
-    g.addColorStop(0, '#12151d'); g.addColorStop(1, '#07080b');
-    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-    const rg = ctx.createRadialGradient(W / 2, 0, 20, W / 2, 0, W * 0.8);
-    rg.addColorStop(0, 'rgba(255,211,92,.18)'); rg.addColorStop(1, 'rgba(255,211,92,0)');
-    ctx.fillStyle = rg; ctx.fillRect(0, 0, W, 420);
-    ctx.fillStyle = EXP.gold; ctx.fillRect(0, 0, W, 8);
-  }
-  function expHeader(ctx, W, logo, title, sub) {
-    let y = 48;
-    if (logo && logo.naturalWidth) {
-      const lw = 360, lh = lw * logo.naturalHeight / logo.naturalWidth;
-      ctx.drawImage(logo, (W - lw) / 2, y, lw, Math.min(lh, 150)); y += Math.min(lh, 150) + 10;
-    } else {
-      ctx.fillStyle = EXP.gold2; ctx.textAlign = 'center'; ctx.font = '900 54px Manrope, system-ui, sans-serif';
-      ctx.fillText('♛ MASTER KING', W / 2, y + 54); y += 84;
-    }
-    ctx.textAlign = 'center'; ctx.fillStyle = '#fff'; ctx.font = '800 54px Manrope, system-ui, sans-serif';
-    ctx.fillText(title, W / 2, y + 52);
-    ctx.fillStyle = EXP.muted; ctx.font = '700 26px Manrope, system-ui, sans-serif';
-    ctx.fillText(sub, W / 2, y + 96);
-    return y + 130;
-  }
-  function expFooter(ctx, W, y) {
-    ctx.textAlign = 'center'; ctx.fillStyle = EXP.muted; ctx.font = '700 22px Manrope, system-ui, sans-serif';
-    ctx.fillText('kings-master.pages.dev  ·  ' + new Date().toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' }), W / 2, y);
-  }
-  function expSave(canvas, filename) {
-    return new Promise(res => {
-      canvas.toBlob(async blob => {
-        if (!blob) { uiAlert('No se pudo crear la imagen.'); return res(); }
-        const file = new File([blob], filename, { type: 'image/png' });
-        const mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        if (mobile && navigator.canShare && navigator.canShare({ files: [file] })) {
-          try { await navigator.share({ files: [file], title: 'MASTER KING' }); return res(); }
-          catch (e) { if (e && e.name === 'AbortError') return res(); }
-        }
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = filename;
-        document.body.appendChild(a); a.click(); a.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 4000);
-        res();
-      }, 'image/png');
-    });
-  }
-  async function exportStandings(tn, nTables) {
-    const rows = computeStandings(tn);
-    await expFonts(); const logo = await expLoadLogo();
-    const W = 1080, PAD = 44, RH = 66, HH = 54, scale = 2;
-    const probe = document.createElement('canvas').getContext('2d');
-    const headerH = (logo && logo.naturalWidth ? Math.min(360 * logo.naturalHeight / logo.naturalWidth, 150) + 58 : 132) + 130;
-    const H = headerH + HH + rows.length * RH + 110;
-    const c = document.createElement('canvas'); c.width = W * scale; c.height = H * scale;
-    const ctx = c.getContext('2d'); ctx.scale(scale, scale);
-    expBase(ctx, W, H);
-    let y = expHeader(ctx, W, logo, nTables > 1 ? 'TABLA ' + tn : 'TABLA GENERAL', 'Tabla de posiciones · ' + rows.length + ' equipos');
-    // columnas (centros)
-    const colX = { pos: PAD + 40, pj: 640, pts: 730, g: 820, p: 905, goleo: 990 };
-    ctx.font = '800 20px Manrope, system-ui, sans-serif'; ctx.fillStyle = '#d7dcea'; ctx.textAlign = 'center';
-    ctx.fillText('POS', colX.pos, y + 34);
-    ctx.textAlign = 'left'; ctx.fillText('EQUIPO', PAD + 100, y + 34);
-    ctx.textAlign = 'center';
-    [['PJ', colX.pj], ['PTS', colX.pts], ['G', colX.g], ['P', colX.p], ['GOLEO', colX.goleo]].forEach(a => ctx.fillText(a[0], a[1], y + 34));
-    y += HH;
-    rows.forEach((r, i) => {
-      const q = i < 4 && !r.dq;
-      ctx.fillStyle = i % 2 ? EXP.row2 : EXP.row1; expRR(ctx, PAD, y + 3, W - PAD * 2, RH - 6, 10); ctx.fill();
-      if (q) {
-        const g = ctx.createLinearGradient(PAD, 0, W - PAD, 0); g.addColorStop(0, 'rgba(255,211,92,.20)'); g.addColorStop(0.7, 'rgba(255,211,92,0)');
-        ctx.fillStyle = g; expRR(ctx, PAD, y + 3, W - PAD * 2, RH - 6, 10); ctx.fill();
-        ctx.fillStyle = EXP.gold; expRR(ctx, PAD, y + 3, 8, RH - 6, 4); ctx.fill();
-      }
-      const cy = y + RH / 2 + 11;
-      ctx.globalAlpha = r.dq ? 0.5 : 1;
-      ctx.textAlign = 'center'; ctx.fillStyle = q ? EXP.gold2 : '#c3cadb'; ctx.font = '900 30px Manrope, system-ui, sans-serif';
-      ctx.fillText(String(i + 1).padStart(2, '0'), colX.pos, cy);
-      ctx.textAlign = 'left'; ctx.fillStyle = '#fff';
-      const nm = (i === 0 && q ? '♛ ' : '') + r.name + (r.dq ? ' (DQ)' : '');
-      const shown = expFit(ctx, nm, 500, 31, 800, 20);
-      ctx.fillText(shown, PAD + 100, cy);
-      ctx.textAlign = 'center'; ctx.font = '700 29px Manrope, system-ui, sans-serif'; ctx.fillStyle = '#e6e9f2';
-      ctx.fillText(String(r.wins + r.losses), colX.pj, cy);
-      ctx.fillText(String(r.wins), colX.g, cy); ctx.fillText(String(r.losses), colX.p, cy); ctx.fillText(String(r.goleo), colX.goleo, cy);
-      ctx.font = '900 36px Manrope, system-ui, sans-serif'; ctx.fillStyle = q ? EXP.gold2 : '#fff';
-      ctx.fillText(String(r.pts), colX.pts, cy + 1);
-      ctx.globalAlpha = 1;
-      if (i === 3 && rows.length > 4) {
-        ctx.save(); ctx.setLineDash([10, 8]); ctx.strokeStyle = 'rgba(255,255,255,.45)'; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.moveTo(PAD, y + RH); ctx.lineTo(W - PAD, y + RH); ctx.stroke(); ctx.restore();
-      }
-      y += RH;
-    });
-    ctx.textAlign = 'left'; ctx.fillStyle = EXP.gold; expRR(ctx, PAD, y + 22, 26, 14, 3); ctx.fill();
-    ctx.fillStyle = '#d0d6e4'; ctx.font = '700 22px Manrope, system-ui, sans-serif'; ctx.fillText('Clasifican a las rondas finales (4 primeros)', PAD + 38, y + 35);
-    expFooter(ctx, W, y + 82);
-    await expSave(c, 'master-king-tabla-' + tn + '.png');
-  }
-  async function exportRound(tn, round, nTables) {
-    const list = matches.filter(m => (isAdmin || m.published === true) && m.table === tn && m.round === round);
-    const duels = list.filter(m => !m.bye), byes = list.filter(m => m.bye);
-    await expFonts(); const logo = await expLoadLogo();
-    const W = 1080, PAD = 44, CH = 112, GAP = 16, scale = 2;
-    const headerH = (logo && logo.naturalWidth ? Math.min(360 * logo.naturalHeight / logo.naturalWidth, 150) + 58 : 132) + 130;
-    const H = headerH + duels.length * (CH + GAP) + byes.length * 70 + 100;
-    const c = document.createElement('canvas'); c.width = W * scale; c.height = H * scale;
-    const ctx = c.getContext('2d'); ctx.scale(scale, scale);
-    expBase(ctx, W, H);
-    let y = expHeader(ctx, W, logo, (nTables > 1 ? 'TABLA ' + tn + ' · ' : '') + 'RONDA ' + round, duels.length + ' versus · ' + duels.filter(m => m.winner).length + ' definidos');
-    duels.forEach(m => {
-      const x0 = PAD, w = W - PAD * 2, cx = W / 2, sideW = 360;
-      ctx.fillStyle = '#171a2e'; expRR(ctx, x0, y, w, CH, 18); ctx.fill();
-      ctx.strokeStyle = 'rgba(162,77,255,.45)'; ctx.lineWidth = 2; expRR(ctx, x0, y, w, CH, 18); ctx.stroke();
-      [['A', x0 + 28, 'left', '#ff2e93'], ['B', x0 + w - 28, 'right', '#a24dff']].forEach(side => {
-        const key = side[0], win = m.winner === key, lose = m.winner && !win;
-        const name = key === 'A' ? m.teamAName : m.teamBName;
-        if (win) { const g = ctx.createLinearGradient(key === 'A' ? x0 : x0 + w, 0, cx, 0); g.addColorStop(0, 'rgba(255,211,92,.30)'); g.addColorStop(1, 'rgba(255,211,92,0)'); ctx.fillStyle = g; expRR(ctx, key === 'A' ? x0 : cx, y, w / 2, CH, 18); ctx.fill(); }
-        ctx.fillStyle = win ? EXP.gold : side[3];
-        ctx.fillRect(key === 'A' ? x0 + 18 : cx + 60, y + CH - 8, w / 2 - 78, 4);
-        ctx.textAlign = side[2];
-        ctx.fillStyle = win ? EXP.gold2 : (lose ? '#a3abbf' : '#fff');
-        const t = expFit(ctx, name || 'Equipo', sideW - 20, 34, 800, 20);
-        ctx.fillText(t, side[1] + (key === 'A' ? 0 : 0), y + CH / 2 + 6);
-        const ld = leaderOf(key === 'A' ? m.teamAId : m.teamBId);
-        if (ld) { const lt = expFit(ctx, '♛ ' + ld, sideW - 20, 18, 800, 11); ctx.fillStyle = win ? EXP.gold2 : '#ffd35c'; ctx.fillText(lt, side[1], y + 30); }
-        if (win) { ctx.font = '900 18px Manrope, system-ui, sans-serif'; ctx.fillStyle = EXP.gold; ctx.fillText(m.forfeit ? 'GANÓ (ADMIN.)' : 'GANÓ ✓', side[1], y + CH / 2 + 36); }
-      });
-      // centro: VS o marcador
-      ctx.textAlign = 'center';
-      if (m.winner) {
-        [['A', cx - 56], ['B', cx + 56]].forEach(a => {
-          const win = m.winner === a[0];
-          ctx.beginPath(); ctx.arc(a[1], y + CH / 2, 34, 0, Math.PI * 2);
-          ctx.fillStyle = win ? EXP.gold : '#1b1650'; ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = win ? '#fff6d6' : '#fff'; ctx.stroke();
-          ctx.fillStyle = win ? '#1a1405' : '#fff'; ctx.font = '900 38px Manrope, system-ui, sans-serif'; ctx.fillText(win ? '1' : '0', a[1], y + CH / 2 + 13);
-        });
-        ctx.fillStyle = '#c79bff'; ctx.font = 'italic 900 22px Manrope, system-ui, sans-serif'; ctx.fillText('VS', cx, y + CH / 2 + 8);
-      } else {
-        ctx.beginPath(); ctx.arc(cx, y + CH / 2, 38, 0, Math.PI * 2); ctx.fillStyle = '#140f3d'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = '#a24dff'; ctx.stroke();
-        ctx.fillStyle = '#d9b8ff'; ctx.font = 'italic 900 34px Manrope, system-ui, sans-serif'; ctx.fillText('VS', cx, y + CH / 2 + 12);
-      }
-      y += CH + GAP;
-    });
-    byes.forEach(m => {
-      ctx.textAlign = 'center'; ctx.fillStyle = EXP.muted; ctx.font = '700 26px Manrope, system-ui, sans-serif';
-      ctx.fillText((m.teamAName || 'Equipo') + ' descansa esta ronda', W / 2, y + 40); y += 70;
-    });
-    expFooter(ctx, W, y + 50);
-    await expSave(c, 'master-king-' + (nTables > 1 ? 'tabla' + tn + '-' : '') + 'ronda-' + round + '.png');
-  }
-  function mkDlBtn(label, fn) {
-    const b = document.createElement('button'); b.type = 'button'; b.className = 'dl-btn'; b.textContent = label;
-    b.onclick = async () => {
-      const old = b.textContent; b.disabled = true; b.textContent = '⏳ Creando imagen…';
-      try { await fn(); } catch (e) { uiAlert('No se pudo crear la imagen: ' + (e && e.message ? e.message : e)); }
-      b.disabled = false; b.textContent = old;
-    };
-    return b;
-  }
-
   function renderStandings() {
     const el = document.getElementById('standingsContent');
     const resultsDetails = document.getElementById('resultsDetails');
-    if (!isAdmin && !meta.tableVisible) {
-      el.innerHTML = '<p class="pending-note">🔒 La tabla de posiciones se publicará próximamente.</p>';
-      return;
-    }
     if (!meta.scheduleStart || (isAdmin && matches.length === 0)) {
       el.innerHTML = '<p class="pending-note">La tabla aparece en cuanto se generan las fechas.</p>';
       resultsDetails.style.display = 'none';
@@ -2762,13 +2445,12 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
       const ttl = document.createElement('h3'); ttl.className = 'sb-title'; ttl.textContent = tableNums.length > 1 ? 'Tabla ' + tn : 'Tabla general';
       const cnt = document.createElement('span'); cnt.className = 'tg-count'; cnt.textContent = rowsS.length + ' equipos';
       head.append(ttl, cnt);
-      { const bar = document.createElement('div'); bar.className = 'dl-bar'; bar.appendChild(mkDlBtn('📷 Descargar imagen', () => exportStandings(tn, tableNums.length))); head.appendChild(bar); }
       board.appendChild(head);
       const scroll = document.createElement('div'); scroll.className = 'st-scroll';
       const table = document.createElement('table'); table.className = 'standings';
-      table.innerHTML = '<thead><tr><th class="rk">Pos.</th><th class="tm">Equipo</th><th class="num" title="Partidos jugados">PJ</th><th class="num">Pts</th><th class="num">G</th><th class="num">P</th><th class="num">Goleo</th></tr></thead>';
+      table.innerHTML = '<thead><tr><th class="rk">Pos.</th><th class="tm">Equipo</th><th class="num">Pts</th><th class="num">G</th><th class="num">P</th><th class="num">Goleo</th></tr></thead>';
       const tbody = document.createElement('tbody');
-      const clsByCol = ['rk', 'tm', 'num', 'num pts', 'num', 'num', 'num'];
+      const clsByCol = ['rk', 'tm', 'num pts', 'num', 'num', 'num'];
       rowsS.forEach((s, i) => {
         const tr = document.createElement('tr');
         const cls = [];
@@ -2780,7 +2462,7 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
         const mv = (rkBase !== undefined && !s.dq) ? rkBase - rkNow : 0;
         if (rkPrev !== undefined && rkPrev !== rkNow && !s.dq) { tr.classList.add(rkPrev > rkNow ? 'rk-up' : 'rk-down'); }
         if (trackRanks) rankNext[s.id] = rkNow;
-        [String(i + 1).padStart(2, '0'), s.name + (s.dq ? ' (DESCALIFICADO)' : ''), String(s.wins + s.losses), String(s.pts), String(s.wins), String(s.losses), String(s.goleo)].forEach((val, ci) => {
+        [String(i + 1).padStart(2, '0'), s.name + (s.dq ? ' (DESCALIFICADO)' : ''), String(s.pts), String(s.wins), String(s.losses), String(s.goleo)].forEach((val, ci) => {
           const td = document.createElement('td');
           td.className = clsByCol[ci];
           const c = document.createElement('span'); c.className = 'c'; c.textContent = val;
@@ -2823,42 +2505,6 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
   }
 
   let vsTable = 1, vsRound = null;
-  // Líder (capitán) de un equipo: se busca siempre en vivo, así que si cambias el capitán se actualiza solo en todos los versus
-  function leaderOf(teamId) {
-    const t = teams.find(x => x.id === teamId);
-    if (!t) return '';
-    const ps = t.players || [], i = t.captain;
-    return (Number.isInteger(i) && ps[i]) ? String(ps[i]) : '';
-  }
-
-  // ===== Contacto del líder dentro de los versus (solo organizador) =====
-  let vsContactMode = 'below';   // 'below' = debajo del cruce, 'side' = junto al nombre, 'off' = oculto
-  try { const sv = localStorage.getItem('vsContactMode'); if (sv === 'below' || sv === 'side' || sv === 'off') vsContactMode = sv; } catch (e) {}
-  function leaderInfo(teamId) {
-    const d = leaderDocs[teamId] || {};
-    return { name: d.name || leaderOf(teamId) || '', phone: d.phone ? String(d.phone) : '' };
-  }
-  function mentionOf(teamId) {
-    const i = leaderInfo(teamId), dg = i.phone.replace(/\D/g, '');
-    return [i.name ? '♛ ' + i.name : '', dg ? 'wa.me/' + dg : ''].filter(Boolean).join(' ');
-  }
-  function matchLine(m) {
-    const a = mentionOf(m.teamAId), b = mentionOf(m.teamBId);
-    return m.teamAName + (a ? ' (' + a + ')' : '') + ' 🆚 ' + m.teamBName + (b ? ' (' + b + ')' : '');
-  }
-  function copyText(txt, done) {
-    const ok = () => { if (done) done(); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(ok, () => fallbackCopy(txt, ok)); }
-    else fallbackCopy(txt, ok);
-  }
-  function fallbackCopy(txt, ok) {
-    const ta = document.createElement('textarea'); ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
-    document.body.appendChild(ta); ta.select();
-    try { document.execCommand('copy'); ok(); } catch (e) { window.prompt('Copia este texto:', txt); }
-    ta.remove();
-  }
-  function flash(btn, msg) { const o = btn.textContent; btn.textContent = msg; setTimeout(() => { btn.textContent = o; }, 1400); }
-
   function renderResults() {
     const el = document.getElementById('resultsContent');
     el.innerHTML = '';
@@ -2878,13 +2524,6 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
       const info = document.createElement('span'); info.className = 'empty-note';
       info.textContent = 'Publicados: ' + pub + ' de ' + shown.length + '. El público solo ve los publicados.';
       bar.appendChild(info);
-      const ids = new Set(); shown.forEach(m => { if (m.teamAId) ids.add(m.teamAId); if (!m.bye && m.teamBId) ids.add(m.teamBId); });
-      const sinLider = teams.filter(t => ids.has(t.id) && !leaderOf(t.id)).map(t => t.name || 'Equipo');
-      if (sinLider.length) {
-        const w = document.createElement('span'); w.className = 'empty-note';
-        w.textContent = '⚠ Sin líder: ' + sinLider.join(', ') + '. Asígnalo en Equipos con «♛ Capitán».';
-        bar.appendChild(w);
-      }
       bar.appendChild(mkBtn('Publicar todos', () => setPublishedMany(shown, true, 'todos los cruces')));
       bar.appendChild(mkBtn('Ocultar todos', () => setPublishedMany(shown, false, 'todos los cruces')));
       el.appendChild(bar);
@@ -2932,22 +2571,9 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
     const real = roundMatches.filter(m => !m.bye);
     sub.textContent = real.length + ' duelos · ' + real.filter(m => m.winner).length + ' definidos';
     hl.append(h4, sub); head.appendChild(hl);
-    { const dl = document.createElement('div'); dl.className = 'dl-bar'; dl.appendChild(mkDlBtn('📷 Descargar ronda ' + sel, () => exportRound(vsTable, sel, tablesAvail.length))); head.appendChild(dl); }
     if (isAdmin) {
       const rb = document.createElement('div'); rb.className = 'match-buttons';
       const lbl = 'la ronda ' + sel + (tablesAvail.length > 1 ? ' de la Tabla ' + vsTable : '');
-      { const bar = document.createElement('div'); bar.className = 'vs-adminbar';
-        const seg = document.createElement('div'); seg.className = 'vs-seg'; seg.title = 'Dónde mostrar líder y teléfono (solo tú lo ves)';
-        [['below', 'Contacto abajo'], ['side', 'Al lado'], ['off', 'Ocultar']].forEach(([v, t]) => {
-          const b = document.createElement('button'); b.type = 'button'; b.textContent = t; b.className = vsContactMode === v ? 'on' : '';
-          b.onclick = () => { vsContactMode = v; try { localStorage.setItem('vsContactMode', v); } catch (e) {} renderResults(); };
-          seg.appendChild(b);
-        });
-        bar.appendChild(seg);
-        const cr = document.createElement('button'); cr.type = 'button'; cr.className = 'btn-pick'; cr.textContent = '📋 Copiar ronda ' + sel;
-        cr.onclick = () => { const txt = 'RONDA ' + sel + '\n' + roundMatches.filter(x => !x.bye).map(matchLine).join('\n'); copyText(txt, () => flash(cr, '✔ Copiada')); };
-        bar.appendChild(cr);
-        head.appendChild(bar); }
       rb.appendChild(mkBtn('Publicar ronda', () => setPublishedMany(roundMatches, true, lbl)));
       rb.appendChild(mkBtn('Ocultar ronda', () => setPublishedMany(roundMatches, false, lbl)));
       head.appendChild(rb);
@@ -2981,42 +2607,19 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
       };
       const sideEl = (name, key, side) => {
         const d = document.createElement('div'); d.className = 'vsb-side ' + side + cls(key);
-        const wrap = document.createElement('div'); wrap.className = 'vsb-txt';
-        const n = document.createElement('span'); n.className = 'vsb-name'; n.textContent = name; wrap.appendChild(n);
-        const tid = key === 'A' ? m.teamAId : m.teamBId;
-        const inf = leaderInfo(tid), ld = isAdmin ? inf.name : leaderOf(tid);
-        const showPh = isAdmin && vsContactMode === 'side' && inf.phone;
-        if (ld || showPh) {
-          const l = document.createElement('span'); l.className = 'vsb-lead';
-          l.textContent = [ld ? '♛ ' + ld : '', showPh ? inf.phone : ''].filter(Boolean).join(' · ');
-          if (showPh) l.style.whiteSpace = 'normal';
-          l.title = 'Líder de ' + name; wrap.appendChild(l);
-        }
-        d.appendChild(wrap); return d;
+        const n = document.createElement('span'); n.className = 'vsb-name'; n.textContent = name; d.appendChild(n); return d;
       };
       const vs = document.createElement('div'); vs.className = 'vsb-vs'; const vsT = document.createElement('span'); vsT.textContent = 'VS'; vs.appendChild(vsT);
       ban.append(scoreEl('A', 'l'), sideEl(m.teamAName, 'A', 'a'), vs, sideEl(m.teamBName, 'B', 'b'), scoreEl('B', 'r'));
       ban.setAttribute('role', 'group');
       ban.setAttribute('aria-label', m.teamAName + ' contra ' + m.teamBName + (m.winner ? '. Ganó ' + (m.winner === 'A' ? m.teamAName : m.teamBName) : '. Pendiente'));
       item.appendChild(ban);
-      if (isAdmin && vsContactMode === 'below') {
-        const cs = document.createElement('div'); cs.className = 'vs-contacts';
-        [['A', m.teamAId, m.teamAName], ['B', m.teamBId, m.teamBName]].forEach(([k, tid, tn]) => {
-          const inf = leaderInfo(tid);
-          const c = document.createElement('button'); c.type = 'button';
-          c.className = 'vs-contact ' + k.toLowerCase() + (inf.phone ? '' : ' none');
-          const l1 = document.createElement('span'); l1.textContent = inf.name ? '♛ ' + inf.name : 'Sin líder';
-          const l2 = document.createElement('small'); l2.textContent = inf.phone || 'sin teléfono';
-          c.append(l1, l2); c.title = inf.phone ? 'Toca para copiar: ' + mentionOf(tid) : 'Falta el teléfono de ' + tn;
-          if (inf.phone) c.onclick = () => copyText(mentionOf(tid), () => { c.classList.add('ok'); setTimeout(() => c.classList.remove('ok'), 1200); });
-          cs.appendChild(c);
-        });
-        item.appendChild(cs);
-      }
 
       const meta2 = document.createElement('div'); meta2.className = 'vs-meta';
       const st = document.createElement('span'); st.className = 'vs-status' + (m.winner ? ' done' : '');
-      st.textContent = m.winner ? (m.forfeit ? 'Victoria administrativa' : 'Definido') : 'Pendiente';
+      const inReview = !m.winner && flagged(m.id);
+      st.textContent = m.winner ? (m.forfeit ? 'Victoria administrativa' : 'Definido') : (inReview ? 'Resultado reportado · en revisión' : 'Pendiente');
+      if (inReview) st.classList.add('review');
       meta2.appendChild(st);
       if (isAdmin) {
         meta2.appendChild(pubTag());
@@ -3027,9 +2630,6 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
         btnB.className = 'btn-pick' + (m.winner === 'B' ? ' active' : ''); btnB.textContent = 'Ganó ' + m.teamBName;
         btnB.onclick = () => setWinner(m.id, 'B');
         meta2.append(btnA, btnB);
-        { const cb = document.createElement('button'); cb.type = 'button'; cb.className = 'btn-pick secondary'; cb.textContent = '📋 Copiar cruce';
-          cb.onclick = () => copyText(matchLine(m), () => flash(cb, '✔ Copiado')); meta2.appendChild(cb); }
-        { const wa1 = mkWa(m.teamAId, m.teamAName), wa2 = mkWa(m.teamBId, m.teamBName); if (wa1) meta2.appendChild(wa1); if (wa2) meta2.appendChild(wa2); }
         if (m.winner) {
           const btnClear = document.createElement('button'); btnClear.type = 'button';
           btnClear.className = 'btn-pick secondary'; btnClear.textContent = 'Sin definir';
@@ -3103,6 +2703,98 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
     }
   }
 
+  function renderActivityControl() {
+    const box = document.getElementById('activityControl');
+    const list = document.getElementById('activityList');
+    const dayEl = document.getElementById('activityDay');
+    const note = document.getElementById('activityNote');
+    if (!box || !list || !isAdmin || !meta.scheduleStart || !matches.length || !teams.length) {
+      if (box) box.style.display = 'none';
+      return;
+    }
+    box.style.display = 'block';
+
+    const DAY = 86400000;
+    const ROUND = 3 * DAY;
+    const elapsed = Math.max(0, Date.now() - Number(meta.scheduleStart));
+    const currentRound = Math.floor(elapsed / ROUND) + 1;
+    const dayInRound = Math.min(3, Math.floor((elapsed % ROUND) / DAY) + 1);
+    const totalRounds = Math.max(1, ...matches.map(m => Number(m.round) || 1));
+    dayEl.textContent = 'RONDA ' + currentRound + ' · DÍA ' + dayInRound + ' / 3';
+    note.textContent = 'El sistema revisa automáticamente el duelo de cada equipo en la ronda actual. Día 1 = actividad inicial; Día 2 = seguimiento; Día 3 = cierre. Un duelo con resultado capturado cuenta como cumplido.';
+
+    const rows = teams.map(t => {
+      const tm = matches.filter(m => !m.bye && (m.teamAId === t.id || m.teamBId === t.id));
+      const table = tm.length ? tm[0].table : 1;
+      const current = matches.find(m => !m.bye && m.round === currentRound && m.table === table && (m.teamAId === t.id || m.teamBId === t.id));
+      const onBye = matches.some(m => m.bye && m.round === currentRound && m.table === table && m.teamAId === t.id);
+      const unresolvedPast = tm.filter(m => m.round < currentRound && !m.winner).length;
+      const completedPast = tm.filter(m => m.round < currentRound && !!m.winner).length;
+      const currentDone = !!(current && current.winner);
+      let status, cls, detail;
+
+      if (t.disqualified) {
+        status = '⛔ DESCALIFICADO'; cls = 'black';
+        detail = t.disqualifiedReason || 'Descalificado por la organización';
+      } else if (unresolvedPast >= 2) {
+        status = '⚫ REVISIÓN / ABANDONO'; cls = 'black';
+        detail = unresolvedPast + ' rondas anteriores pendientes';
+      } else if (onBye) {
+        status = '😴 DESCANSA'; cls = 'green';
+        detail = 'Descansa esta ronda (sin duelo)';
+      } else if (currentDone) {
+        status = '🟢 ACTIVO'; cls = 'green';
+        detail = 'Duelo de la ronda cumplido';
+      } else if (dayInRound === 1) {
+        status = '🟡 EN RIESGO'; cls = 'yellow';
+        detail = 'Debe jugar durante el Día 1';
+      } else if (dayInRound === 2) {
+        status = '🔴 INCUMPLIMIENTO'; cls = 'red';
+        detail = 'Duelo de la ronda aún pendiente';
+      } else {
+        status = '🔴 INCUMPLIMIENTO'; cls = 'red';
+        detail = 'Cierre de ronda sin resultado';
+      }
+
+      if (!t.disqualified && !current && currentRound > totalRounds) {
+        status = '🟢 ACTIVO'; cls = 'green'; detail = 'Liga finalizada o sin ronda pendiente';
+      }
+      return { name: t.name || 'Equipo', status, cls, detail, completedPast };
+    }).sort((a,b) => {
+      const order = {black:0, red:1, yellow:2, green:3};
+      return order[a.cls]-order[b.cls] || a.name.localeCompare(b.name);
+    });
+
+    if (!rows.length) { list.innerHTML = '<div class="activity-empty">No hay equipos para evaluar.</div>'; return; }
+    const GROUPS = [
+      { cls: 'black', label: '⚫ Revisión / abandono / descalificados' },
+      { cls: 'red', label: '🔴 Incumplimiento' },
+      { cls: 'yellow', label: '🟡 En riesgo' },
+      { cls: 'green', label: '🟢 Activos / descansan' }
+    ];
+    list.innerHTML = '';
+    GROUPS.forEach(g => {
+      const items = rows.filter(r => r.cls === g.cls);
+      if (!items.length) return;
+      const det = document.createElement('details'); det.className = 'act-group';
+      if (openActGroups.has(g.cls)) det.open = true;
+      det.addEventListener('toggle', () => { if (det.open) openActGroups.add(g.cls); else openActGroups.delete(g.cls); });
+      const sm = document.createElement('summary');
+      const lb = document.createElement('span'); lb.className = 'activity-team'; lb.textContent = g.label;
+      const ct = document.createElement('span'); ct.className = 'act-count'; ct.textContent = String(items.length);
+      sm.append(lb, ct);
+      det.appendChild(sm);
+      const inner = document.createElement('div');
+      inner.innerHTML = items.map(r =>
+        '<div class="activity-row"><div><div class="activity-team">' + esc(r.name) + '</div><div class="activity-meta">' + esc(r.detail) + '</div></div>' +
+        '<div class="activity-meta">Rondas anteriores cumplidas: ' + r.completedPast + '</div>' +
+        '<span class="activity-status ' + r.cls + '">' + r.status + '</span></div>'
+      ).join('');
+      det.appendChild(inner);
+      list.appendChild(det);
+    });
+  }
+
   // ===== Buscador de jugadores / equipos (sección Equipos) =====
   function normSearch(x) { return String(x || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim(); }
   function applyTeamFilter() {
@@ -3139,104 +2831,6 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
     const inp = document.getElementById('teamSearch');
     if (inp) inp.addEventListener('input', applyTeamFilter);
   })();
-
-  // ===== Panel de inicio =====
-  function renderDashboard() {
-    const $ = (id) => document.getElementById(id);
-    if (!$('dashRound')) return;
-    const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
-    const fill = (id, nodes) => { const el = $(id); el.innerHTML = ''; nodes.forEach(n => el.appendChild(n)); };
-    const vis = isAdmin ? matches : matches.filter(m => m.published === true);
-    const real = vis.filter(m => !m.bye);
-    const DAY = 86400000, total = vis.reduce((a, m) => Math.max(a, Number(m.round) || 0), 0);
-    let cur = 0, day = 0;
-    if (meta.scheduleStart) {
-      const el = Math.max(0, Date.now() - Number(meta.scheduleStart));
-      cur = Math.floor(el / (3 * DAY)) + 1; day = Math.min(3, Math.floor((el % (3 * DAY)) / DAY) + 1);
-      if (total) cur = Math.min(cur, total);
-    }
-    // Ronda actual
-    const rd = [];
-    if (cur) { rd.push(mk('b', '', 'RONDA ' + cur), mk('span', '', 'ACTUALMENTE'), mk('small', '', 'Día ' + day + ' de 3')); }
-    else { rd.push(mk('b', '', 'PRÓXIMAMENTE'), mk('span', '', 'LA LIGA AÚN NO INICIA')); }
-    fill('dashRound', rd);
-    // Tablas (top 5)
-    const tNodes = [];
-    if (!isAdmin && !meta.tableVisible) tNodes.push(mk('p', 'dash-lock', '🔒 La tabla de posiciones se publicará próximamente.'));
-    else if (!meta.scheduleStart || (isAdmin && !matches.length)) tNodes.push(mk('p', 'dash-lock', 'La tabla aparece en cuanto se generan las fechas.'));
-    else [1, 2].forEach(tn => {
-      const box = mk('div', 'dash-t'); box.appendChild(mk('h3', '', 'Tabla ' + tn));
-      computeStandings(tn).slice(0, 5).forEach((r, i) => {
-        const row = mk('div', 'r'); row.append(mk('i', '', String(i + 1)), mk('span', '', r.name), mk('em', '', r.pts + ' pts')); box.appendChild(row);
-      });
-      const a = mk('a', '', 'Ver tabla completa →'); a.href = '#tabla'; box.appendChild(a);
-      tNodes.push(box);
-    });
-    fill('dashTables', tNodes);
-    const nm = (name, id, cls) => { const sp = mk('span', cls || '', name); const ld = leaderOf(id); if (ld) sp.appendChild(mk('em', 'dash-cap', '♛ ' + ld)); return sp; };
-    // Próximos versus
-    const pend = real.filter(m => !m.winner).sort((a, b) => a.round - b.round);
-    const nx = [];
-    if (!pend.length) nx.push(mk('p', 'dash-empty', meta.scheduleStart ? 'No hay versus pendientes.' : 'Aparecerán cuando se publiquen los cruces.'));
-    else {
-      pend.filter(m => m.round === pend[0].round).slice(0, 6).forEach(m => {
-        const r = mk('div', 'dash-vs'); r.append(nm(m.teamAName, m.teamAId, ''), mk('u', '', 'VS'), nm(m.teamBName, m.teamBId, ''), mk('small', '', 'Ronda ' + m.round + ' · Tabla ' + m.table)); nx.push(r);
-      });
-      const n = pend.filter(m => m.round === pend[0].round).length;
-      if (n > 6) { const a = mk('a', 'go', 'Ver los ' + n + ' en Versus →'); a.href = '#versus'; nx.push(a); }
-    }
-    fill('dashNext', nx);
-    // Últimos resultados
-    const done = real.filter(m => m.winner).sort((a, b) => b.round - a.round).slice(0, 6);
-    const ls = [];
-    if (!done.length) ls.push(mk('p', 'dash-empty', 'Aún no hay resultados.'));
-    done.forEach(m => {
-      const r = mk('div', 'dash-vs'); const win = m.winner === 'A' ? m.teamAName : m.teamBName;
-      r.append(nm(m.teamAName, m.teamAId, m.winner === 'A' ? 'w' : ''), mk('u', '', 'VS'), nm(m.teamBName, m.teamBId, m.winner === 'B' ? 'w' : ''),
-        mk('small', '', '🏆 Ganó ' + win + (m.forfeit ? ' (victoria administrativa)' : '') + ' · Ronda ' + m.round));
-      ls.push(r);
-    });
-    fill('dashLast', ls);
-    // MVP (último por tabla)
-    const mv = [];
-    [1, 2].forEach(tn => {
-      for (let b = mvpBlocks(); b >= 1; b--) {
-        const d = mvps[mvpKey(tn, b)];
-        if (!d) continue;
-        const w = mk('div', 'dash-mvp');
-        if (typeof d.photo === 'string' && d.photo.indexOf('data:image/') === 0) { const im = mk('img'); im.src = d.photo; im.alt = 'MVP ' + (d.nick || ''); w.appendChild(im); }
-        else w.appendChild(mk('div', 'ph', String(d.nick || '?').charAt(0).toUpperCase()));
-        const t = mk('div'); t.append(mk('b', '', d.nick || '—'), mk('small', '', (d.team || '') + (d.goleo != null ? ' · Goleo ' + d.goleo : '')), mk('small', '', 'Tabla ' + tn + ' · ' + mvpRange(b)));
-        w.appendChild(t); mv.push(w); break;
-      }
-    });
-    if (!mv.length) mv.push(mk('p', 'dash-empty', 'Aún sin MVP.'));
-    fill('dashMvp', mv);
-  }
-
-  // ===== Tabla de posiciones: oculta al público hasta que el organizador la autorice =====
-  function setMetaStatus(data) { return db.doc('meta/status').set(data, { merge: true }); }
-  async function setTableVisible(v) {
-    if (!isAdmin || !db) return;
-    if (v && !(await uiConfirm('¿Mostrar la tabla de posiciones a todo el público?'))) return;
-    try {
-      await db.doc('meta/status').set({ tableVisible: v }, { merge: true });
-      await logAction('table', v ? 'Mostró la tabla de posiciones al público' : 'Ocultó la tabla de posiciones al público');
-    } catch (err) { uiAlert('No se pudo cambiar: ' + (err && err.message ? err.message : err)); }
-  }
-  function renderTableVisBar() {
-    const el = document.getElementById('tableVisBar');
-    if (!el) return;
-    el.innerHTML = '';
-    if (!isAdmin) return;
-    const bar = document.createElement('div'); bar.className = 'tablevis-bar' + (meta.tableVisible ? ' on' : '');
-    const txt = document.createElement('span');
-    txt.textContent = meta.tableVisible ? '👁 La tabla está VISIBLE para todo el público.' : '🔒 La tabla está OCULTA al público (solo tú la ves).';
-    const b = document.createElement('button'); b.type = 'button'; b.className = 'btn-mini' + (meta.tableVisible ? ' danger' : '');
-    b.textContent = meta.tableVisible ? 'Ocultar tabla' : 'Mostrar tabla al público';
-    b.onclick = () => setTableVisible(!meta.tableVisible);
-    bar.append(txt, b); el.appendChild(bar);
-  }
 
   // ===== Banner de campeones (el organizador lo declara al cierre) =====
   async function setPlacing(field, label) {
@@ -3335,9 +2929,9 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
         li.dataset.tid = t.id; li.dataset.tn = normSearch(t.name || 'Equipo');
         if (window.__mkRevealCard) window.__mkRevealCard(li, t.id);
         const det = document.createElement('details'); det.className = 'tc-fold';
-        det.open = openedTeams.has(t.id);
-        det.addEventListener('toggle', () => { if (det.open) { openedTeams.add(t.id); if (t.hasPhotos) loadTeamPhotos(t.id); } else openedTeams.delete(t.id); });
-        if (t.hasPhotos && !photoCache[t.id] && openedTeams.has(t.id)) {
+        det.open = !closedTeams.has(t.id);
+        det.addEventListener('toggle', () => { if (det.open) { closedTeams.delete(t.id); if (t.hasPhotos) loadTeamPhotos(t.id); } else closedTeams.add(t.id); });
+        if (t.hasPhotos && !photoCache[t.id] && !closedTeams.has(t.id)) {
           if (isAdmin || !photoIO) loadTeamPhotos(t.id);
           else { li.dataset.tid = t.id; photoIO.observe(li); }
         }
@@ -3393,14 +2987,6 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
         });
         body.appendChild(row);
         if (isAdmin) {
-          const ph = leaderPhone(t.id);
-          const ct = document.createElement('div'); ct.className = 'tc-contact';
-          const lt = document.createElement('span'); lt.textContent = ph ? ('♛ Líder: ' + ((leaderDocs[t.id] || {}).name || leaderOf(t.id) || '—') + ' · ' + ph) : '♛ Líder: sin teléfono guardado';
-          ct.appendChild(lt);
-          const w = mkWa(t.id, 'Escribirle'); if (w) ct.appendChild(w);
-          body.appendChild(ct);
-        }
-        if (isAdmin) {
           const acts = document.createElement('span'); acts.className = 'team-actions';
           const bEdit = document.createElement('button'); bEdit.type = 'button'; bEdit.className = 'btn-mini'; bEdit.textContent = 'Editar';
           bEdit.onclick = () => openEdit(t);
@@ -3427,25 +3013,24 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
     if (ab) ab.style.display = isAdmin ? 'flex' : 'none';
     if (lb) lb.style.display = isAdmin ? 'block' : 'none';
     const rs = document.getElementById('respaldo'); if (rs) rs.style.display = isAdmin ? '' : 'none';
-    renderLeadersAdmin();
     renderDecisionPanel();
     renderRounds();
     renderStandings();
-    renderTableVisBar();
     renderChampions();
-    renderDashboard();
     renderGoleo();
     const gl = document.getElementById('goleo'), gn = document.querySelector('#navLinks a[href="#goleo"]');
     if (gl && gn) gn.style.display = gl.style.display === 'none' ? 'none' : '';
-    { const bg = document.querySelector('#bottomNav a[href="#goleo"]'); if (bg && gl) bg.style.display = gl.style.display === 'none' ? 'none' : ''; }
+    renderActivityControl();
     renderResults();
+    updateReportCta();
+    renderReports();
     renderMyVs();
   }
 
   async function finalizeSchedule() {
     if (!db) return;
     try {
-      await setMetaStatus({ expansionDecided: true, expanded: true, scheduleStart: Date.now(), fixturesGenerating: true, fixturesGeneratingAt: Date.now() });
+      await db.doc('meta/status').set({ expansionDecided: true, expanded: true, scheduleStart: Date.now(), fixturesGenerating: true, fixturesGeneratingAt: Date.now() });
       await generateAndStoreFixtures();
       await logAction('fixtures', 'Generó fechas y cruces de la liga de 32 equipos');
     } catch (err) {
@@ -3499,7 +3084,7 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
       const order = teams.slice();
       for (let k = 0; k < 3; k++) shuffleInPlace(order);
       const base = Math.min.apply(null, teams.map(t => Number(t.registeredAt) || Date.now()));
-      await setMetaStatus({ expansionDecided: true, expanded: true, scheduleStart: meta.scheduleStart || Date.now(), fixturesGenerating: true, fixturesGeneratingAt: Date.now() });
+      await db.doc('meta/status').set({ expansionDecided: true, expanded: true, scheduleStart: meta.scheduleStart || Date.now(), fixturesGenerating: true, fixturesGeneratingAt: Date.now() });
       const batch = db.batch();
       order.forEach((t, i) => batch.update(db.doc('teams/' + t.id), { registeredAt: base + i * 1000 }));
       batch.set(db.collection('log').doc(), logEntry('shuffle', 'Barajó los 32 equipos (3 veces). Tabla 1: ' + order.slice(0, 16).map(t => t.name).join(', ') + '. Tabla 2: ' + order.slice(16).map(t => t.name).join(', ')));
@@ -3562,7 +3147,7 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
   (function watchModals() {
     const focusBefore = new WeakMap();
     const wasOpen = new WeakMap();
-    const backs = [editBackdrop, loginBackdrop, mvpBackdrop];
+    const backs = [editBackdrop, loginBackdrop, mvpBackdrop, reportBackdrop, imgBackdrop];
     function sync(b) {
       const open = b.classList.contains('open');
       if (open === !!wasOpen.get(b)) return;
@@ -3586,6 +3171,8 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
     closeEdit();
     closeLogin();
     closeMvp();
+    closeReport();
+    closeImg();
   });
 
   // Menú móvil
@@ -3624,141 +3211,6 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
     });
   }
 
-  // ===== Líderes (capitanes) y teléfonos: solo el organizador los lee (colección "leaders") =====
-  const LEADERS_SEED = [
-    ['SQUIRTLE SQUAD','ALLEN','+593 97 958 1412'],
-    ['AURA SPORT','LOVI','+56 9 7717 8221'],
-    ['EEVENGERS','ANIBAL','+51 978 039 278'],
-    ['LOS 4 JINETES','BREXXAR','+52 1 729 393 5498'],
-    ['PIKABLINDERS','VIKTOR','+52 1 56 3665 9305'],
-    ['PIKATSUKIS','CORCHO','+54 9 362 411-7513'],
-    ['TOTODILE SQUAD','SAMMAEL','+1 (829) 628-0719'],
-    ['BRS','SCARPRICE','+52 1 56 1068 4341'],
-    ['DARK RAIDES','YAS','+56 9 4670 4579'],
-    ['DR NIGHT','THUNDER','+1 (787) 224-8172'],
-    ['PIRATA CREW','FEMTO','+1 (903) 724-5011'],
-    ['DARK ROCKET SPORT','LILPANDA','+57 301 3460830'],
-    ['EUFORICOS WORD','PATO','+56 9 3646 3502'],
-    ['DARK MASTER','MISAEL','+52 1 228 170 8458'],
-    ['RACCONS','LUFFY','+52 1 81 3132 0535'],
-    ['DARKRAI SPORT','LILPANDA','+57 301 3460830'],
-    ['LEGION ESMERALDA 2','JESUSMORAO','+58 424-8265396'],
-    ['LOS PRIMATES','LP ISMA','+52 1 669 929 1647'],
-    ['TEAM FUCSIA 1','FELLOGOD','+56 9 8634 9949'],
-    ['LOS EMISORES VERDES','LELOUCH','+52 1 773 182 1594'],
-    ['DARK WEEZING','BICHEJITO','+34 620 33 11 27'],
-    ['GST','GST CHIANE','+51 956 677 392'],
-    ['LEGACY PRO','HIKOSA','+51 966 476 582'],
-    ['DORAGON CRO','YUZMEG','+51 994 339 631'],
-    ['LIGH EUPHORICS ROCKET','PATO','+56 9 3646 3502'],
-    ['LA JEFA Y SUS 3 BIDOOFS','PAU','+56 9 8610 9002'],
-    ['FUCSIA STAR','FELLOGOD','+56 9 8634 9949'],
-    ['LOS JINETES DEL POCKET','THE DARWIN','+593 98 976 4576'],
-    ['CHARIZARD SQUAD','YIGO','+56 9 7869 4955'],
-    ['PALOMOS TEAM','PALOMOS','+51 946 303 072'],
-    ['RED LEGACY 1','WORNZ','+58 424-8226408'],
-    ['AMBU','WHITEDRAGON','+54 9 11 3095-4738']
-  ];
-  let leaderDocs = {};   // teamId -> { name, phone, team }
-  let unsubLeaders = null;
-  function leaderPhone(teamId) { const d = leaderDocs[teamId]; return d && d.phone ? String(d.phone) : ''; }
-  function waLink(phone) { const n = String(phone || '').replace(/\D/g, ''); return n ? 'https://wa.me/' + n : ''; }
-  function mkWa(teamId, label) {
-    const ph = leaderPhone(teamId), href = waLink(ph);
-    if (!href) return null;
-    const a = document.createElement('a'); a.className = 'wa-btn'; a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer';
-    a.textContent = '💬 ' + label; a.title = ph; return a;
-  }
-  function watchLeaders() {
-    if (isAdmin && !unsubLeaders) {
-      unsubLeaders = db.collection('leaders').onSnapshot(snap => {
-        leaderDocs = {}; snap.docs.forEach(d => { leaderDocs[d.id] = d.data(); });
-        render();
-      }, () => { document.getElementById('leadersMsg').textContent = 'No se pudo leer la colección «leaders». Revisa que ya publicaste las reglas de Firestore.'; });
-    } else if (!isAdmin && unsubLeaders) {
-      unsubLeaders(); unsubLeaders = null; leaderDocs = {};
-    }
-  }
-  function lev(a, b) {
-    const m = a.length, n = b.length; if (!m) return n; if (!n) return m;
-    let prev = Array.from({ length: n + 1 }, (_, j) => j);
-    for (let i = 1; i <= m; i++) {
-      const cur = [i];
-      for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
-      prev = cur;
-    }
-    return prev[n];
-  }
-  async function importLeaders() {
-    if (!isAdmin) return;
-    const msg = document.getElementById('leadersMsg');
-    if (!teams.length) { uiAlert('Todavía no hay equipos cargados.'); return; }
-    const key = x => normSearch(x).replace(/[^a-z0-9]/g, '');
-    const used = new Set(), plan = [], approx = [], missing = [];
-    const pending = LEADERS_SEED.slice();
-    // 1) coincidencias exactas (ignora mayúsculas, acentos y espacios)
-    const rest = [];
-    pending.forEach(row => {
-      const t = teams.find(x => !used.has(x.id) && key(x.name) === key(row[0]));
-      if (t) { used.add(t.id); plan.push({ t, row }); } else rest.push(row);
-    });
-    // 2) casi iguales (hasta 2 letras de diferencia): se avisan para que las revises
-    rest.forEach(row => {
-      let best = null, bd = 99;
-      teams.forEach(t => { if (used.has(t.id)) return; const d = lev(key(t.name), key(row[0])); if (d < bd) { bd = d; best = t; } });
-      if (best && bd <= 2) { used.add(best.id); plan.push({ t: best, row }); approx.push(row[0] + ' → ' + best.name); } else missing.push(row[0]);
-    });
-    let txt = 'Se guardarán ' + plan.length + ' líderes con su teléfono.';
-    if (approx.length) txt += '\n\nCoincidencia aproximada (revísala):\n' + approx.join('\n');
-    if (missing.length) txt += '\n\nNo encontré estos equipos en la página:\n' + missing.join('\n');
-    txt += '\n\n¿Continuar?';
-    if (!await uiConfirm(txt)) return;
-    try {
-      const batch = db.batch();
-      plan.forEach(({ t, row }) => batch.set(db.doc('leaders/' + t.id), { teamId: t.id, team: t.name || row[0], name: row[1], phone: row[2], updatedAt: Date.now() }, { merge: true }));
-      batch.set(db.collection('log').doc(), logEntry('leaders', 'Importó ' + plan.length + ' líderes con teléfono'));
-      await batch.commit();
-      msg.textContent = 'Listo: ' + plan.length + ' líderes guardados.' + (missing.length ? ' Sin equipo: ' + missing.join(', ') + '.' : '');
-    } catch (err) { uiAlert('No se pudo guardar: ' + err.message + '\n\n¿Publicaste la regla de Firestore para «leaders»?'); }
-  }
-  async function editLeaderPhone(t) {
-    const cur = leaderDocs[t.id] || {};
-    const ph = window.prompt('Teléfono del líder de «' + (t.name || 'Equipo') + '» (con lada del país, ej. +52 1 55 1234 5678):', cur.phone || '');
-    if (ph === null) return;
-    const nm = window.prompt('Nombre del líder:', cur.name || '');
-    if (nm === null) return;
-    try {
-      const batch = db.batch();
-      batch.set(db.doc('leaders/' + t.id), { teamId: t.id, team: t.name || '', name: nm.trim(), phone: ph.trim(), updatedAt: Date.now() }, { merge: true });
-      batch.set(db.collection('log').doc(), logEntry('leaders', 'Actualizó el contacto del líder de "' + (t.name || 'Equipo') + '"'));
-      await batch.commit();
-    } catch (err) { uiAlert('No se pudo guardar: ' + err.message); }
-  }
-  function renderLeadersAdmin() {
-    const box = document.getElementById('adminLeadersBox'); if (!box) return;
-    box.style.display = isAdmin ? 'block' : 'none';
-    const list = document.getElementById('leadersList'); if (!list) return;
-    list.innerHTML = '';
-    if (!isAdmin) return;
-    const withPhone = teams.filter(t => leaderPhone(t.id)).length;
-    const sum = document.createElement('p'); sum.className = 'table-note';
-    sum.textContent = 'Con teléfono: ' + withPhone + ' de ' + teams.length + ' equipos.';
-    list.appendChild(sum);
-    teams.forEach(t => {
-      const d = leaderDocs[t.id] || {}, ph = d.phone || '';
-      const r = document.createElement('div'); r.className = 'ld-row' + (ph ? '' : ' none');
-      const a = document.createElement('span'); a.className = 'ld-team'; a.textContent = t.name || 'Equipo';
-      const b = document.createElement('span'); b.className = 'ld-who'; b.textContent = d.name ? '♛ ' + d.name : (leaderOf(t.id) ? '♛ ' + leaderOf(t.id) : '—');
-      const c = document.createElement('span'); c.className = 'ld-tel'; c.textContent = ph || 'sin teléfono';
-      r.append(a, b, c);
-      const wa = mkWa(t.id, 'WhatsApp'); if (wa) r.appendChild(wa);
-      const eb = document.createElement('button'); eb.type = 'button'; eb.className = 'btn-mini'; eb.textContent = '✎ Editar'; eb.onclick = () => editLeaderPhone(t);
-      r.appendChild(eb);
-      list.appendChild(r);
-    });
-  }
-  { const ib = document.getElementById('leadersImportBtn'); if (ib) ib.onclick = importLeaders; }
-
   // El organizador recibe todos los cruces; el público solo los publicados.
   let unsubMatches = null;
   function watchMatches() {
@@ -3777,11 +3229,12 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
   function init() {
     setupAdminToggle();
     watchMvps();
+    watchFlags();
 
     auth.onAuthStateChanged((user) => {
       isAdmin = !!user;
       watchLog();
-      watchLeaders();
+      watchReports();
       watchMatches();
       render();
     });
@@ -3802,8 +3255,7 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
         fixturesGenerating: !!d.fixturesGenerating,
         fixturesGeneratingAt: Number(d.fixturesGeneratingAt) || 0,
         championId: d.championId || '',
-        runnerUpId: d.runnerUpId || '',
-        tableVisible: d.tableVisible === true
+        runnerUpId: d.runnerUpId || ''
       };
       render();
     }, () => {
@@ -3830,128 +3282,16 @@ section::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5)
           el.removeEventListener('animationend', done);
         });
       });
-    }, { threshold: 0, rootMargin: '0px 0px -4% 0px' });
-    const SEL = '.clause, .cell, .step, .prize, .stat, .activity-card, main section > h2, main section > .kicker';
+    }, { threshold: 0.08, rootMargin: '0px 0px -6% 0px' });
+    const SEL = '.clause, .cell, .step, .prize, .stat, .activity-card, .roster-box, .goleo-box, main section > h2, main section > .kicker';
     document.querySelectorAll(SEL).forEach(el => {
       if (el.closest('.hero') || el.dataset.rv) return;
       el.dataset.rv = '1'; el.classList.add('mk-rv'); io.observe(el);
     });
-    // Red de seguridad: nada que ya esté en pantalla puede quedarse invisible
-    setTimeout(() => { document.querySelectorAll('.mk-rv:not(.mk-in)').forEach(el => { if (el.getBoundingClientRect().top < innerHeight) el.classList.remove('mk-rv'); }); }, 3500);
     window.__mkRevealCard = (li, id) => {
       if (seenCards.has(id)) return;
       li.classList.add('mk-rv'); io.observe(li);
     };
-  })();
-
-  // ===== Barra inferior móvil: pestaña activa según el scroll =====
-  (function () {
-    const bar = document.getElementById('bottomNav');
-    if (!bar) return;
-    const links = Array.from(bar.querySelectorAll('a'));
-    const MAP = [['inicio', 'inicio'], ['tabla', 'tabla'], ['goleo', 'goleo'], ['versus', 'versus'], ['inscripcion', 'inscripcion'],
-                 ['reglamento', null], ['formato', null], ['fechas', null], ['premiacion', null], ['respaldo', null]];
-    let tick = false;
-    function update() {
-      tick = false;
-      const line = window.innerHeight * 0.4;
-      let cur = 'inicio';
-      MAP.forEach(([id, tab]) => {
-        const el = document.getElementById(id);
-        if (!el || el.offsetParent === null && getComputedStyle(el).position !== 'fixed') return;
-        if (el.getBoundingClientRect().top <= line) cur = tab;
-      });
-      links.forEach(a => a.classList.toggle('on', a.dataset.t === cur));
-    }
-    window.addEventListener('scroll', () => { if (!tick) { tick = true; requestAnimationFrame(update); } }, { passive: true });
-    window.addEventListener('resize', update);
-    window.__mkBottomNavUpdate = update;
-    update();
-  })();
-
-  // ===== Panel de administración (solo con sesión) =====
-  (function () {
-    const ITEMS = [
-      ['📊', 'Dashboard', '#panel'], ['👥', 'Equipos', '#inscripcion'], ['🃏', 'Jugadores', '#goleo'],
-      ['📅', 'Calendario', '#fechas'], ['⚔️', 'Resultados', '#versus'],
-      ['⭐', 'MVP', '#versus'], ['🚫', 'Sanciones', '#reglamento'],
-      ['📢', 'Publicaciones', '#tableVisBar'], ['💾', 'Respaldos', '#respaldo']
-    ];
-    const body = document.body;
-    const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt) e.textContent = txt; return e; };
-    const panel = mk('aside'); panel.id = 'adminPanel'; panel.setAttribute('aria-label', 'Panel de administración');
-    const head = mk('div', 'ap-head');
-    const ttl = mk('div'); ttl.append(mk('b', '', 'ADMIN'), mk('small', '', 'MASTER KING'));
-    const x = mk('button', 'ap-x', '✕'); x.type = 'button'; x.setAttribute('aria-label', 'Cerrar panel');
-    head.append(mk('span', 'ap-crown', '♛'), ttl, x);
-    const nav = mk('nav', 'ap-nav'); nav.setAttribute('aria-label', 'Secciones de administración');
-    const note = mk('p', 'ap-note'); note.setAttribute('role', 'status');
-    let noteT = null;
-    const say = (t) => { note.textContent = t; clearTimeout(noteT); noteT = setTimeout(() => { note.textContent = ''; }, 3500); };
-    const isWide = () => window.innerWidth >= 1100;
-    ITEMS.forEach(([ico, label, sel]) => {
-      const b = mk('button'); b.type = 'button';
-      b.append(mk('span', 'ap-i', ico), document.createTextNode(label));
-      b.addEventListener('click', () => {
-        const el = document.querySelector(sel);
-        const shown = el && (el.offsetParent !== null || getComputedStyle(el).position === 'fixed');
-        if (!shown) { say(label + ': aún no hay herramientas activas aquí (se habilitan al generar las fechas).'); return; }
-        if (el.tagName === 'DETAILS') el.open = true;
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        if (!isWide()) body.classList.remove('ap-open');
-      });
-      nav.appendChild(b);
-    });
-    const foot = mk('div', 'ap-foot');
-    const view = mk('button', 'ap-view'); view.type = 'button';
-    const syncView = () => { view.textContent = body.classList.contains('admin-public') ? '🛠 Volver a vista admin' : '👁 Ver como público'; };
-    view.addEventListener('click', () => { body.classList.toggle('admin-public'); syncView(); });
-    const out = mk('button', 'ap-out', 'Cerrar sesión'); out.type = 'button';
-    out.addEventListener('click', async () => { if (await uiConfirm('¿Cerrar sesión de organizador?')) auth.signOut(); });
-    foot.append(view, out);
-    // Inicio real de la Ronda 1: de aquí se calcula la ronda actual (3 días por ronda)
-    const st = mk('div', 'ap-start');
-    const stIn = mk('input'); stIn.type = 'datetime-local'; stIn.setAttribute('aria-label', 'Inicio de la Ronda 1');
-    const stBtn = mk('button', '', 'Guardar inicio'); stBtn.type = 'button';
-    const stHint = mk('small');
-    st.append(mk('label', '', '📅 Inicio de la Ronda 1'), stIn, stBtn, stHint);
-    const toLocal = (ms) => new Date(ms - new Date(ms).getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-    const fillStart = () => {
-      if (meta.scheduleStart) stIn.value = toLocal(Number(meta.scheduleStart));
-      stHint.textContent = meta.scheduleStart ? 'La ronda actual se calcula desde esta fecha (3 días por ronda).' : 'Aún no se generan las fechas.';
-    };
-    stBtn.addEventListener('click', async () => {
-      const ms = new Date(stIn.value).getTime();
-      if (!stIn.value || isNaN(ms)) { say('Elige fecha y hora.'); return; }
-      if (!(await uiConfirm('¿Cambiar el inicio de la Ronda 1? Se recalcula la ronda actual para todos.'))) return;
-      try {
-        await db.doc('meta/status').set({ scheduleStart: ms }, { merge: true });
-        await logAction('schedule', 'Cambió el inicio de la Ronda 1 a ' + new Date(ms).toLocaleString('es-MX'));
-        say('Inicio guardado.');
-      } catch (err) { say('No se pudo guardar el inicio.'); }
-    });
-    panel.append(head, nav, st, foot, note);
-    const fab = mk('button'); fab.id = 'adminFab'; fab.type = 'button'; fab.textContent = '⚙ Admin';
-    fab.addEventListener('click', () => { fillStart(); body.classList.add('ap-open'); });
-    x.addEventListener('click', () => body.classList.remove('ap-open'));
-    body.append(panel, fab);
-
-    // Acceso discreto en el pie (además de los 5 toques y de #admin)
-    const ft = document.querySelector('footer');
-    if (ft) {
-      const a = mk('a', 'ap-login', 'Acceso organizador'); a.href = '#admin';
-      a.addEventListener('click', (e) => { e.preventDefault(); openAdmin(); });
-      ft.appendChild(document.createElement('br')); ft.appendChild(a);
-    }
-    function openAdmin() { if (auth.currentUser) body.classList.add('ap-open'); else openLogin(); }
-    window.addEventListener('hashchange', () => { if (location.hash === '#admin') { openAdmin(); history.replaceState(null, '', location.pathname + location.search); } });
-    if (location.hash === '#admin') setTimeout(() => { openAdmin(); history.replaceState(null, '', location.pathname + location.search); }, 600);
-
-    auth.onAuthStateChanged((user) => {
-      body.classList.toggle('is-admin', !!user);
-      if (user) { body.classList.remove('admin-public'); syncView(); if (isWide()) body.classList.add('ap-open'); setTimeout(fillStart, 1500); }
-      else body.classList.remove('ap-open', 'admin-public');
-    });
   })();
 
   init();
