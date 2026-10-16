@@ -794,7 +794,7 @@ body::after{display:none}
           <div class="step"><h3>Los demás quedan eliminados</h3><p>Del 5.º lugar en adelante, el equipo <strong>queda eliminado</strong> y no participa en las rondas finales.</p></div>
           <div class="step"><h3>Rondas finales</h3><p>Los clasificados de cada tabla se enfrentan entre tablas según su posición: <strong>1.º vs 1.º</strong>, <strong>2.º vs 2.º</strong>, <strong>3.º vs 3.º</strong> y <strong>4.º vs 4.º</strong>.</p></div>
           <div class="step"><h3>Puntos</h3><p>Victoria de encuentro: <strong>3 puntos</strong>. Derrota: <strong>0 puntos</strong>. Como un 2-2 se resuelve con muerte súbita, no hay empates. Las victorias administrativas también valen 3 puntos.</p></div>
-          <div class="step"><h3>Orden de la tabla</h3><p>1) Más puntos. 2) Resultado del enfrentamiento directo entre los equipos empatados (si son más de dos, cuenta el mayor número de victorias entre ellos). 3) Menos encuentros perdidos. 4) Mayor goleo total del equipo (la suma del goleo de sus 4 jugadores). 5) Si persiste el empate, la administración organiza un encuentro de desempate.</p></div>
+          <div class="step"><h3>Orden de la tabla</h3><p>1) Más puntos. 2) Resultado del enfrentamiento directo, solo cuando el empate es entre dos equipos (si hay tres o más equipos empatados, este criterio no se aplica). 3) Menos encuentros perdidos. 4) Mayor goleo total del equipo (la suma del goleo de sus 4 jugadores). 5) Si persiste el empate, la administración organiza un encuentro de desempate.</p></div>
           <div class="step"><h3>Empate 2-2 en un encuentro</h3><p>Se resuelve con una muerte súbita entre los equipos empatados.</p></div>
           <div class="step"><h3>Quién puede jugarla</h3><p>Solo entran los jugadores que ganaron su versus dentro de ese mismo encuentro.</p></div>
           <div class="step"><h3>Quién queda fuera</h3><p>Los jugadores que perdieron su versus no pueden participar en la muerte súbita.</p></div>
@@ -1721,7 +1721,10 @@ body::after{display:none}
         grp.forEach(g => { g.h2h = 0; ids[g.id] = g; });
         matches.filter(m => m.table === tableNum && !m.bye && m.winner && ids[m.teamAId] && ids[m.teamBId])
           .forEach(m => { ids[m.winner === 'A' ? m.teamAId : m.teamBId].h2h++; });
-        grp.sort((x, y) => (y.h2h - x.h2h) || (x.losses - y.losses) || (y.goleo - x.goleo));
+        // el enfrentamiento directo solo decide cuando el empate es entre exactamente 2 equipos;
+        // con 3 o más equipos empatados se pasa directo a menos perdidos y mayor goleo
+        const useH2h = grp.length === 2;
+        grp.sort((x, y) => (useH2h ? (y.h2h - x.h2h) : 0) || (x.losses - y.losses) || (y.goleo - x.goleo));
       }
       grp.forEach(g => out.push(g));
       i = j;
