@@ -203,6 +203,28 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
 .subkicker{font-family:"Cinzel",serif;color:var(--mk-gold2);font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:7px}
 #versus .table-note{max-width:68ch}
 #versus .vs-hub{margin-top:22px}
+
+/* ===== Legibilidad de las tablas de posiciones ===== */
+.standings{border-spacing:0 7px}
+.standings th{color:#fff;font-size:.8rem;font-weight:800;letter-spacing:.18em;text-shadow:0 1px 2px #000}
+.standings td>.c{height:40px;font-style:normal;font-weight:800;font-size:1.45rem;line-height:38px;letter-spacing:.02em;
+ background:rgba(0,0,0,.88);border:1.5px solid #fff;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.9)}
+.standings td.pts>.c{font-size:1.65rem;font-weight:900;color:#ffe27a;border-color:#ffe27a}
+.standings td.rk>.c{font-size:1.4rem;font-weight:900;color:#fff}
+.standings td.tm>.c{font-size:1.15rem;font-weight:800;letter-spacing:.03em;color:#fff}
+.standings tbody tr:not(.qualify) td.rk>.c{background:linear-gradient(90deg,#6b1018,#2a080c);color:#fff}
+.standings tbody tr:not(.qualify) td.tm>.c{background:linear-gradient(90deg,#7a1019,#2a080c);color:#fff}
+.standings th.rk,.standings td.rk{width:66px}
+.standings th.num,.standings td.num{width:76px}
+@media(max-width:560px){
+ .standings th{font-size:.68rem;letter-spacing:.08em}
+ .standings td>.c{height:36px;font-size:1.2rem;line-height:34px}
+ .standings td.pts>.c{font-size:1.35rem}
+ .standings td.rk>.c{font-size:1.15rem}
+ .standings td.tm>.c{font-size:clamp(.78rem,3.6vw,.98rem)}
+ .standings th.rk,.standings td.rk{width:48px}
+ .standings th.num,.standings td.num{width:50px}
+}
 </style>
 
 <style id="mk-activity-rules">
