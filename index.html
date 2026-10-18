@@ -2873,6 +2873,111 @@ body::after{display:none}
       list.appendChild(item);
     });
     el.appendChild(list);
+
+    // --- Imagen de la ronda: descargar / compartir ---
+    if (real.length) {
+      const roundTitle = (tablesAvail.length > 1 ? 'TABLA ' + vsTable + ' · ' : '') + 'RONDA ' + sel;
+      const bar = document.createElement('div'); bar.className = 'vs-share';
+      bar.style.cssText = 'display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:18px';
+      const dl = document.createElement('button'); dl.type = 'button'; dl.className = 'btn-outline'; dl.textContent = '📷 Descargar ronda como imagen';
+      dl.onclick = () => roundImageAction('download', vsTable, sel, roundTitle, tablesAvail.length > 1, dl);
+      bar.appendChild(dl);
+      let canShareFiles = false;
+      try { canShareFiles = !!(navigator.canShare && navigator.canShare({ files: [new File([''], 'a.png', { type: 'image/png' })] })); } catch (e) {}
+      if (canShareFiles) {
+        const sh = document.createElement('button'); sh.type = 'button'; sh.className = 'btn-outline'; sh.textContent = '📤 Compartir imagen';
+        sh.onclick = () => roundImageAction('share', vsTable, sel, roundTitle, tablesAvail.length > 1, sh);
+        bar.appendChild(sh);
+      }
+      el.appendChild(bar);
+    }
+  }
+
+  // --- Imagen (PNG) de una ronda de versus ---
+  async function buildRoundImage(tn, round, title) {
+    const list = matches.filter(m => (isAdmin || m.published === true) && m.table === tn && m.round === round);
+    const real = list.filter(m => !m.bye), byes = list.filter(m => m.bye);
+    const FONT = '"Manrope","Segoe UI",Arial,sans-serif';
+    try { await Promise.all([document.fonts.load('800 30px Manrope'), document.fonts.load('600 18px Manrope')]); } catch (e) {}
+    const logo = await new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = 'logo.webp'; });
+    const S = 2, W = 800, PAD = 32, ROW = 56, GAP = 6, TOP = 270, BYE_H = 30;
+    const anyForfeit = real.some(m => m.winner && m.forfeit);
+    const H = TOP + real.length * (ROW + GAP) + (byes.length ? 16 + byes.length * BYE_H : 0) + (anyForfeit ? 30 : 0) + 100;
+    const c = document.createElement('canvas'); c.width = W * S; c.height = H * S;
+    const x = c.getContext('2d'); x.scale(S, S);
+    const rr = (X, Y, w, h, r) => { x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath(); };
+    const fit = (txt, maxW, size, weight) => { let f = size; x.font = weight + ' ' + f + 'px ' + FONT; while (x.measureText(txt).width > maxW && f > 11) { f -= 1; x.font = weight + ' ' + f + 'px ' + FONT; } };
+    // nombre del equipo: se achica un poco y, si aun así no cabe, pasa a dos líneas
+    const drawName = (txt, xPos, align, color, cy) => {
+      x.textAlign = align; x.fillStyle = color;
+      fit(txt, 280, 22, '800');
+      const fs = parseInt(x.font.match(/(\d+)px/)[1], 10);
+      if (fs >= 17 || txt.indexOf(' ') === -1) { x.fillText(txt, xPos, cy + 1); return; }
+      const mid = txt.length / 2; let cut = -1;
+      for (let d = 0; d < txt.length; d++) { if (txt[Math.floor(mid) - d] === ' ') { cut = Math.floor(mid) - d; break; } if (txt[Math.floor(mid) + d] === ' ') { cut = Math.floor(mid) + d; break; } }
+      const l1 = txt.slice(0, cut).trim(), l2 = txt.slice(cut).trim();
+      fit(l1.length > l2.length ? l1 : l2, 280, 18, '800');
+      x.fillText(l1, xPos, cy - 10); x.fillText(l2, xPos, cy + 11);
+    };
+    x.fillStyle = '#0a0c13'; x.fillRect(0, 0, W, H);
+    const glow = x.createLinearGradient(0, 0, 0, 300); glow.addColorStop(0, '#3a3224'); glow.addColorStop(1, '#0a0c13');
+    x.fillStyle = glow; x.fillRect(0, 0, W, 300);
+    x.fillStyle = '#ffd35c'; x.fillRect(0, 0, W, 6);
+    if (logo) { const lh = 130, lw = lh * (logo.naturalWidth / logo.naturalHeight || 1.2); try { x.drawImage(logo, (W - lw) / 2, 28, lw, lh); } catch (e) {} }
+    x.textAlign = 'center'; x.textBaseline = 'alphabetic';
+    x.fillStyle = '#fff'; x.font = '800 46px ' + FONT; x.fillText(title, W / 2, 205);
+    x.fillStyle = '#9aa0b4'; x.font = '600 18px ' + FONT;
+    x.fillText('Versus de la liga · ' + real.length + (real.length === 1 ? ' duelo' : ' duelos') + ' · ' + real.filter(m => m.winner).length + ' definidos', W / 2, 236);
+    real.forEach((m, i) => {
+      const y = TOP + i * (ROW + GAP), cy = y + ROW / 2;
+      x.fillStyle = i % 2 ? '#1b2030' : '#151927'; rr(PAD, y, W - 2 * PAD, ROW, 8); x.fill();
+      const wA = m.winner === 'A', wB = m.winner === 'B', done = !!m.winner;
+      if (wA || wB) { x.fillStyle = '#ffd35c'; rr(wA ? PAD : W - PAD - 5, y, 5, ROW, 2); x.fill(); }
+      // equipos
+      const nameCol = (win) => !done ? '#fff' : (win ? '#ffd35c' : '#7f869b');
+      x.textBaseline = 'middle';
+      drawName(m.teamAName || '', 338, 'right', nameCol(wA), cy);
+      drawName(m.teamBName || '', 462, 'left', nameCol(wB), cy);
+      // centro: marcador o VS
+      x.fillStyle = 'rgba(0,0,0,.45)'; rr(W / 2 - 52, cy - 20, 104, 40, 8); x.fill();
+      x.strokeStyle = done ? '#ffd35c' : 'rgba(255,255,255,.25)'; x.lineWidth = 1.2; rr(W / 2 - 52, cy - 20, 104, 40, 8); x.stroke();
+      x.textAlign = 'center';
+      if (done) { x.fillStyle = '#ffd35c'; x.font = '800 24px ' + FONT; x.fillText((wA ? '1' : '0') + '  –  ' + (wA ? '0' : '1') + (m.forfeit ? ' ✱' : ''), W / 2, cy + 1); }
+      else { x.fillStyle = '#9aa0b4'; x.font = '800 20px ' + FONT; x.fillText('VS', W / 2, cy + 1); }
+    });
+    x.textBaseline = 'alphabetic';
+    let yy = TOP + real.length * (ROW + GAP);
+    if (byes.length) {
+      yy += 16; x.textAlign = 'center'; x.fillStyle = '#c4c8da'; x.font = '600 16px ' + FONT;
+      byes.forEach(b => { yy += BYE_H; x.fillText('😴 ' + b.teamAName + ' descansa esta ronda', W / 2, yy - 10); });
+    }
+    if (anyForfeit) { yy += 30; x.textAlign = 'center'; x.fillStyle = '#9aa0b4'; x.font = '600 14px ' + FONT; x.fillText('✱ Victoria administrativa', W / 2, yy - 8); }
+    const fecha = new Date().toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' });
+    x.textAlign = 'center'; x.fillStyle = '#8a90a6'; x.font = '600 15px ' + FONT;
+    x.fillText((location.hostname || 'kings-master.pages.dev') + '  ·  ' + fecha, W / 2, H - 30);
+    return await new Promise((res, rej) => c.toBlob(b => b ? res(b) : rej(new Error('toBlob')), 'image/png'));
+  }
+  async function roundImageAction(mode, tn, round, title, multiTable, btn) {
+    const old = btn.textContent; btn.disabled = true; btn.textContent = 'Generando imagen…';
+    try {
+      const blob = await buildRoundImage(tn, round, title);
+      const fname = 'master-king-' + (multiTable ? 'tabla' + tn + '-' : '') + 'ronda-' + round + '.png';
+      if (mode === 'share') {
+        const file = new File([blob], fname, { type: 'image/png' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try { await navigator.share({ files: [file], title: 'MASTER KING · ' + title }); return; }
+          catch (e) { if (e && e.name === 'AbortError') return; }
+        }
+      }
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = fname;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 3000);
+    } catch (err) {
+      uiAlert('No se pudo generar la imagen. Si abriste el archivo desde tu computadora, súbelo al sitio y prueba de nuevo.');
+    } finally {
+      btn.disabled = false; btn.textContent = old;
+    }
   }
 
   function capacity() {
