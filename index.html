@@ -204,6 +204,21 @@ footer{border-top:1px solid rgba(244,212,119,.13)!important;background:#020203!i
 #versus .table-note{max-width:68ch}
 #versus .vs-hub{margin-top:22px}
 
+
+/* ---- Buscador de reglas ---- */
+.rules-search{margin:18px 0 8px}
+.rules-search .rs-box{position:relative}
+.rules-search input{width:100%;padding:13px 44px 13px 16px;border-radius:12px;border:1px solid var(--line);background:rgba(10,13,18,.85);color:#f5f0df;font:inherit;font-size:1rem}
+.rules-search input:focus{outline:2px solid var(--gold);outline-offset:1px}
+.rules-search .rs-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:30px;height:30px;border:0;border-radius:50%;background:rgba(255,255,255,.08);color:#f5f0df;font-size:1rem;line-height:1;cursor:pointer;display:none}
+.rules-search .rs-clear:hover{background:rgba(255,255,255,.16)}
+.rules-search .rs-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.rules-search .rs-chip{padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:#d6d9e6;font:inherit;font-size:.85rem;cursor:pointer}
+.rules-search .rs-chip:hover{border-color:var(--gold);color:#fff2ca}
+.rules-search .rs-count{margin-top:10px;color:#929bad;font-size:.9rem;min-height:1.2em}
+.rules-hide{display:none!important}
+#reglamento mark.rs-mark{background:rgba(255,211,92,.35);color:#fff;border-radius:3px;padding:0 2px}
+.rules-empty{padding:22px 8px;color:#929bad;text-align:center}
 </style>
 
 <style id="mk-activity-rules">
@@ -738,6 +753,22 @@ body::after{display:none}
       <section id="reglamento">
         <div class="kicker">01 · El código del rey</div>
         <h2>Reglas del duelo</h2>
+        <div class="rules-search" id="rulesSearchBox">
+          <div class="rs-box">
+            <input type="search" id="rulesSearch" placeholder="🔍 Buscar en las reglas (ej. puntos, inactividad, sustituciones)…" autocomplete="off" aria-label="Buscar en las reglas">
+            <button type="button" class="rs-clear" id="rulesClear" aria-label="Borrar búsqueda">✕</button>
+          </div>
+          <div class="rs-chips" id="rulesChips">
+            <button type="button" class="rs-chip" data-q="puntos">Puntos</button>
+            <button type="button" class="rs-chip" data-q="inactividad">Inactividad</button>
+            <button type="button" class="rs-chip" data-q="goleo">Goleo</button>
+            <button type="button" class="rs-chip" data-q="sustituciones">Sustituciones</button>
+            <button type="button" class="rs-chip" data-q="sanciones">Sanciones</button>
+            <button type="button" class="rs-chip" data-q="premio">Premios</button>
+          </div>
+          <div class="rs-count" id="rulesCount" role="status" aria-live="polite"></div>
+        </div>
+        <div class="rules-empty rules-hide" id="rulesEmpty">No se encontró nada en las reglas con esa búsqueda. Prueba con otra palabra.</div>
         <div class="grid-2" id="definiciones">
           <div class="cell"><h3>Versus</h3><p>Duelo individual de un jugador contra un jugador rival. Se juega al mejor de tres partidas (Bo3).</p></div>
           <div class="cell"><h3>Encuentro</h3><p>Enfrentamiento de un equipo contra otro en una ronda: son 4 versus. Gana el equipo que gane más versus. La victoria vale <strong>3 puntos</strong> y la derrota <strong>0</strong>.</p></div>
@@ -865,6 +896,9 @@ body::after{display:none}
           <div id="goleoPodium"></div>
           <div id="goleoList"></div>
           <div class="pager" id="goleoPager"></div>
+          <p class="table-note" id="goleoNote" style="margin-top:10px"></p>
+          <button type="button" class="btn-outline st-img-btn" id="goleoReorder" style="display:none">🔄 Reordenar por goleo</button>
+          <button type="button" class="btn-outline st-img-btn" id="goleoImgBtn">📷 Descargar goleo como imagen</button>
         </div>
         <div class="activity-control" id="activityControl" style="display:none;">
           <div class="activity-head">
@@ -1377,15 +1411,28 @@ body::after{display:none}
     const t = teams.find(x => x.id === id);
     return t ? getScores(t).reduce((a, b) => a + b, 0) : 0;
   }
+  // Posición de cada equipo en su tabla (1 = líder) y sus puntos, para desempatar el goleo
+  function teamStandingInfo() {
+    const info = {};
+    [1, 2].forEach(tn => computeStandings(tn).forEach((s, i) => { info[s.id] = { pos: i + 1, pts: s.pts, table: tn }; }));
+    return info;
+  }
   function goleoRows() {
+    const info = teamStandingInfo();
     const rows = [];
     teams.forEach(t => {
       const sc = getScores(t);
-      (t.players || []).forEach((name, idx) => rows.push({ team: t, idx, name, teamName: t.name || 'Equipo', score: sc[idx] || 0 }));
+      const si = info[t.id] || { pos: 999, pts: 0, table: 0 };
+      (t.players || []).forEach((name, idx) => rows.push({ team: t, idx, name, teamName: t.name || 'Equipo', score: sc[idx] || 0, pos: si.pos, tpts: si.pts, table: si.table }));
     });
-    rows.sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
+    // 1) más goleo  2) mejor posición del equipo en su tabla  3) más puntos del equipo  4) nombre
+    rows.sort((a, b) => b.score - a.score || a.pos - b.pos || b.tpts - a.tpts || a.name.localeCompare(b.name));
     let rank = 0;
-    rows.forEach((r, i) => { if (i === 0 || r.score !== rows[i - 1].score) rank = i + 1; r.rank = rank; });
+    rows.forEach((r, i) => {
+      const prev = rows[i - 1];
+      if (i === 0 || r.score !== prev.score || r.pos !== prev.pos || r.tpts !== prev.tpts) rank = i + 1;
+      r.rank = rank;
+    });
     return rows;
   }
   async function setScore(team, idx, value) {
@@ -1396,6 +1443,7 @@ body::after{display:none}
     const before = scores[idx];
     if (before === v) return;
     scores[idx] = v;
+    if (!goleoFrozen) goleoFrozen = goleoRows().map(goleoKey);
     try {
       const batch = db.batch();
       batch.update(db.doc('teams/' + team.id), { scores });
@@ -1406,17 +1454,27 @@ body::after{display:none}
     }
   }
   let goleoPage = 0;
+  // Modo captura (organizador): al anotar goleo el orden se congela para que el jugador no cambie de lugar
+  let goleoFrozen = null;
+  const goleoKey = (r) => r.team.id + ':' + r.idx;
+  (function () { const rb = document.getElementById('goleoReorder'); if (rb) rb.addEventListener('click', () => { goleoFrozen = null; renderGoleo(); }); })();
   ['goleoSearch', 'goleoTeam'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener(id === 'goleoSearch' ? 'input' : 'change', () => { goleoPage = 0; renderGoleo(); });
   });
-  const GOLEO_PER_PAGE = 10;
+  const GOLEO_TOP = 10;
   function renderGoleo() {
     const box = document.getElementById('goleo');
     const list = document.getElementById('goleoList');
     const podEl = document.getElementById('goleoPodium');
     if (!box || !list) return;
+    if (!isAdmin) goleoFrozen = null;
     const rows = goleoRows();
+    if (isAdmin && goleoFrozen) {
+      const pos = new Map(goleoFrozen.map((k, i) => [k, i]));
+      const big = goleoFrozen.length + 1;
+      rows.sort((a, b) => (pos.has(goleoKey(a)) ? pos.get(goleoKey(a)) : big) - (pos.has(goleoKey(b)) ? pos.get(goleoKey(b)) : big));
+    }
     if (!rows.length) { box.style.display = 'none'; return; }
     box.style.display = 'block';
     // Buscador + filtro por equipo
@@ -1452,11 +1510,11 @@ body::after{display:none}
       }
       return null;
     };
-    const teamLabel = (r) => r.teamName + (r.team.disqualified ? ' · descalificado' : '');
+    const teamLabel = (r) => r.teamName + (r.table && r.pos < 999 ? ' · Tabla ' + r.table + ' (#' + r.pos + ')' : '') + (r.team.disqualified ? ' · descalificado' : '');
 
     // Podio: los primeros 3 con goleo mayor a 0
     const podium = [];
-    if (!filtering) for (let i = 0; i < rows.length && i < 3 && rows[i].score > 0; i++) podium.push(rows[i]);
+    if (!filtering && !isAdmin) for (let i = 0; i < rows.length && i < 3 && rows[i].score > 0; i++) podium.push(rows[i]);
     if (podEl) {
       podEl.innerHTML = '';
       const medals = ['🥇', '🥈', '🥉'];
@@ -1474,10 +1532,10 @@ body::after{display:none}
     }
 
     // Resto de la lista, por páginas
-    const rest = filtering ? visible : rows.slice(podium.length);
+    const rest = filtering ? visible : (isAdmin ? rows : rows.slice(podium.length, GOLEO_TOP));
     list.innerHTML = '';
     list.style.display = rest.length ? '' : 'none';
-    const perPage = filtering ? 9999 : GOLEO_PER_PAGE;
+    const perPage = (isAdmin && !filtering) ? 10 : 9999;
     const pages = Math.max(1, Math.ceil(rest.length / perPage));
     if (goleoPage > pages - 1) goleoPage = pages - 1;
     if (goleoPage < 0) goleoPage = 0;
@@ -1498,15 +1556,92 @@ body::after{display:none}
     if (pager) {
       pager.innerHTML = '';
       pager.style.display = pages > 1 ? 'flex' : 'none';
-      const prev = document.createElement('button'); prev.type = 'button'; prev.textContent = '‹ Anterior'; prev.disabled = goleoPage === 0;
-      prev.onclick = () => { goleoPage--; renderGoleo(); };
-      const info = document.createElement('span'); info.className = 'pg-info';
-      info.textContent = 'Página ' + (goleoPage + 1) + ' de ' + pages + ' · ' + rest.length + ' jugadores';
-      const next = document.createElement('button'); next.type = 'button'; next.textContent = 'Siguiente ›'; next.disabled = goleoPage >= pages - 1;
-      next.onclick = () => { goleoPage++; renderGoleo(); };
-      pager.append(prev, info, next);
+      if (pages > 1) {
+        const prev = document.createElement('button'); prev.type = 'button'; prev.textContent = '‹ Anterior'; prev.disabled = goleoPage === 0;
+        prev.onclick = () => { goleoPage--; renderGoleo(); };
+        const info = document.createElement('span'); info.className = 'pg-info';
+        info.textContent = 'Página ' + (goleoPage + 1) + ' de ' + pages + ' · ' + rest.length + ' jugadores';
+        const next = document.createElement('button'); next.type = 'button'; next.textContent = 'Siguiente ›'; next.disabled = goleoPage >= pages - 1;
+        next.onclick = () => { goleoPage++; renderGoleo(); };
+        pager.append(prev, info, next);
+      }
+    }
+    const rb = document.getElementById('goleoReorder');
+    if (rb) rb.style.display = (isAdmin && goleoFrozen) ? '' : 'none';
+    const note = document.getElementById('goleoNote');
+    if (note) note.textContent = filtering
+      ? 'Resultados de la búsqueda (' + rest.length + ').'
+      : (isAdmin
+        ? 'Modo captura: ves a todos los jugadores y, al anotar goleo, el orden no cambia para que no pierdas al jugador. Pulsa «Reordenar por goleo» para actualizar el orden. El público ve solo el Top 10.'
+        : 'Top 10 de goleo. Si hay empate en goles, queda arriba el jugador cuyo equipo esté mejor ubicado en su tabla; si persiste, el de más puntos.');
+  }
+
+  // --- Descargar top 10 de goleo como imagen (PNG) ---
+  async function downloadGoleoImage(btn) {
+    const old = btn ? btn.textContent : '';
+    if (btn) { btn.disabled = true; btn.textContent = 'Generando imagen…'; }
+    try {
+      const rows = goleoRows().slice(0, GOLEO_TOP);
+      const FONT = '"Manrope","Segoe UI",Arial,sans-serif';
+      try { await Promise.all([document.fonts.load('800 30px Manrope'), document.fonts.load('600 18px Manrope')]); } catch (e) {}
+      const logo = await new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = 'logo.webp'; });
+      const S = 2, W = 800, PAD = 32, ROW = 54, GAP = 5, TOP = 300;
+      const H = TOP + Math.max(rows.length, 1) * (ROW + GAP) + 110;
+      const c = document.createElement('canvas'); c.width = W * S; c.height = H * S;
+      const x = c.getContext('2d'); x.scale(S, S);
+      const rr = (X, Y, w, h, r) => { x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath(); };
+      x.fillStyle = '#0a0c13'; x.fillRect(0, 0, W, H);
+      const glow = x.createLinearGradient(0, 0, 0, 330); glow.addColorStop(0, '#3a3224'); glow.addColorStop(1, '#0a0c13');
+      x.fillStyle = glow; x.fillRect(0, 0, W, 330);
+      x.fillStyle = '#ffd35c'; x.fillRect(0, 0, W, 6);
+      if (logo) { const lh = 130, lw = lh * (logo.naturalWidth / logo.naturalHeight || 1.2); try { x.drawImage(logo, (W - lw) / 2, 28, lw, lh); } catch (e) {} }
+      x.textAlign = 'center'; x.textBaseline = 'alphabetic';
+      x.fillStyle = '#fff'; x.font = '800 46px ' + FONT; x.fillText('TABLA DE GOLEO', W / 2, 205);
+      x.fillStyle = '#9aa0b4'; x.font = '600 18px ' + FONT; x.fillText('Goleo individual · Top ' + GOLEO_TOP, W / 2, 236);
+      const col = { pos: 62, name: 107, goleo: 732 };
+      x.fillStyle = '#b9bdd0'; x.font = '700 14px ' + FONT;
+      x.textAlign = 'center'; x.fillText('POS', col.pos, 278); x.fillText('GOLEO', col.goleo, 278);
+      x.textAlign = 'left'; x.fillText('JUGADOR', col.name, 278);
+      if (!rows.length) { x.textAlign = 'center'; x.fillStyle = '#c4c8da'; x.font = '600 18px ' + FONT; x.fillText('Sin jugadores todavía', W / 2, TOP + 30); }
+      rows.forEach((r, i) => {
+        const y = TOP + i * (ROW + GAP), top3 = i < 3 && r.score > 0;
+        x.save();
+        if (top3) { const g = x.createLinearGradient(PAD, 0, W - PAD, 0); g.addColorStop(0, '#3b3322'); g.addColorStop(1, '#1b2030'); x.fillStyle = g; }
+        else x.fillStyle = i % 2 ? '#1b2030' : '#151927';
+        rr(PAD, y, W - 2 * PAD, ROW, 7); x.fill();
+        if (top3) { x.fillStyle = '#ffd35c'; rr(PAD, y, 5, ROW, 2); x.fill(); }
+        x.textAlign = 'center';
+        x.fillStyle = top3 ? '#ffd35c' : '#c4c8da'; x.font = '800 22px ' + FONT; x.fillText(String(r.rank).padStart(2, '0'), col.pos, y + ROW / 2 + 8);
+        // jugador (se reduce si es muy largo) + equipo debajo
+        let nm = (i === 0 && r.score > 0 ? '♛ ' : '') + r.name, fs = 22; const maxW = 560;
+        x.textAlign = 'left'; x.fillStyle = '#fff'; x.font = '800 ' + fs + 'px ' + FONT;
+        while (x.measureText(nm).width > maxW && fs > 13) { fs -= 1; x.font = '800 ' + fs + 'px ' + FONT; }
+        x.fillText(nm, col.name, y + 24);
+        let tl = r.teamName + (r.table && r.pos < 999 ? ' · Tabla ' + r.table + ' (#' + r.pos + ')' : ''), tf = 14;
+        x.fillStyle = '#9aa0b4'; x.font = '600 ' + tf + 'px ' + FONT;
+        while (x.measureText(tl).width > maxW && tf > 10) { tf -= 1; x.font = '600 ' + tf + 'px ' + FONT; }
+        x.fillText(tl, col.name, y + 43);
+        x.textAlign = 'center'; x.fillStyle = top3 ? '#ffd35c' : '#fff'; x.font = '800 27px ' + FONT; x.fillText(String(r.score), col.goleo, y + ROW / 2 + 9);
+        x.restore();
+      });
+      const ly = TOP + Math.max(rows.length, 1) * (ROW + GAP) + 22;
+      x.textAlign = 'center'; x.fillStyle = '#d6d9e6'; x.font = '600 14px ' + FONT;
+      x.fillText('Empate en goles: gana el jugador cuyo equipo esté mejor ubicado en su tabla', W / 2, ly);
+      const fecha = new Date().toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' });
+      x.fillStyle = '#8a90a6'; x.font = '600 15px ' + FONT;
+      x.fillText((location.hostname || 'kings-master.pages.dev') + '  ·  ' + fecha, W / 2, H - 30);
+      const blob = await new Promise((res, rej) => c.toBlob(b => b ? res(b) : rej(new Error('toBlob')), 'image/png'));
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'master-king-goleo.png';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 3000);
+    } catch (err) {
+      uiAlert('No se pudo generar la imagen. Si abriste el archivo desde tu computadora, súbelo al sitio y prueba de nuevo.');
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = old; }
     }
   }
+  (function () { const gb = document.getElementById('goleoImgBtn'); if (gb) gb.addEventListener('click', () => downloadGoleoImage(gb)); })();
 
   // --- Respaldo restaurable (.json) ---
   const jsonMsg = document.getElementById('jsonMsg');
@@ -3394,5 +3529,77 @@ body::after{display:none}
 })();
 </script>
 
+<script>
+/* Buscador de reglas: filtra cláusulas, pasos y definiciones; ignora acentos y mayúsculas */
+(function () {
+  var sec = document.getElementById('reglamento'), input = document.getElementById('rulesSearch');
+  if (!sec || !input) return;
+  var clearBtn = document.getElementById('rulesClear'), countEl = document.getElementById('rulesCount'), emptyEl = document.getElementById('rulesEmpty');
+  var items = [].slice.call(sec.querySelectorAll('.clause, .step, .cell, .activity-card, .rules-subsection > .table-note'));
+  var containers = [].slice.call(sec.querySelectorAll('#definiciones, .activity-grid, .steps, .rules-subsection'));
+  var orig = new Map(); items.forEach(function (el) { orig.set(el, el.innerHTML); });
+  var marked = [];
+  function fold(str) {
+    var out = '';
+    for (var i = 0; i < str.length; i++) {
+      var c = str[i].normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      out += c.length === 1 ? c : (str[i].toLowerCase()[0] || ' ');
+    }
+    return out;
+  }
+  function stem(w) {
+    if (w.length > 4) { if (w.slice(-2) === 'es') return w.slice(0, -2); if (w.slice(-1) === 's') return w.slice(0, -1); }
+    return w;
+  }
+  function highlight(el, tokens) {
+    var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null), nodes = [], n;
+    while ((n = walker.nextNode())) nodes.push(n);
+    nodes.forEach(function (node) {
+      var text = node.nodeValue, f = fold(text), ranges = [];
+      tokens.forEach(function (t) { var k = 0, at; while ((at = f.indexOf(t, k)) !== -1) { ranges.push([at, at + t.length]); k = at + t.length; } });
+      if (!ranges.length) return;
+      ranges.sort(function (a, b) { return a[0] - b[0]; });
+      var merged = [ranges[0].slice()];
+      for (var i = 1; i < ranges.length; i++) { var last = merged[merged.length - 1]; if (ranges[i][0] <= last[1]) last[1] = Math.max(last[1], ranges[i][1]); else merged.push(ranges[i].slice()); }
+      var frag = document.createDocumentFragment(), pos = 0;
+      merged.forEach(function (r) {
+        if (r[0] > pos) frag.appendChild(document.createTextNode(text.slice(pos, r[0])));
+        var m = document.createElement('mark'); m.className = 'rs-mark'; m.textContent = text.slice(r[0], r[1]); frag.appendChild(m); pos = r[1];
+      });
+      if (pos < text.length) frag.appendChild(document.createTextNode(text.slice(pos)));
+      node.parentNode.replaceChild(frag, node);
+    });
+  }
+  function run() {
+    var raw = input.value, tokens = fold(raw).split(/\s+/).filter(Boolean).map(stem);
+    clearBtn.style.display = raw ? 'block' : 'none';
+    marked.forEach(function (el) { el.innerHTML = orig.get(el); }); marked = [];
+    if (!tokens.length) {
+      items.forEach(function (el) { el.classList.remove('rules-hide'); });
+      containers.forEach(function (c) { c.classList.remove('rules-hide'); });
+      emptyEl.classList.add('rules-hide'); countEl.textContent = '';
+      return;
+    }
+    var found = 0;
+    items.forEach(function (el) {
+      var t = fold(el.textContent), ok = tokens.every(function (tk) { return t.indexOf(tk) !== -1; });
+      el.classList.toggle('rules-hide', !ok);
+      if (ok) { found++; highlight(el, tokens); marked.push(el); }
+    });
+    containers.forEach(function (c) {
+      var any = [].some.call(c.querySelectorAll('.clause, .step, .cell, .activity-card, .table-note'), function (el) { return !el.classList.contains('rules-hide') && items.indexOf(el) !== -1; });
+      c.classList.toggle('rules-hide', !any);
+    });
+    emptyEl.classList.toggle('rules-hide', found > 0);
+    countEl.textContent = found ? (found + (found === 1 ? ' coincidencia' : ' coincidencias') + ' para «' + raw.trim() + '»') : '';
+  }
+  input.addEventListener('input', run);
+  input.addEventListener('keydown', function (e) { if (e.key === 'Escape') { input.value = ''; run(); } });
+  clearBtn.addEventListener('click', function () { input.value = ''; run(); input.focus(); });
+  [].forEach.call(document.querySelectorAll('#rulesChips .rs-chip'), function (b) {
+    b.addEventListener('click', function () { input.value = b.getAttribute('data-q'); run(); });
+  });
+})();
+</script>
 </body>
 </html>
