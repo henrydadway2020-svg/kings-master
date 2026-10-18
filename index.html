@@ -929,6 +929,16 @@ body::after{display:none}
           <summary id="adminReportsSummary">Reportes de capitanes (solo organizador)</summary>
           <div id="reportsList"></div>
         </details>
+        <details class="results-toggle admin-box" id="leadersBox" style="display:none;">
+          <summary id="leadersSummary">Líderes: nick y WhatsApp (solo organizador)</summary>
+          <p class="table-note">Pega aquí líneas con este formato (sirve pegar el texto de una ronda anterior): <strong>Equipo (♛ nick wa.me/5215512345678) 🆚 Otro equipo (♛ nick wa.me/573001112233)</strong>. Se guardan por equipo y se usan en «Copiar texto para WhatsApp». Si un equipo ya estaba, se actualiza.</p>
+          <textarea id="leadersText" rows="6" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:rgba(10,13,18,.85);color:#f5f0df;font:inherit;font-size:.9rem" placeholder="RONDA 4&#10;TS (♛ sammael wa.me/18296280719) 🆚 Darkrai Esports (♛ LILPANDA wa.me/573013460830)"></textarea>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;align-items:center">
+            <button type="button" class="btn-outline" id="leadersSave">Guardar líderes</button>
+            <span class="table-note" id="leadersMsg" role="status" aria-live="polite" style="margin:0"></span>
+          </div>
+          <pre id="leadersList" style="white-space:pre-wrap;margin-top:12px;color:#b9c0ce;font-size:.85rem;max-height:240px;overflow:auto"></pre>
+        </details>
         <div class="vs-hub" id="resultsDetails" style="display:none;">
           <div id="resultsContent"></div>
         </div>
@@ -1294,6 +1304,77 @@ body::after{display:none}
       row.appendChild(meta); row.appendChild(txt); el.appendChild(row);
     });
   }
+  // --- Líderes (nick + WhatsApp): solo el organizador; colección leaders/{teamId} ---
+  let leaderDocs = [], unsubLeaders = null, leadersErr = false;
+  const leaderKey = (n) => String(n || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  // mapa clave-de-equipo -> { team, nick, phone }; tolera documentos con otros nombres de campo
+  function leadersMap() {
+    const map = {};
+    leaderDocs.forEach(d => {
+      const x = d.data || {}, t = teams.find(tt => tt.id === d.id);
+      const team = x.team || x.teamName || x.name || (t && t.name) || '';
+      const nick = x.nick || x.leader || x.lider || x.captain || x.nickname || '';
+      const phone = String(x.phone || x.whatsapp || x.tel || x.telefono || '').replace(/\D/g, '');
+      if (team && nick && phone) map[leaderKey(team)] = { team, nick: String(nick), phone };
+    });
+    return map;
+  }
+  function parseLeaders(text) {
+    const out = {};
+    String(text || '').split(/\n|🆚/).forEach(seg => {
+      const m = seg.trim().replace(/^(?:\d+[.)]\s*)?(?:✅\s*)?/, '').match(/^(.+?)\s*\(\s*♛\s*(.+?)\s+(?:https?:\/\/)?wa\.me\/(\d{6,16})\s*\)\s*$/);
+      if (!m) return;
+      const team = m[1].trim(), key = leaderKey(team);
+      if (key) out[key] = { team, nick: m[2].trim(), phone: m[3] };
+    });
+    return out;
+  }
+  function renderLeadersBox() {
+    const box = document.getElementById('leadersBox'); if (!box) return;
+    box.style.display = isAdmin ? '' : 'none';
+    if (!isAdmin) return;
+    const map = leadersMap();
+    const vals = Object.keys(map).map(k => map[k]).sort((a, b) => a.team.localeCompare(b.team));
+    document.getElementById('leadersSummary').textContent = 'Líderes: nick y WhatsApp (' + vals.length + ' guardados · solo organizador)';
+    const list = document.getElementById('leadersList');
+    if (leadersErr) list.textContent = 'No se pudo leer o guardar los líderes. Revisa que hayas iniciado sesión como organizador y que las reglas de Firestore incluyan match /leaders/{teamId} con isAdmin().';
+    else list.textContent = vals.map(v => v.team + ' — ♛ ' + v.nick + ' — wa.me/' + v.phone).join('\n');
+  }
+  function watchLeaders() {
+    if (unsubLeaders) { unsubLeaders(); unsubLeaders = null; }
+    leaderDocs = []; leadersErr = false;
+    if (isAdmin) {
+      unsubLeaders = db.collection('leaders').onSnapshot(snap => {
+        leadersErr = false; leaderDocs = snap.docs.map(d => ({ id: d.id, data: d.data() })); renderLeadersBox();
+      }, () => { leadersErr = true; renderLeadersBox(); });
+    }
+    renderLeadersBox();
+  }
+  (function () {
+    const btn = document.getElementById('leadersSave'); if (!btn) return;
+    btn.addEventListener('click', async () => {
+      if (!isAdmin) return;
+      const msg = document.getElementById('leadersMsg'), ta = document.getElementById('leadersText');
+      const found = parseLeaders(ta.value), keys = Object.keys(found), n = keys.length;
+      if (!n) { msg.textContent = 'No encontré líderes. Usa el formato: Equipo (♛ nick wa.me/número)'; return; }
+      btn.disabled = true; msg.textContent = 'Guardando…';
+      try {
+        const batch = db.batch();
+        keys.forEach(k => {
+          const L = found[k];
+          // si el equipo existe se usa su id como id del documento; si no, la clave normalizada del nombre
+          const t = teams.find(tt => leaderKey(tt.name) === k);
+          const old = leaderDocs.find(d => (t && d.id === t.id) || d.id === k || leaderKey((d.data || {}).team || (d.data || {}).name) === k);
+          batch.set(db.collection('leaders').doc(old ? old.id : (t ? t.id : k)), { team: L.team, nick: L.nick, phone: L.phone, updatedAt: Date.now() });
+        });
+        batch.set(db.collection('log').doc(), logEntry('leaders', 'Actualizó líderes (' + n + ' equipos)'));
+        await batch.commit();
+        ta.value = ''; msg.textContent = '✓ ' + n + ' líderes guardados.';
+      } catch (err) { leadersErr = true; renderLeadersBox(); msg.textContent = 'No se pudo guardar: ' + err.message; }
+      finally { btn.disabled = false; }
+    });
+  })();
+
   function watchLog() {
     if (isAdmin && !unsubLog) {
       unsubLog = db.collection('log').orderBy('at', 'desc').limit(100).onSnapshot(snap => {
@@ -2882,6 +2963,18 @@ body::after{display:none}
       const dl = document.createElement('button'); dl.type = 'button'; dl.className = 'btn-outline'; dl.textContent = '📷 Descargar ronda como imagen';
       dl.onclick = () => roundImageAction('download', vsTable, sel, roundTitle, tablesAvail.length > 1, dl);
       bar.appendChild(dl);
+      const cp = document.createElement('button'); cp.type = 'button'; cp.className = 'btn-outline'; cp.textContent = '📋 Copiar texto para WhatsApp';
+      cp.onclick = async () => {
+        const txt = buildRoundText(vsTable, sel, tablesAvail.length > 1);
+        let ok = false;
+        try { await navigator.clipboard.writeText(txt); ok = true; } catch (e) {
+          try { const ta = document.createElement('textarea'); ta.value = txt; ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0'; document.body.appendChild(ta); ta.focus(); ta.select(); ok = document.execCommand('copy'); ta.remove(); } catch (e2) {}
+        }
+        const old = '📋 Copiar texto para WhatsApp';
+        cp.textContent = ok ? '✓ Texto copiado' : 'No se pudo copiar';
+        setTimeout(() => { cp.textContent = old; }, 2200);
+      };
+      if (isAdmin) bar.appendChild(cp);
       let canShareFiles = false;
       try { canShareFiles = !!(navigator.canShare && navigator.canShare({ files: [new File([''], 'a.png', { type: 'image/png' })] })); } catch (e) {}
       if (canShareFiles) {
@@ -2891,6 +2984,26 @@ body::after{display:none}
       }
       el.appendChild(bar);
     }
+  }
+
+  // --- Texto de una ronda para copiar y pegar (WhatsApp) ---
+  function buildRoundText(tn, round, multiTable) {
+    const list = matches.filter(m => (isAdmin || m.published === true) && m.table === tn && m.round === round);
+    const real = list.filter(m => !m.bye), byes = list.filter(m => m.bye);
+    // Equipo (♛ nick wa.me/número). Si no hay líder guardado, usa el capitán marcado en el equipo (sin teléfono)
+    const lmap = leadersMap();
+    const label = (id, name) => {
+      const t = teams.find(x => x.id === id);
+      const nm = name || (t && t.name) || 'Equipo';
+      const L = lmap[leaderKey(nm)];
+      if (L) return nm + ' (♛ ' + L.nick + ' wa.me/' + L.phone + ')';
+      const nick = t && Number.isInteger(t.captain) && (t.players || [])[t.captain];
+      return nm + (nick ? ' (♛ ' + nick + ')' : '');
+    };
+    const lines = ['RONDA ' + round + (multiTable ? ' · TABLA ' + tn : '')];
+    real.forEach(m => lines.push(label(m.teamAId, m.teamAName) + ' 🆚 ' + label(m.teamBId, m.teamBName)));
+    byes.forEach(b => lines.push('😴 Descansa: ' + b.teamAName));
+    return lines.join('\n');
   }
 
   // --- Imagen (PNG) de una ronda de versus ---
@@ -3570,6 +3683,7 @@ body::after{display:none}
     auth.onAuthStateChanged((user) => {
       isAdmin = !!user;
       watchLog();
+      watchLeaders();
       watchReports();
       watchMatches();
       render();
