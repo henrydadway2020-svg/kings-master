@@ -802,12 +802,12 @@ body::after{display:none}
           <div class="clause activity severe"><div class="num">H</div><div class="body"><strong>Consecuencias por incumplimiento:</strong> 1) primer incumplimiento: advertencia oficial y requerimiento de regularización; 2) reincidencia: pérdida administrativa de los versus afectados y registro disciplinario; 3) reincidencia grave o abandono de rondas: <strong>descalificación o expulsión de la liga</strong>. Un equipo descalificado pierde su lugar en la clasificación: sus versus pendientes se adjudican al rival, los ya jugados se conservan y el equipo aparece al final de la tabla.</div></div>
           <div class="clause activity"><div class="num">I</div><div class="body"><strong>Abandono:</strong> un equipo que no juegue, no responda o no muestre actividad durante una ronda completa podrá ser declarado <strong>equipo inactivo</strong>. La administración podrá descalificarlo para no bloquear el calendario.</div></div>
           <div class="clause activity final-rule"><div class="num">J</div><div class="body"><strong>Causa justificada:</strong> problemas técnicos, personales o de fuerza mayor deberán comunicarse <strong>antes de que venza el plazo</strong> y, cuando sea posible, acompañarse de evidencia. La administración determinará si procede una extensión excepcional.</div></div>
-          <div class="clause activity severe"><div class="num">K</div><div class="body"><strong>Punto por inactividad y goleo:</strong> el <strong>punto de inactividad</strong> (la victoria administrativa que se adjudica al equipo activo) es <strong>independiente de a quién se le coloque el goleo</strong> por esa inactividad. La administración decide a qué jugador del equipo se le acredita el goleo, y esa asignación <strong>no modifica ni condiciona</strong> los puntos que el equipo recibe en la tabla de posiciones.</div></div>
+          <div class="clause activity severe"><div class="num">K</div><div class="body"><strong>Punto por inactividad y goleo:</strong> el <strong>punto de inactividad</strong> (la victoria administrativa que se adjudica al equipo activo) es <strong>independiente de a quién se le coloque el goleo</strong> por esa inactividad. Ese goleo se acredita <strong>al equipo</strong> (goleo de equipo) y <strong>no a un jugador en particular</strong>, para evitar disputas entre jugadores: suma al total del equipo y sirve de desempate, pero no aparece en la tabla de goleo individual ni modifica los puntos de la tabla de posiciones.</div></div>
         </div>
         <div class="rules-subsection" id="reconocimientos">
           <div class="subkicker">RECONOCIMIENTOS</div>
           <h2>Goleo, premios y reconocimientos</h2>
-          <div class="clause reward"><div class="num">I</div><div class="body"><strong>Goleo individual:</strong> cada jugador tiene su propio goleo, que la <strong>administración registra manualmente</strong> durante la liga. Cada <strong>partida ganada suma 1 punto</strong> de goleo: un versus ganado 2-0 suma 2 puntos al ganador; en un 2-1, el ganador suma 2 y el perdedor suma 1. Los puntos de la <strong>muerte súbita no suman</strong> al goleo individual. La tabla de goleo es pública y se actualiza con cada cambio. El goleo de un equipo es la <strong>suma del goleo de sus 4 jugadores</strong>, aparece en la tabla de posiciones y sirve como criterio de desempate. El <strong>punto de inactividad es independiente de a quién se le coloque el goleo</strong> por la inactividad (ver regla K de Actividad obligatoria).</div></div>
+          <div class="clause reward"><div class="num">I</div><div class="body"><strong>Goleo individual:</strong> cada jugador tiene su propio goleo, que la <strong>administración registra manualmente</strong> durante la liga. Cada <strong>partida ganada suma 1 punto</strong> de goleo: un versus ganado 2-0 suma 2 puntos al ganador; en un 2-1, el ganador suma 2 y el perdedor suma 1. Los puntos de la <strong>muerte súbita no suman</strong> al goleo individual. La tabla de goleo es pública y se actualiza con cada cambio. El goleo de un equipo es la <strong>suma del goleo de sus 4 jugadores</strong> más el goleo de equipo por inactividad del rival, si lo hubiera, aparece en la tabla de posiciones y sirve como criterio de desempate. El goleo por inactividad se acredita <strong>al equipo</strong>, no a ningún jugador (ver regla K de Actividad obligatoria).</div></div>
           <div class="clause reward grand"><div class="num">II</div><div class="body"><strong>Campeón de goleo:</strong> al finalizar la temporada, el jugador con <strong>mayor goleo individual</strong> será el Campeón de goleo y recibirá <strong>1 sticker de Campeón de goleo</strong> más <strong>1 cuenta con 6200 relojes</strong>. Si hay empate, decide la administración.</div></div>
           <div class="clause reward"><div class="num">III</div><div class="body"><strong>Carta por victoria 2-0:</strong> cada <strong>3 fechas</strong> (rondas 1 a 3, 4 a 6, y así sucesivamente), al cierre del bloque, cada jugador que haya ganado un versus por <strong>2-0</strong> recibe <strong>1 carta de 2 estrellas</strong>. Solo cuentan versus jugados; las victorias administrativas no cuentan.</div></div>
           <div class="clause reward"><div class="num">IV</div><div class="body"><strong>Premio MVP:</strong> si un jugador consigue <strong>3 versus consecutivos ganados</strong>, será nombrado <strong>MVP</strong> y recibirá <strong>1 carta de premio de 2 estrellas</strong> más <strong>1 sticker oficial de MVP</strong>. Solo cuentan versus jugados; las victorias administrativas no suman.</div></div>
@@ -995,6 +995,7 @@ body::after{display:none}
         <div class="field"><label for="e2">Jugador 2</label><input type="text" id="e2" required maxlength="30"></div>
         <div class="field"><label for="e3">Jugador 3</label><input type="text" id="e3" required maxlength="30"></div>
         <div class="field"><label for="e4">Jugador 4</label><input type="text" id="e4" required maxlength="30"></div>
+        <div class="field"><label for="eBonus">Goleo de equipo (por inactividad del rival)</label><input type="number" id="eBonus" min="0" max="999" step="1" value="0"><div class="hint">Suma al goleo total del equipo, pero no a ningún jugador.</div></div>
         <div class="modal-actions"><button type="button" class="cancel" id="editCancelBtn">Cancelar</button><button type="submit">Guardar cambios</button></div>
         <div class="form-msg" id="editMsg"></div>
       </form>
@@ -1270,6 +1271,7 @@ body::after{display:none}
     editingId = t.id;
     document.getElementById('eName').value = t.name || '';
     ['e1', 'e2', 'e3', 'e4'].forEach((id, i) => { document.getElementById(id).value = (t.players || [])[i] || ''; });
+    document.getElementById('eBonus').value = Math.max(0, Math.round(Number(t.teamBonus)) || 0);
     editMsg.className = 'form-msg'; editMsg.textContent = '';
     editBackdrop.classList.add('open');
   }
@@ -1398,13 +1400,15 @@ body::after{display:none}
     const players = ['e1', 'e2', 'e3', 'e4'].map(id => document.getElementById(id).value.trim());
     if (!name || players.some(p => !p)) return;
     const old = teams.find(t => t.id === editingId);
+    const bonus = Math.max(0, Math.min(999, Math.round(Number(document.getElementById('eBonus').value)) || 0));
     const changes = [];
+    if (old && (Math.max(0, Math.round(Number(old.teamBonus)) || 0)) !== bonus) changes.push('goleo de equipo ' + (Math.round(Number(old.teamBonus)) || 0) + ' → ' + bonus);
     if (old && old.name !== name) changes.push('nombre "' + old.name + '" → "' + name + '"');
     if (old && JSON.stringify(old.players || []) !== JSON.stringify(players)) changes.push('jugadores [' + (old.players || []).join(', ') + '] → [' + players.join(', ') + ']');
     if (!changes.length) { closeEdit(); return; }
     try {
       const batch = db.batch();
-      batch.update(db.doc('teams/' + editingId), { name, players });
+      batch.update(db.doc('teams/' + editingId), { name, players, teamBonus: bonus });
       // los cruces guardan una copia del nombre: se actualiza para que tabla y versus coincidan
       matches.forEach(m => {
         if (m.teamAId === editingId) batch.update(db.doc('matches/' + m.id), { teamAName: name });
@@ -1460,20 +1464,30 @@ body::after{display:none}
         if (!await uiConfirm('¿Descalificar a "' + name + '"?\n\nSus ' + pending.length + ' versus pendientes se adjudicarán como victoria administrativa al rival. Los resultados ya jugados se conservan. Se puede revertir con "Reactivar".')) return;
         const reason = await uiPrompt('Motivo de la descalificación (opcional):', '');
         if (reason === null) return;
+        const gRaw = await uiPrompt('Goleo de equipo que recibe cada rival por su encuentro adjudicado (8 = 4 versus 2-0; pon 0 para no dar goleo). Va al EQUIPO, no a un jugador:', '8');
+        if (gRaw === null) return;
+        const gPer = Math.max(0, Math.min(99, Math.round(Number(gRaw)) || 0));
         const data = { disqualified: true, disqualifiedAt: Date.now() };
         if (reason.trim()) data.disqualifiedReason = reason.trim().slice(0, 200);
         batch.update(teamRef, data);
         pending.forEach(m => {
-          batch.update(db.doc('matches/' + m.id), { winner: m.teamAId === t.id ? 'B' : 'A', forfeit: true, forfeitBy: t.id });
+          const rivalId = m.teamAId === t.id ? m.teamBId : m.teamAId;
+          const upd = { winner: m.teamAId === t.id ? 'B' : 'A', forfeit: true, forfeitBy: t.id };
+          if (gPer > 0 && !isDq(rivalId)) { upd.forfeitGoleo = gPer; batch.update(db.doc('teams/' + rivalId), { teamBonus: FV().increment(gPer) }); }
+          batch.update(db.doc('matches/' + m.id), upd);
         });
-        batch.set(db.collection('log').doc(), logEntry('disqualify', 'Descalificó a "' + name + '" — ' + pending.length + ' versus adjudicados al rival' + (reason.trim() ? '. Motivo: ' + reason.trim() : '')));
+        batch.set(db.collection('log').doc(), logEntry('disqualify', 'Descalificó a "' + name + '" — ' + pending.length + ' versus adjudicados al rival' + (gPer > 0 ? ' (+' + gPer + ' goleo de equipo c/u)' : '') + (reason.trim() ? '. Motivo: ' + reason.trim() : '')));
       } else {
         const revert = related.filter(m => m.forfeit && m.forfeitBy === t.id);
         if (!await uiConfirm('¿Reactivar a "' + name + '"?\n\nSe revertirán ' + revert.length + ' victorias administrativas y esos versus volverán a quedar pendientes.')) return;
         const del = FV().delete();
         batch.update(teamRef, { disqualified: false, disqualifiedAt: del, disqualifiedReason: del });
         revert.forEach(m => {
-          batch.update(db.doc('matches/' + m.id), { winner: null, forfeit: del, forfeitBy: del });
+          if (Number(m.forfeitGoleo) > 0) {
+            const wId = m.winner === 'A' ? m.teamAId : m.teamBId;
+            batch.update(db.doc('teams/' + wId), { teamBonus: FV().increment(-Math.round(Number(m.forfeitGoleo))) });
+          }
+          batch.update(db.doc('matches/' + m.id), { winner: null, forfeit: del, forfeitBy: del, forfeitGoleo: del });
         });
         batch.set(db.collection('log').doc(), logEntry('reinstate', 'Reactivó a "' + name + '" — ' + revert.length + ' versus revertidos a pendiente'));
       }
@@ -1490,7 +1504,7 @@ body::after{display:none}
   }
   function teamGoleo(id) {
     const t = teams.find(x => x.id === id);
-    return t ? getScores(t).reduce((a, b) => a + b, 0) : 0;
+    return t ? getScores(t).reduce((a, b) => a + b, 0) + Math.max(0, Math.round(Number(t.teamBonus)) || 0) : 0;
   }
   // Posición de cada equipo en su tabla (1 = líder) y sus puntos, para desempatar el goleo
   function teamStandingInfo() {
@@ -1757,6 +1771,7 @@ body::after{display:none}
     if (Number.isInteger(t.captain) && t.captain >= 0 && t.captain < 4) o.captain = t.captain;
     if (t.hasPhotos) o.hasPhotos = true;
     if (Array.isArray(t.scores)) o.scores = getScores(t);
+    if (Number(t.teamBonus) > 0) o.teamBonus = Math.round(Number(t.teamBonus));
     if (t.disqualified) {
       o.disqualified = true;
       if (t.disqualifiedAt) o.disqualifiedAt = Number(t.disqualifiedAt) || Date.now();
@@ -1770,7 +1785,7 @@ body::after{display:none}
     if (m.bye) { o.bye = true; return o; }
     o.teamBId = String(m.teamBId || ''); o.teamBName = String(m.teamBName || '');
     o.winner = (m.winner === 'A' || m.winner === 'B') ? m.winner : null;
-    if (m.forfeit) { o.forfeit = true; if (m.forfeitBy) o.forfeitBy = String(m.forfeitBy); }
+    if (m.forfeit) { o.forfeit = true; if (m.forfeitBy) o.forfeitBy = String(m.forfeitBy); if (Number(m.forfeitGoleo) > 0) o.forfeitGoleo = Math.round(Number(m.forfeitGoleo)); }
     return o;
   }
   async function wipeCollection(name) {
