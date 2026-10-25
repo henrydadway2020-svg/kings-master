@@ -3013,9 +3013,26 @@ body::after{display:none}
       const nick = t && Number.isInteger(t.captain) && (t.players || [])[t.captain];
       return nm + (nick ? ' (♛ ' + nick + ')' : '');
     };
-    const lines = ['RONDA ' + round + (multiTable ? ' · TABLA ' + tn : '')];
-    real.forEach(m => lines.push(label(m.teamAId, m.teamAName) + ' 🆚 ' + label(m.teamBId, m.teamBName)));
-    byes.forEach(b => lines.push('😴 Descansa: ' + b.teamAName));
+    // Cada duelo en su propio bloque (número, equipo, capitán, 🆚, equipo, capitán) con una línea en blanco entre bloques
+    const split = (id, name) => {
+      const t = teams.find(x => x.id === id);
+      const nm = name || (t && t.name) || 'Equipo';
+      const L = lmap[leaderKey(nm)];
+      if (L) return { nm, cap: '♛ ' + L.nick + ' · wa.me/' + L.phone };
+      const nick = t && Number.isInteger(t.captain) && (t.players || [])[t.captain];
+      return { nm, cap: nick ? '♛ ' + nick : '' };
+    };
+    const lines = ['*RONDA ' + round + (multiTable ? ' · TABLA ' + tn : '') + '*', '━━━━━━━━━━━━━━'];
+    real.forEach((m, i) => {
+      const A = split(m.teamAId, m.teamAName), B = split(m.teamBId, m.teamBName);
+      lines.push('');
+      lines.push('*' + (i + 1) + '.* ' + A.nm);
+      if (A.cap) lines.push(A.cap);
+      lines.push('🆚');
+      lines.push(B.nm);
+      if (B.cap) lines.push(B.cap);
+    });
+    if (byes.length) { lines.push(''); byes.forEach(b => lines.push('😴 Descansa: ' + b.teamAName)); }
     return lines.join('\n');
   }
 
@@ -3026,24 +3043,48 @@ body::after{display:none}
     const FONT = '"Manrope","Segoe UI",Arial,sans-serif';
     try { await Promise.all([document.fonts.load('800 30px Manrope'), document.fonts.load('600 18px Manrope')]); } catch (e) {}
     const logo = await new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = 'logo.webp'; });
-    const S = 2, W = 800, PAD = 32, ROW = 56, GAP = 6, TOP = 270, BYE_H = 30;
+    const S = 2, W = 800, PAD = 32, ROW = 98, GAP = 16, TOP = 270, BYE_H = 34;
     const anyForfeit = real.some(m => m.winner && m.forfeit);
     const H = TOP + real.length * (ROW + GAP) + (byes.length ? 16 + byes.length * BYE_H : 0) + (anyForfeit ? 30 : 0) + 100;
     const c = document.createElement('canvas'); c.width = W * S; c.height = H * S;
     const x = c.getContext('2d'); x.scale(S, S);
     const rr = (X, Y, w, h, r) => { x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath(); };
     const fit = (txt, maxW, size, weight) => { let f = size; x.font = weight + ' ' + f + 'px ' + FONT; while (x.measureText(txt).width > maxW && f > 11) { f -= 1; x.font = weight + ' ' + f + 'px ' + FONT; } };
-    // nombre del equipo: se achica un poco y, si aun así no cabe, pasa a dos líneas
-    const drawName = (txt, xPos, align, color, cy) => {
-      x.textAlign = align; x.fillStyle = color;
-      fit(txt, 280, 22, '800');
-      const fs = parseInt(x.font.match(/(\d+)px/)[1], 10);
-      if (fs >= 17 || txt.indexOf(' ') === -1) { x.fillText(txt, xPos, cy + 1); return; }
-      const mid = txt.length / 2; let cut = -1;
-      for (let d = 0; d < txt.length; d++) { if (txt[Math.floor(mid) - d] === ' ') { cut = Math.floor(mid) - d; break; } if (txt[Math.floor(mid) + d] === ' ') { cut = Math.floor(mid) + d; break; } }
-      const l1 = txt.slice(0, cut).trim(), l2 = txt.slice(cut).trim();
-      fit(l1.length > l2.length ? l1 : l2, 280, 18, '800');
-      x.fillText(l1, xPos, cy - 10); x.fillText(l2, xPos, cy + 11);
+    // Capitán / líder de cada equipo (se muestra pequeño debajo del nombre)
+    const lmapI = leadersMap();
+    const capOf = (id, name) => {
+      const t = teams.find(q => q.id === id);
+      const L = lmapI[leaderKey(name || (t && t.name) || '')];
+      if (L) return '♛ ' + L.nick;
+      const nick = t && Number.isInteger(t.captain) && (t.players || [])[t.captain];
+      return nick ? '♛ ' + nick : '';
+    };
+    // Nombre del equipo: hasta 2 líneas, con letra lo más grande posible, y capitán debajo
+    const NAME_W = 268;
+    const wrapLines = (txt) => {
+      const words = String(txt).split(/\s+/).filter(Boolean), out = []; let cur = '';
+      words.forEach(w => { const t = cur ? cur + ' ' + w : w; if (cur && x.measureText(t).width > NAME_W) { out.push(cur); cur = w; } else cur = t; });
+      if (cur) out.push(cur);
+      return out;
+    };
+    const drawTeam = (txt, id, xPos, align, color, cy) => {
+      txt = txt || '';
+      let f = 24, lines = [];
+      for (; f >= 14; f--) {
+        x.font = '800 ' + f + 'px ' + FONT; lines = wrapLines(txt);
+        if (lines.length <= 2 && lines.every(l => x.measureText(l).width <= NAME_W)) break;
+      }
+      if (lines.length > 2) lines = [lines[0], lines.slice(1).join(' ')];
+      const cap = capOf(id, txt), LH = f + 5, CH = cap ? 22 : 0;
+      const total = lines.length * LH + CH;
+      let yy = cy - total / 2 + LH / 2;
+      x.textAlign = align; x.textBaseline = 'middle'; x.fillStyle = color; x.font = '800 ' + f + 'px ' + FONT;
+      lines.forEach(l => { x.fillText(l, xPos, yy); yy += LH; });
+      if (cap) {
+        let cf = 15; x.font = '600 ' + cf + 'px ' + FONT;
+        while (x.measureText(cap).width > NAME_W && cf > 11) { cf--; x.font = '600 ' + cf + 'px ' + FONT; }
+        x.fillStyle = color === '#7f869b' ? '#5f667a' : '#b9a46a'; x.fillText(cap, xPos, yy + 2);
+      }
     };
     x.fillStyle = '#0a0c13'; x.fillRect(0, 0, W, H);
     const glow = x.createLinearGradient(0, 0, 0, 300); glow.addColorStop(0, '#3a3224'); glow.addColorStop(1, '#0a0c13');
@@ -3056,20 +3097,23 @@ body::after{display:none}
     x.fillText('Versus de la liga · ' + real.length + (real.length === 1 ? ' duelo' : ' duelos') + ' · ' + real.filter(m => m.winner).length + ' definidos', W / 2, 236);
     real.forEach((m, i) => {
       const y = TOP + i * (ROW + GAP), cy = y + ROW / 2;
-      x.fillStyle = i % 2 ? '#1b2030' : '#151927'; rr(PAD, y, W - 2 * PAD, ROW, 8); x.fill();
       const wA = m.winner === 'A', wB = m.winner === 'B', done = !!m.winner;
-      if (wA || wB) { x.fillStyle = '#ffd35c'; rr(wA ? PAD : W - PAD - 5, y, 5, ROW, 2); x.fill(); }
-      // equipos
+      x.fillStyle = i % 2 ? '#1b2030' : '#151927'; rr(PAD, y, W - 2 * PAD, ROW, 14); x.fill();
+      x.strokeStyle = 'rgba(255,255,255,.07)'; x.lineWidth = 1; rr(PAD, y, W - 2 * PAD, ROW, 14); x.stroke();
+      if (wA || wB) { x.fillStyle = '#ffd35c'; rr(wA ? PAD : W - PAD - 6, y + 10, 6, ROW - 20, 3); x.fill(); }
+      // número del duelo
+      x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = '#6d748a'; x.font = '700 13px ' + FONT;
+      x.fillText('DUELO ' + (i + 1), W / 2, y + 15);
+      // equipos, separados del centro
       const nameCol = (win) => !done ? '#fff' : (win ? '#ffd35c' : '#7f869b');
-      x.textBaseline = 'middle';
-      drawName(m.teamAName || '', 338, 'right', nameCol(wA), cy);
-      drawName(m.teamBName || '', 462, 'left', nameCol(wB), cy);
+      drawTeam(m.teamAName, m.teamAId, W / 2 - 66, 'right', nameCol(wA), cy + 6);
+      drawTeam(m.teamBName, m.teamBId, W / 2 + 66, 'left', nameCol(wB), cy + 6);
       // centro: marcador o VS
-      x.fillStyle = 'rgba(0,0,0,.45)'; rr(W / 2 - 52, cy - 20, 104, 40, 8); x.fill();
-      x.strokeStyle = done ? '#ffd35c' : 'rgba(255,255,255,.25)'; x.lineWidth = 1.2; rr(W / 2 - 52, cy - 20, 104, 40, 8); x.stroke();
-      x.textAlign = 'center';
-      if (done) { x.fillStyle = '#ffd35c'; x.font = '800 24px ' + FONT; x.fillText((wA ? '1' : '0') + '  –  ' + (wA ? '0' : '1') + (m.forfeit ? ' ✱' : ''), W / 2, cy + 1); }
-      else { x.fillStyle = '#9aa0b4'; x.font = '800 20px ' + FONT; x.fillText('VS', W / 2, cy + 1); }
+      x.fillStyle = 'rgba(0,0,0,.5)'; rr(W / 2 - 44, cy - 14, 88, 44, 10); x.fill();
+      x.strokeStyle = done ? '#ffd35c' : 'rgba(255,255,255,.28)'; x.lineWidth = 1.2; rr(W / 2 - 44, cy - 14, 88, 44, 10); x.stroke();
+      x.textAlign = 'center'; x.textBaseline = 'middle';
+      if (done) { x.fillStyle = '#ffd35c'; x.font = '800 22px ' + FONT; x.fillText((wA ? '1' : '0') + ' – ' + (wA ? '0' : '1') + (m.forfeit ? ' ✱' : ''), W / 2, cy + 9); }
+      else { x.fillStyle = '#9aa0b4'; x.font = '800 20px ' + FONT; x.fillText('VS', W / 2, cy + 9); }
     });
     x.textBaseline = 'alphabetic';
     let yy = TOP + real.length * (ROW + GAP);
