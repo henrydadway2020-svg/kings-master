@@ -1310,16 +1310,30 @@ body::after{display:none}
   let leaderDocs = [], unsubLeaders = null, leadersErr = false;
   const leaderKey = (n) => String(n || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
   // mapa clave-de-equipo -> { team, nick, phone }; tolera documentos con otros nombres de campo
+  function leaderFromDoc(d) {
+    const x = d.data || {}, t = teams.find(tt => tt.id === d.id);
+    const team = x.team || x.teamName || x.name || (t && t.name) || '';
+    const phone = String(x.phone || x.whatsapp || x.tel || x.telefono || '').replace(/\D/g, '');
+    let nick = x.nick || x.leader || x.lider || x.captain || x.nickname || '';
+    if (!nick && t && Number.isInteger(t.captain)) nick = (t.players || [])[t.captain] || '';
+    if (!phone) return null;
+    return { team, nick: String(nick || ''), phone };
+  }
   function leadersMap() {
     const map = {};
-    leaderDocs.forEach(d => {
-      const x = d.data || {}, t = teams.find(tt => tt.id === d.id);
-      const team = x.team || x.teamName || x.name || (t && t.name) || '';
-      const nick = x.nick || x.leader || x.lider || x.captain || x.nickname || '';
-      const phone = String(x.phone || x.whatsapp || x.tel || x.telefono || '').replace(/\D/g, '');
-      if (team && nick && phone) map[leaderKey(team)] = { team, nick: String(nick), phone };
-    });
+    leaderDocs.forEach(d => { const L = leaderFromDoc(d); const k = L && leaderKey(L.team); if (k) map[k] = L; });
     return map;
+  }
+  // Líder de un equipo: primero por id del equipo, luego por nombre (normalizado), luego por nombre parecido
+  function leaderOf(id, name) {
+    const t = teams.find(x => x.id === id);
+    const byId = leaderDocs.find(d => d.id === id);
+    if (byId) { const L = leaderFromDoc(byId); if (L) return L; }
+    const map = leadersMap();
+    const keys = [leaderKey(name), leaderKey(t && t.name)].filter(Boolean);
+    for (const k of keys) if (map[k]) return map[k];
+    for (const k of keys) { const hit = Object.keys(map).find(m => m.length >= 4 && (m.includes(k) || k.includes(m))); if (hit) return map[hit]; }
+    return null;
   }
   function parseLeaders(text) {
     const out = {};
@@ -2986,6 +3000,7 @@ body::after{display:none}
         const old = '📋 Copiar texto para WhatsApp';
         cp.textContent = ok ? '✓ Texto copiado' : 'No se pudo copiar';
         setTimeout(() => { cp.textContent = old; }, 2200);
+        if (ok && roundTextMissing.length) uiAlert('Texto copiado, pero estos equipos no tienen número de WhatsApp guardado:\n\n• ' + Array.from(new Set(roundTextMissing)).join('\n• ') + '\n\nAgrégalos en la caja «Líderes» (formato: Equipo (♛ nick wa.me/número)). El nombre debe ser igual al del equipo.' + (leadersErr ? '\n\nOjo: hubo un error leyendo los líderes; revisa tu sesión de organizador y las reglas de Firestore.' : ''));
       };
       if (isAdmin) bar.appendChild(cp);
       let canShareFiles = false;
@@ -3000,6 +3015,7 @@ body::after{display:none}
   }
 
   // --- Texto de una ronda para copiar y pegar (WhatsApp) ---
+  let roundTextMissing = [];
   function buildRoundText(tn, round, multiTable) {
     const list = matches.filter(m => (isAdmin || m.published === true) && m.table === tn && m.round === round);
     const real = list.filter(m => !m.bye), byes = list.filter(m => m.bye);
@@ -3014,11 +3030,13 @@ body::after{display:none}
       return nm + (nick ? ' (♛ ' + nick + ')' : '');
     };
     // Cada duelo en su propio bloque (número, equipo, capitán, 🆚, equipo, capitán) con una línea en blanco entre bloques
+    roundTextMissing = [];
     const split = (id, name) => {
       const t = teams.find(x => x.id === id);
       const nm = name || (t && t.name) || 'Equipo';
-      const L = lmap[leaderKey(nm)];
-      if (L) return { nm, cap: '♛ ' + L.nick + ' · wa.me/' + L.phone };
+      const L = leaderOf(id, nm);
+      if (L) return { nm, cap: '♛ ' + (L.nick ? L.nick + ' · ' : '') + 'wa.me/' + L.phone };
+      if (isAdmin) roundTextMissing.push(nm);
       const nick = t && Number.isInteger(t.captain) && (t.players || [])[t.captain];
       return { nm, cap: nick ? '♛ ' + nick : '' };
     };
@@ -3051,11 +3069,10 @@ body::after{display:none}
     const rr = (X, Y, w, h, r) => { x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath(); };
     const fit = (txt, maxW, size, weight) => { let f = size; x.font = weight + ' ' + f + 'px ' + FONT; while (x.measureText(txt).width > maxW && f > 11) { f -= 1; x.font = weight + ' ' + f + 'px ' + FONT; } };
     // Capitán / líder de cada equipo (se muestra pequeño debajo del nombre)
-    const lmapI = leadersMap();
     const capOf = (id, name) => {
       const t = teams.find(q => q.id === id);
-      const L = lmapI[leaderKey(name || (t && t.name) || '')];
-      if (L) return '♛ ' + L.nick;
+      const L = leaderOf(id, name);
+      if (L) return '♛ ' + (L.nick ? L.nick + ' · ' : '') + 'wa.me/' + L.phone;
       const nick = t && Number.isInteger(t.captain) && (t.players || [])[t.captain];
       return nick ? '♛ ' + nick : '';
     };
